@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djongo',
 ]
 
 MIDDLEWARE = [
@@ -73,10 +74,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+#fix djongo error https://www.mongodb.com/community/forums/t/djongo-notimplementederror-database-objects-do-not-implement-truth-value-testing-or-bool/188912/4
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'cmput404',
+        'CLIENT': {
+            'host': 'mongodb+srv://123:123@cmput404.lsvdxyr.mongodb.net/test',
+            'username': '123',
+            'password': '123',
+        }
     }
 }
 
