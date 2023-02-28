@@ -1,0 +1,15 @@
+/* Appearance of the search bar*/
+.searchWrapper{
+    width: 300px;
+    height: 50px;
+    background-color: aqua;
+    float: right;
+    margin-top: 25px;
+
+}
+.search_wrapper .search_input{
+    float: right;
+}
+.search_wrapper .search_button{
+    float: right;
+}
