@@ -1,10 +1,35 @@
-import TopBar from './Components/TopBar/TopBar'; 
+import Post from './Components/Post/Post'; 
 import './App.css';
+
+const postData = [
+  {
+    author: "Username1", 
+    title: "Title1", 
+    date: "2023-02-28", 
+    content: "This is my first post. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
+  },
+  {
+    author: "Username2", 
+    title: "Title2", 
+    date: "2023-02-28", 
+    content: "This is my second post. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
+  },
+  {
+    author: "Username3", 
+    title: "Title3", 
+    date: "2023-02-28", 
+    content: "This is my third post. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
+  },
+];
+
 
 function App() {
   return (
     <div className="App">
-      <TopBar />
+      {postData.map(function(post){
+          return <Post post={post}/>;
+      })}
+      
     </div>
   );
 }
