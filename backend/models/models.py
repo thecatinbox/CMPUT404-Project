@@ -61,19 +61,22 @@ class Posts(models.Model):
 class Followers(models.Model):
     class Meta:
         verbose_name_plural = 'Followers'
-        
-    id = models.CharField(max_length = 255, primary_key = True)
-    followed = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "follower")
-    follower = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followed")
+    
+    followedId = models.CharField(max_length = 255, primary_key = True)#store uuid of author being followed
+    type = models.CharField(default="followers",editable=False)
+    followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE)
+    follower = models.ForeignKey(Authors, on_delete= models.CASCADE)
 
 
 class FollowRequests(models.Model):
     class Meta:
         verbose_name_plural = 'FollowRequests'
         
-    id = models.CharField(max_length = 255, primary_key = True)
-    receiver = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "receiver")
-    requester = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "requester")
+    belongTo = models.CharField(max_length = 255, primary_key = True)#store uuid of the author who received the request
+    type = models.CharField(default="Follow",editable=False)
+    summary = models.TextField(max_length=25, blank=True,default='')
+    actor = models.ForeignKey(Authors, on_delete= models.CASCADE)
+    object = models.ForeignKey(Authors, on_delete= models.CASCADE)
 
 
 class Comments(models.Model):
