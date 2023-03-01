@@ -1,23 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser
+#from django.core.validators import MinLengthValidator
 import uuid
 import os
 
-class Users(AbstractUser):
-        id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-class Authors(models.Model):
+class Authors(AbstractBaseUser):
     class Meta:
         verbose_name_plural = 'Authors'
 
-    id = models.CharField(max_length = 255, primary_key = True)
-    type = models.CharField(max_length = 255, default = "author")
-    host = models.CharField(max_length = 255)
-    displayName = models.CharField(max_length = 32)
-    url = models.CharField(max_length = 255)
-    github = models.CharField(max_length = 255, null=True)
+    username = models.CharField(max_length = 255, unique = True, primary_key=True, default="", blank=False)
+    password = models.CharField(max_length = 255, default="", blank=False)
+    type = models.CharField(default="author",editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    id = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    url = models.CharField(max_length = 255, null=True, blank=True, default="")
+    host = models.CharField(max_length = 255, null=True, blank=True, default="")
+    displayName = models.CharField(max_length = 20, null=True, blank=True, default="")
+    github = models.CharField(max_length = 255, null=True, blank=True, default="")
+    profileImage = models.ImageField(upload_to='profile_images', blank=True, null=True)
     accepted = models.BooleanField(default = False)
-    profileImage = models.TextField()
+
+    def __str__(self):
+        return "username"+self.username + "uuid"+str(self.uuid)
 
 class Posts(models.Model):
     class Meta:
