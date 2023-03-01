@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import TopBar from './Components/TopBar/TopBar'; 
-import Home from './Views/Home/Home';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TopBar from "./Components/TopBar/TopBar";
+import Home from "./Pages/Home/Home";
+import Inbox from "./Pages/Inbox/Inbox";
+// import Friends from "./Pages/Friends/Friends";
+// import Profile from "./Pages/Profile/Profile";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<TopBar />}>
+          <Route index element={<Home />} />
+          <Route path="inbox" element={<Inbox />} />
+          <Route path="friends" element={<Inbox />} />
+          <Route path="profile" element={<Inbox />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <TopBar />
-    <Home />
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+root.render(<App />);
