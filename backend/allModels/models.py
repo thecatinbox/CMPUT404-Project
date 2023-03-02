@@ -10,7 +10,7 @@ class Authors(AbstractBaseUser):
 
     username = models.CharField(max_length = 255, unique = True, primary_key=True, default="", blank=False)
     password = models.CharField(max_length = 255, default="", blank=False)
-    type = models.CharField(default="author",editable=False)
+    type = models.CharField(max_length = 255,default="author",editable=False)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     id = models.CharField(unique=True, max_length=255, blank=True, null=True)
     url = models.CharField(max_length = 255, null=True, blank=True, default="")
@@ -18,7 +18,7 @@ class Authors(AbstractBaseUser):
     displayName = models.CharField(max_length = 20, null=True, blank=True, default="")
     github = models.CharField(max_length = 255, null=True, blank=True, default="")
     profileImage = models.ImageField(upload_to='profile_images', blank=True, null=True)
-    accepted = models.BooleanField(default = False)
+    #accepted = models.BooleanField(default = False)
 
     def __str__(self):
         return "username"+self.username + "uuid"+str(self.uuid)
@@ -35,11 +35,12 @@ class Posts(models.Model):
     visibility_choices = [
         ('PUBLIC', 'PUBLIC'),
         ('FRIENDS', 'FRIENDS'),
+        ('PRIVATE', 'PRIVATE')
     ]
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    type = models.CharField(default = "post", editable = False)
+    type = models.CharField(max_length = 255, default = "post", editable = False)
     title = models.CharField(max_length = 255, default = "Untitled")
-    id = models.CharField(max_length = 255, primary_key = True)#store url htto://localhost:../authors/author_uuid/post/post_uuid
+    id = models.CharField(max_length = 255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid
     source = models.CharField(max_length = 255, null=True, blank=True)
     origin = models.CharField(max_length = 255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -62,9 +63,9 @@ class Followers(models.Model):
         verbose_name_plural = 'Followers'
     
     followedId = models.CharField(max_length = 255, primary_key = True)#store uuid of author being followed
-    type = models.CharField(default="followers",editable=False)
-    followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE)
-    follower = models.ForeignKey(Authors, on_delete= models.CASCADE)
+    type = models.CharField(max_length = 255,default="followers",editable=False)
+    followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followedUser")
+    follower = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "follower")
 
     def __str__(self):
         return "followedUser"+self.followedUser + "follower"+str(self.follower)
@@ -75,10 +76,10 @@ class FollowRequests(models.Model):
         verbose_name_plural = 'FollowRequests'
         
     belongTo = models.CharField(max_length = 255, primary_key = True)#store uuid of the author who received the request
-    type = models.CharField(default="Follow",editable=False)
+    type = models.CharField(max_length = 255,default="Follow",editable=False)
     summary = models.TextField(max_length=25, blank=True,default='')
-    actor = models.ForeignKey(Authors, on_delete= models.CASCADE)
-    object = models.ForeignKey(Authors, on_delete= models.CASCADE)
+    actor = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name='request_sender')
+    object = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name='request_receiver')
 
     def __str__(self):
         return "actor"+self.actor + "object"+str(self.object)
@@ -93,13 +94,13 @@ class Comments(models.Model):
         ('text/markdown', 'MARKDOWN')
     ]
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    type = models.CharField(default = "comment", editable = False)
+    type = models.CharField(max_length = 255,default = "comment", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     post = models.ForeignKey(Posts, on_delete = models.CASCADE)
     comment = models.TextField(max_length=500, null=True, blank=True)
     contentType = models.CharField(max_length = 15, choices = choices, default = 'text/plain')
     published = models.DateTimeField(auto_now_add = True)
-    id = models.CharField(max_length=255, primary_key = True)#store url htto://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid
+    id = models.CharField(max_length=255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid
     
     def __str__(self):
         return "author"+self.author + "post"+str(self.post)
@@ -110,7 +111,7 @@ class Likes(models.Model):
 
     context = models.CharField(max_length=255)    
     summary = models.CharField(max_length=64, default = "A user likes your post")
-    type = models.CharField(default = "like", editable = False) 
+    type = models.CharField(max_length = 255,default = "like", editable = False) 
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
@@ -121,7 +122,7 @@ class Liked(models.Model):
     class Meta:
         verbose_name_plural = 'Liked'
 
-    type = models.CharField(default='liked', editable=False)
+    type = models.CharField(max_length = 255,default='liked', editable=False)
     items = models.ManyToManyField(Likes,blank=True)
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
@@ -129,9 +130,9 @@ class Inbox(models.Model):
     class Meta:
         verbose_name_plural = 'Inboxes'
     
-    type = models.CharField(default = "inbox", editable = False)
+    type = models.CharField(max_length = 255,default = "inbox", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     items = models.ManyToManyField(Posts, blank=True)
-    comments = models.ManyToManyField(Comment, blank=True, symmetrical=False)
-    followRequests = models.ManyToManyField(FollowRequest, blank=True, symmetrical=False)
+    comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
+    followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
     likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)
