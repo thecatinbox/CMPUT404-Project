@@ -5,14 +5,27 @@ import "./TopBar.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
-const TopBar = () => {
+function setActive(id) {
+  if (id) {
+    console.log(id); 
+    document.getElementById(id).className = 'active';
+  }
+}; 
+
+
+const TopBar = (params) => {
+
+  React.useEffect(() => {
+    setActive(params["id"]); 
+  }, [])
+
   return (
     <>
       <div className="topnav">
-        <a className="active"><Link to="/">Home</Link></a>
-        <a><Link to="/inbox">Inbox</Link></a>
-        <a><Link to="/friends">Friends</Link></a>
-        <a><Link to="/profile">Profile</Link></a>
+        <a id="home"><Link to="/">Home</Link></a>
+        <a id="inbox"><Link to="/inbox">Inbox</Link></a>
+        <a id="friends"><Link to="/friends">Friends</Link></a>
+        <a id="profile"><Link to="/profile">Profile</Link></a>
         <div className="search-container">
           <form action="/action_page.php">
             <input type="text" placeholder="Search.." name="search"></input>

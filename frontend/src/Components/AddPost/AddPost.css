@@ -21,14 +21,14 @@
   
 }
 .dropdown {
-  margin-left: 57%; 
+  margin-left: 65%; 
 }
 .submit {
   border-color: rgb(164, 223, 255); 
   border: 1px solid; 
   border-radius: 5px; 
 }
-button{
+button {
   background-color: #ddf0ff;
   color: #3d82ba;
   font-size: 20px;
