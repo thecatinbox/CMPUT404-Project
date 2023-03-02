@@ -1,5 +1,6 @@
 import './Inbox.css';
 import Message from '../../Components/Message/Message'; 
+import TopBar from "../../Components/TopBar/TopBar";
 
 const messageData = [
   {
@@ -15,11 +16,14 @@ const messageData = [
 
 function Inbox() {
   return (
-    <div className="inbox">
-      {messageData.map(function(message){
-          return <Message message={message}/>;
-      })}
-    </div>
+    <>
+      <TopBar id="inbox"/>
+      <div className="inbox">
+        {messageData.map(function(message){
+            return <Message message={message}/>;
+        })}
+      </div>
+    </>
   );
 }
 

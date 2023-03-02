@@ -1,4 +1,5 @@
 import User from '../../Components/User/User'; 
+import TopBar from "../../Components/TopBar/TopBar";
 import './Friends.css';
 
 const followingData = [
@@ -30,23 +31,26 @@ const followerData = [
 
 function Friends() {
   return (
-    <div className="friends">
+    <>
+      <TopBar id="friends"/>
+      <div className="friends">
 
-      <div className="following">
-        <h2>My Followings</h2>
-        {followingData.map(function(user){
-            return <User user={user}/>;
-        })}
+        <div className="following">
+          <h2>My Followings</h2>
+          {followingData.map(function(user){
+              return <User user={user}/>;
+          })}
+        </div>
+
+        <div className="follower">
+          <h2>My Followers</h2>
+          {followerData.map(function(user){
+              return <User user={user}/>;
+          })}
+        </div>
+
       </div>
-
-      <div className="follower">
-        <h2>My Followers</h2>
-        {followerData.map(function(user){
-            return <User user={user}/>;
-        })}
-      </div>
-
-    </div>
+    </>
   );
 }
 

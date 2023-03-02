@@ -1,6 +1,7 @@
 import Post from '../../Components/Post/Post'; 
 import * as React from 'react';
 import './Profile.css';
+import TopBar from "../../Components/TopBar/TopBar";
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -48,31 +49,34 @@ function Profile() {
   };
 
   return (
-    <div className="profile">
-      <div className='profile-data'>
-        <img src={userData.profileImage} alt="Image Description"></img>
-        <h2>{userData.displayName}</h2>
-        <button onClick={handleClickOpen}>Edit Profile</button>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Edit User Profile</DialogTitle>
-          <DialogContent>
-            <TextField margin="dense" id="displayName}" label="Display Name" value={userData.displayName} variant="standard" fullWidth/>
-            <TextField margin="dense" id="github" label="GitHub URL" value={userData.github} variant="standard" fullWidth/>
-            <TextField margin="dense" id="profileImage" label="Profile Image URL" value={userData.profileImage} variant="standard" fullWidth/>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleClose}>Save</Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+    <>
+      <TopBar id="profile"/>
+      <div className="profile">
+        <div className='profile-data'>
+          <img src={userData.profileImage} alt="Image Description"></img>
+          <h2>{userData.displayName}</h2>
+          <button onClick={handleClickOpen}>Edit Profile</button>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Edit User Profile</DialogTitle>
+            <DialogContent>
+              <TextField margin="dense" id="displayName}" label="Display Name" value={userData.displayName} variant="standard" fullWidth/>
+              <TextField margin="dense" id="github" label="GitHub URL" value={userData.github} variant="standard" fullWidth/>
+              <TextField margin="dense" id="profileImage" label="Profile Image URL" value={userData.profileImage} variant="standard" fullWidth/>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleClose}>Save</Button>
+            </DialogActions>
+          </Dialog>
+        </div>
 
-      <div className='post-data'>
-        {postData.map(function(post){
-            return <Post post={post}/>;
-        })}
+        <div className='post-data'>
+          {postData.map(function(post){
+              return <Post post={post}/>;
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
