@@ -13,7 +13,7 @@ function User({user}) {
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
           <Typography>
-            {user.diaplayName}
+            {user.displayName}
           </Typography>
         </CardContent>
 
