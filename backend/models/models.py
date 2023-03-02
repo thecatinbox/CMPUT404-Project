@@ -27,36 +27,35 @@ class Posts(models.Model):
     class Meta:
         verbose_name_plural = 'Posts'
 
-    PLAINTEXT = 'text/plain'
-    MARKDOWN = 'text/markdown'
-    IMAGE = 'image'
-    PUBLIC = 'PUBLIC'
-    FRIENDS = 'FRIENDS'
-    UNLISTED = 'UNLISTED'
     content_type_choices = [
-        (PLAINTEXT, 'PLAINTEXT'),
-        (MARKDOWN, 'COMMONMARK'),
-        (IMAGE, 'IMAGE')
+        ('text/plain', 'PLAINTEXT'),
+        ('text/markdown', 'COMMONMARK'),
+        ('image', 'IMAGE')
     ]
     visibility_choices = [
-        (PUBLIC, 'PUBLIC'),
-        (FRIENDS, 'FRIENDS'),
-        (UNLISTED, 'UNLISTED')
+        ('PUBLIC', 'PUBLIC'),
+        ('FRIENDS', 'FRIENDS'),
     ]
-    id = models.CharField(max_length = 255, primary_key = True)
-    type = models.CharField(max_length = 255, default = "post")
-    title = models.CharField(max_length = 255)
-    source = models.CharField(max_length = 255)
-    origin = models.CharField(max_length = 255)
-    description = models.CharField(max_length = 255)
-    contentType = models.CharField(max_length = 15, choices = content_type_choices, default = PLAINTEXT)
-    content = models.TextField()
-    originalAuthor = models.ForeignKey(Authors, on_delete = models.DO_NOTHING, related_name = "originalPoster")
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    type = models.CharField(default = "post", editable = False)
+    title = models.CharField(max_length = 255, default = "Untitled")
+    id = models.CharField(max_length = 255, primary_key = True)#store url htto://localhost:../authors/author_uuid/post/post_uuid
+    source = models.CharField(max_length = 255, null=True, blank=True)
+    origin = models.CharField(max_length = 255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    contentType = models.CharField(max_length = 15, choices = content_type_choices, default = ('text/plain', 'PLAINTEXT'))
+    content = models.TextField(max_length=500, null=True, blank=True)
+    contentImage = models.ImageField(upload_to='post_images', blank=True, null=True)
     author = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "poster")
+    categories  = models.CharField(max_length = 255, null=True, blank=True)
     count = models.IntegerField(default = 0)
     published = models.DateTimeField(auto_now_add=True)
-    visibility = models.CharField(max_length = 8, choices = visibility_choices, default = PUBLIC)
+    visibility = models.CharField(max_length = 15, choices = visibility_choices, default = ('PUBLIC', 'PUBLIC'))
 
+    def __str__(self):
+        return "title"+self.title + "uuid"+str(self.uuid) + "author"+str(self.author)
+
+    
 
 class Followers(models.Model):
     class Meta:
@@ -66,6 +65,9 @@ class Followers(models.Model):
     type = models.CharField(default="followers",editable=False)
     followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE)
     follower = models.ForeignKey(Authors, on_delete= models.CASCADE)
+
+    def __str__(self):
+        return "followedUser"+self.followedUser + "follower"+str(self.follower)
 
 
 class FollowRequests(models.Model):
@@ -78,76 +80,58 @@ class FollowRequests(models.Model):
     actor = models.ForeignKey(Authors, on_delete= models.CASCADE)
     object = models.ForeignKey(Authors, on_delete= models.CASCADE)
 
+    def __str__(self):
+        return "actor"+self.actor + "object"+str(self.object)
+
 
 class Comments(models.Model):
     class Meta:
         verbose_name_plural = 'Comments'
         
-    PLAINTEXT = 'text/plain'
-    MARKDOWN = 'text/markdown'
     choices = [
-        (PLAINTEXT, 'PLAINTEXT'),
-        (MARKDOWN, 'MARKDOWN')
+        ('text/plain', 'PLAINTEXT'),
+        ('text/markdown', 'MARKDOWN')
     ]
-    id = models.CharField(max_length=255, primary_key = True)
-    type = models.CharField(max_length=16, default = "comment")
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    type = models.CharField(default = "comment", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     post = models.ForeignKey(Posts, on_delete = models.CASCADE)
-    comment = models.CharField(max_length=255)
-    contentType = models.CharField(
-        max_length = 15,
-        choices = choices,
-        default = PLAINTEXT
-    )
+    comment = models.TextField(max_length=500, null=True, blank=True)
+    contentType = models.CharField(max_length = 15, choices = choices, default = 'text/plain')
     published = models.DateTimeField(auto_now_add = True)
+    id = models.CharField(max_length=255, primary_key = True)#store url htto://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid
+    
+    def __str__(self):
+        return "author"+self.author + "post"+str(self.post)
 
 class Likes(models.Model):
     class Meta:
         verbose_name_plural = 'Likes'
-        
-    id = models.CharField(max_length=255, primary_key = True)
-    context = models.CharField(max_length=255)
-    summary = models.CharField(max_length=64)
-    type = models.CharField(max_length=16, default = "like")
-    published = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    post = models.ForeignKey(Posts, on_delete = models.CASCADE)
 
-class LikesComments(models.Model):
-    class Meta:
-        verbose_name_plural = 'LikesComments'
-        
-    id = models.CharField(max_length=255, primary_key = True)
-    context = models.CharField(max_length=255)
-    summary = models.CharField(max_length=64)
-    type = models.CharField(max_length=16, default = "likescomment")
-    published = models.DateTimeField(auto_now_add=True)
+    context = models.CharField(max_length=255)    
+    summary = models.CharField(max_length=64, default = "A user likes your post")
+    type = models.CharField(default = "like", editable = False) 
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    comment = models.ForeignKey(Comments, on_delete = models.CASCADE)
+    object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
+
+    def __str__(self):
+        return "author"+self.author + "object"+str(self.object)
+
+class Liked(models.Model): 
+    class Meta:
+        verbose_name_plural = 'Liked'
+
+    type = models.CharField(default='liked', editable=False)
+    items = models.ManyToManyField(Likes,blank=True)
+    object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
 class Inbox(models.Model):
     class Meta:
         verbose_name_plural = 'Inboxes'
-        
-    id = models.CharField(max_length=255, primary_key = True)
+    
+    type = models.CharField(default = "inbox", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    post = models.ForeignKey(Posts, on_delete = models.CASCADE)
-
-class Images(models.Model):
-
-    # Copied from https://stackoverflow.com/questions/15140942/django-imagefield-change-file-name-on-upload
-    def change_name(instance, filename):
-        upload_to = 'images'
-        ext = filename.split('.')[-1]
-        # get filename
-        if instance.pk:
-            filename = '{}.{}'.format(instance.pk, ext)
-        else:
-            # set filename as random string
-            filename = '{}.{}'.format(uuid4().hex, ext)
-        # return the whole path to the file
-        return os.path.join(upload_to, filename)
-
-    id = models.CharField(max_length=255, primary_key=True)
-    imageContent = models.TextField()
-    referenceId = models.CharField(max_length=255, unique=True)
+    items = models.ManyToManyField(Posts, blank=True)
+    comments = models.ManyToManyField(Comment, blank=True, symmetrical=False)
+    followRequests = models.ManyToManyField(FollowRequest, blank=True, symmetrical=False)
+    likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)
