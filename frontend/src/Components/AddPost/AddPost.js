@@ -21,7 +21,7 @@ const AddPost = () => {
         
           <option value="Public" selected>Public</option>
           <option value="Friends">Friends</option>
-          <option value="Secret" >Secret</option>
+          <option value="Private" >Private</option>
         </select>
       </div>
 
