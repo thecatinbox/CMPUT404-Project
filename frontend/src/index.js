@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useLocation } from 'react-router-dom'
 import TopBar from "./Components/TopBar/TopBar";
 import Home from "./Pages/Home/Home";
 import Inbox from "./Pages/Inbox/Inbox";
