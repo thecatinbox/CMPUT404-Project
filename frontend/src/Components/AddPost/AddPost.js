@@ -7,7 +7,8 @@ import { faImage} from '@fortawesome/free-solid-svg-icons'
 const AddPost = () => {
   return (
     <div class="post--container">
-    <textarea type="text"  class="input-field" placeholder="Create a new post.." maxlength="400" size="450"></textarea>
+    <input class="title" type="text" placeholder="Title.." name="title" maxlength="60"></input>
+    <textarea type="text"  class="input-field" placeholder="Create a new post.." maxlength="450" size="450"></textarea>
 
     <div className="mainPost">
       <div>
@@ -37,11 +38,3 @@ const AddPost = () => {
 }; 
 
 export default AddPost;
-
-
-
-
-
-
-            
-        
