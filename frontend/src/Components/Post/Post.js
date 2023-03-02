@@ -12,6 +12,11 @@ import TextField from '@mui/material/TextField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faChevronDown, faComment, faShare} from '@fortawesome/free-solid-svg-icons'
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
 import "./Post.css"; 
 
 function Post({post}) { 
@@ -19,11 +24,23 @@ function Post({post}) {
   /* https://mui.com/material-ui/react-menu/ */ 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  /* https://mui.com/material-ui/react-dialog/ */ 
+  const [editOpen, setEditOpen] = React.useState(false);
+
+  const handleEditOpen = () => {
+    setEditOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false);
   };
 
   return (
@@ -56,9 +73,21 @@ function Post({post}) {
                 'aria-labelledby': 'basic-button',
               }}
             >
-              <MenuItem onClick={handleClose}>Edit Post</MenuItem>
+              <MenuItem onClick={handleEditOpen}>Edit Post</MenuItem>
               <MenuItem onClick={handleClose}>Delete Post</MenuItem>
             </Menu>
+
+            <Dialog open={editOpen} onClose={handleEditClose}>
+              <DialogTitle>Edit Post</DialogTitle>
+              <DialogContent>
+                <TextField margin="dense" id="displayName}" label="Title" value={post.title} variant="standard" fullWidth/>
+                <TextField margin="dense" id="github" label="Post Content" value={post.content} variant="standard" fullWidth/>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleEditClose}>Cancel</Button>
+                <Button onClick={handleEditClose}>Save</Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </CardActions>
         
