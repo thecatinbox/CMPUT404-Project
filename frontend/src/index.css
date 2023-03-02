@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.searchWrapper{
+  width: 300px;
+  height: 50px;
+  background-color: aqua;
+  float: right;
+  margin-top: 25px;
+
+}
+.search_wrapper .search_input{
+  float: right;
+}
+.search_wrapper .search_button{
+  float: right;
+}
