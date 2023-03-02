@@ -15,7 +15,7 @@ const messageData = [
 
 function Inbox() {
   return (
-    <div className="Inbox">
+    <div className="inbox">
       {messageData.map(function(message){
           return <Message message={message}/>;
       })}

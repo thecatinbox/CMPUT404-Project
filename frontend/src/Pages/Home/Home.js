@@ -26,7 +26,7 @@ const postData = [
 
 function Home() {
   return (
-    <div className="Home">
+    <div className="home">
       <AddPost/>
       {postData.map(function(post){
           return <Post post={post}/>;

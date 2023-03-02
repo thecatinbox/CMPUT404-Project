@@ -2,7 +2,7 @@ import './Profile.css';
 
 function Profile() {
   return (
-    <div className="Profile">
+    <div className="profile">
       <p>Profile</p>
     </div>
   );

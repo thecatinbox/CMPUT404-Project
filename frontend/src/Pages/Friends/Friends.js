@@ -2,8 +2,8 @@ import './Friends.css';
 
 function Friends() {
   return (
-    <div className="Friends">
-      <p>Friends</p>
+    <div className="friends">
+
     </div>
   );
 }
