@@ -1,0 +1,14 @@
+.profile {
+    width: 60%;
+    margin: auto;
+}
+
+.profile-data {
+    text-align: center;
+    padding-top: 5%;
+}
+
+img {
+    width: 20%;
+    height: auto;
+}
