@@ -2,6 +2,9 @@ import React from "react";
 import { Outlet, Link } from "react-router-dom"; 
 import "./TopBar.css"; 
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+
 const TopBar = () => {
   return (
     <>
@@ -13,7 +16,7 @@ const TopBar = () => {
         <div className="search-container">
           <form action="/action_page.php">
             <input type="text" placeholder="Search.." name="search"></input>
-            <button type="submit"><i className="fa fa-search"></i></button>
+            <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
           </form>
         </div>
       </div>
