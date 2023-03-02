@@ -1,26 +1,27 @@
 import React from "react";
-import "./Post.css"; 
+import "./AddPost.css"; 
 
-const Post = () => {
+const AddPost = () => {
   return (
-    <div class="post--container">
-    <textarea type="text"  class="input-field" placeholder="Create a new post.." maxlength="400" size="450"></textarea>
+    <div className="post--container">
+    <script src="https://kit.fontawesome.com/68d79784aa.js" crossorigin="anonymous"></script>
+    <textarea type="text"  className="input-field" placeholder="Create a new post.." maxLength="400" size="450"></textarea>
 
-    <div style="display: flex;">
+    <div className="mainPost">
       <div>
-        <button><i class="fa-solid fa-image"></i></button>
+        <button><i className="fa-solid fa-image"></i></button>
       </div>
 
-      <div class="dropdown" style="margin-left: 57%;">
-        <button><i class="fa-solid fa-chevron-down"></i> Public</button>  
-        <div class="dropdown-content">
+      <div className="dropdown">
+        <button><i className="fa-solid fa-chevron-down"></i> Public</button>  
+        <div className="dropdown-content">
           <a href="#">Friends</a>
           <a href="#">Secret</a>
         </div>
       </div>
 
       <div>
-        <button style="border-color: rgb(164, 223, 255); border: 1px solid; border-radius: 5px;"><b> Submit</b> </button> 
+        <button className="submit"><b> Submit</b> </button> 
       </div>
 
       
@@ -31,7 +32,7 @@ const Post = () => {
   ); 
 }; 
 
-export default TopBar;
+export default AddPost;
 
 
 

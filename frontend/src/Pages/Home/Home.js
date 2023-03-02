@@ -1,4 +1,5 @@
 import Post from '../../Components/Post/Post'; 
+import AddPost from '../../Components/AddPost/AddPost'; 
 import './Home.css';
 
 const postData = [
@@ -26,6 +27,7 @@ const postData = [
 function Home() {
   return (
     <div className="Home">
+      <AddPost/>
       {postData.map(function(post){
           return <Post post={post}/>;
       })}

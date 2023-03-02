@@ -1,5 +1,5 @@
 .post--container{
-    width: 700px;
+    width: 96%;
     height: 160px;
     background-color: #ddf0ff;
     /*set border*/
@@ -7,6 +7,10 @@
     border-color: #a8cdec;
     border-style: solid;
     border-radius: 5px;
+    margin: auto;
+}
+.mainPost{
+  display: flex; 
 }
 .input-field{
   width: 99%;
@@ -15,6 +19,14 @@
   border-radius: 5px;
   border-color: white;
   
+}
+.dropdown {
+  margin-left: 57%; 
+}
+.submit {
+  border-color: rgb(164, 223, 255); 
+  border: 1px solid; 
+  border-radius: 5px; 
 }
 button{
   background-color: #ddf0ff;
