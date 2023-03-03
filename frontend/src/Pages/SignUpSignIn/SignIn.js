@@ -1,21 +1,39 @@
-import React from "react";
-import { useState } from "react";
-// import ReactDOM from "react-dom/client";
+import React, { useState } from "react";
 import './style.css';
 
 function SignIn() {
     const [inputs, setInputs] = useState({});
 
+    // handle changes in the input box
     const handleChange = (event) => {
-        const username = event.target.username;
-        const password = event.target.password;
-        setInputs(values => ({...values, [username]: password}))
-    }
+        const { name, value } = event.target;
+        setInputs((prevInputs) => ({ ...prevInputs, [name]: value }));
+    };
     
+    // handle the submit of the form
     const handleSubmit = (event) => {
         event.preventDefault();
-        alert(inputs);
-    }
+        // alert(JSON.stringify(inputs)); // check input
+
+        // Send form data to server
+        fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: inputs.username,
+                password: inputs.password,
+            }),
+        })
+        .then((response) => {
+            // Handle server response
+        })
+        .catch((error) => {
+            alert(error);
+            // console.error('Error:', error);
+        });
+    };
     
 
     return (
@@ -26,18 +44,21 @@ function SignIn() {
                 <form onSubmit={handleSubmit}>
                     <label>
                         Username:
-                        <input type="text" name="username" placeholder="Username" value={inputs.username || ""} onChange={handleChange} />
+                        <input type="text" name="username" placeholder="Username" value={inputs.username || ""} onChange={handleChange} required/>
                     </label>
                     <br />
                     <label>
                         Password:
-                        <input type="password" name="password" placeholder="Password" value={inputs.password || ""} onChange={handleChange} />
+                        <input type="password" name="password" placeholder="Password" value={inputs.password || ""} onChange={handleChange} required/>
                     </label>
+                    <div className="alert">
+                        <p>* couldn't be empty.</p>
+                    </div>
                     <br />
                     <button type="submit">Sign In</button>
                     <br />
-                    <div class="noAccount">
-                        <p> No Account? <a href="./signup"> Create a account </a></p>
+                    <div className="noAccount">
+                        <p> No Account? <a href="./signup"> Create an account </a></p>
                     </div>
                 </form>
             </div>

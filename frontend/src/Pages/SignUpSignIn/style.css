@@ -15,9 +15,8 @@ label {
 input {
     border: 2px solid;
     border-radius: 4px;
-    width: 160px;
+    width: 100%;
     color: revert;
-    box-sizing: 150%;
 }
 .container {
     background-color: white;
@@ -28,13 +27,14 @@ input {
     margin-left: auto;
     margin-right: auto;
 }
-.container form {
-    align-items: right;
-}
 button {
     margin-left: auto;
     margin-right: auto;
     margin-top: 40px;
     align-self: center;
     width: 100%;
+}
+.alert {
+    color: red;
+    visibility: hidden;
 }
