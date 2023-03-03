@@ -18,7 +18,7 @@ class Authors(AbstractBaseUser):
     displayName = models.CharField(max_length = 20, null=True, blank=True, default="")
     github = models.CharField(max_length = 255, null=True, blank=True, default="")
     profileImage = models.ImageField(upload_to='profile_images', blank=True, null=True)
-    actived = models.BooleanField(default = False)
+    #accepted = models.BooleanField(default = False)
 
     def __str__(self):
         return "username"+self.username + "uuid"+str(self.uuid)
@@ -131,7 +131,7 @@ class Inbox(models.Model):
         verbose_name_plural = 'Inboxes'
     
     type = models.CharField(max_length = 255,default = "inbox", editable = False)
-    author = models.ForeignKey(Authors, on_delete = models.CASCADE,unique=True)
+    author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     items = models.ManyToManyField(Posts, blank=True)
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
