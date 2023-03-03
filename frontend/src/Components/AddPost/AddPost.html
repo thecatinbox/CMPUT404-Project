@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>post</title>
+    <script src="https://kit.fontawesome.com/68d79784aa.js" crossorigin="anonymous"></script>
+<style>
+
+.post--container{
+    width: 700px;
+    height: 160px;
+    background-color: #ddf0ff;
+    /*set border*/
+    border-width: 4px;
+    border-color: #a8cdec;
+    border-style: solid;
+    border-radius: 5px;
+}
+.input-field{
+  width: 99%;
+  height: 110px;
+  resize:none;
+  border-radius: 5px;
+  border-color: white;
+  
+}
+button{
+  background-color: #ddf0ff;
+  color: #3d82ba;
+  font-size: 20px;
+  border: none;
+  margin-left: 15px;
+  padding: 5px 10px;
+
+}
+
+/* Add a background color on hover */
+button:hover {
+  background-color: #86cdff;
+  color: #273144;
+}
+
+/* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+select {
+  font-size: 20px;
+  outline: 0;
+  background: #f7fcff;
+  color: #273144;
+  border: 1px solid #86cdff;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+</style>
+</head>
+<body>
+  <div class="post--container">
+    <textarea type="text"  class="input-field" placeholder="Create a new post.." maxlength="400" size="450"></textarea>
+
+    <div style="display: flex;">
+      <div>
+        <button><i class="fa-solid fa-image"></i></button>
+      </div>
+
+      <div class="dropdown" style="margin-left: 57%;">
+        <label for="post-category"></label>
+        <select name="post-category" id="post-category">
+          <!-- The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected. -->
+          <option value="Public" selected>Public</option>
+          <option value="Friends">Friends</option>
+          <option value="Secret" >Secret</option>
+        </select>
+      </div>
+
+      <div>
+        <button style="border-color: rgb(164, 223, 255); border: 1px solid; border-radius: 5px;"><b> Submit</b> </button> 
+      </div>
+
+      
+    </div>
+    
+  </div>
+  
+</body>
+</html>
