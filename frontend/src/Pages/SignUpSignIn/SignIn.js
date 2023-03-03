@@ -16,7 +16,7 @@ function SignIn() {
         // alert(JSON.stringify(inputs)); // check input
 
         // Send form data to server
-        fetch('/', {
+        fetch('/api/signin', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

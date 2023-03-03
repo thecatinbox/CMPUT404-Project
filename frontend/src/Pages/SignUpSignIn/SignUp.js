@@ -20,7 +20,7 @@ function SignUp() {
         if (inputs.password === inputs.password2) {
             setPassWordMatch(true);
             // Send form data to server
-            fetch('/signin', {
+            fetch('/api/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
