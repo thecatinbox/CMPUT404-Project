@@ -42,29 +42,21 @@ button:hover {
   color: #273144;
 }
 
-/* Hoverable Dropdown: https://www.w3schools.com/howto/howto_css_dropdown.asp */
+/* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
   position: relative;
   display: inline-block;
 }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #ddf0ff;
-  min-width: 100px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
+select {
+  font-size: 20px;
+  outline: 0;
+  background: #f7fcff;
   color: #273144;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+  border: 1px solid #86cdff;
+  padding: 5px;
+  border-radius: 5px;
 }
-.dropdown-content a:hover {background-color: #86cdff; color: #273144;}
-.dropdown:hover .dropdown-content {display: block;}
 
 </style>
 </head>
@@ -78,11 +70,13 @@ button:hover {
       </div>
 
       <div class="dropdown" style="margin-left: 57%;">
-        <button><i class="fa-solid fa-chevron-down"></i> Public</button>  
-        <div class="dropdown-content">
-          <a href="#">Friends</a>
-          <a href="#">Secret</a>
-        </div>
+        <label for="post-category"></label>
+        <select name="post-category" id="post-category">
+          <!-- The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected. -->
+          <option value="Public" selected>Public</option>
+          <option value="Friends">Friends</option>
+          <option value="Secret" >Secret</option>
+        </select>
       </div>
 
       <div>
