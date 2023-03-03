@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'djongo',
     'rest_framework',
+    'signIn',
+    'signUp',
     
 ]
 
