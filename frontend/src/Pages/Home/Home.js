@@ -1,5 +1,6 @@
 import Post from '../../Components/Post/Post'; 
 import AddPost from '../../Components/AddPost/AddPost'; 
+import TopBar from "../../Components/TopBar/TopBar";
 import './Home.css';
 
 const postData = [
@@ -26,13 +27,17 @@ const postData = [
 
 function Home() {
   return (
-    <div className="Home">
-      <AddPost/>
-      {postData.map(function(post){
-          return <Post post={post}/>;
-      })}
-      
-    </div>
+    <>
+      <TopBar id="home"/>
+      <div className="home">
+        <AddPost/>
+        {postData.map(function(post){
+            return <Post post={post}/>;
+        })}
+        
+      </div>
+    </>
+
   );
 }
 
