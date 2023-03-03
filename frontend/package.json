@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "react-router-dom": "^6.8.2"
+    "react-router-dom": "^6.8.2",
+    "react-test-renderer": "^18.2.0"
   }
 }
