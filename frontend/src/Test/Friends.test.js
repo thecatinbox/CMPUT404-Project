@@ -1,10 +1,10 @@
-import Home from "../Pages/Home/Home";
+import Friends from "../Pages/Friends/Friends";
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-it('home page renders correctly', () => {
+it('friends page renders correctly', () => {
     const component = renderer.create(
-      <Home />
+      <Friends />
     );
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();

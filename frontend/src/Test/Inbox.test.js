@@ -1,10 +1,10 @@
-import Home from "../Pages/Home/Home";
+import Inbox from "../Pages/Inbox/Inbox";
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-it('home page renders correctly', () => {
+it('inbox page renders correctly', () => {
     const component = renderer.create(
-      <Home />
+      <Inbox />
     );
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();

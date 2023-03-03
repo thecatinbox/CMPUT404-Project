@@ -72,7 +72,7 @@ function Profile() {
 
         <div className='post-data'>
           {postData.map(function(post){
-              return <Post post={post}/>;
+              return <Post post={post} key={post.id}/>;
           })}
         </div>
       </div>
