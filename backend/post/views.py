@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from .post_form import post_form, Comment_form
-from ..allModels.models import Posts, Comments, Likes, Liked
-from ..allModels.models import Authors, Followers, FollowRequests
+from allModels.models import Posts, Comments, Likes, Liked
+from allModels.models import Authors, Followers, FollowRequests
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 import uuid
 from django.db.models import Q
-from ..allModels.models import Inbox
+from allModels.models import Inbox
 import requests
 from requests.auth import HTTPBasicAuth
 

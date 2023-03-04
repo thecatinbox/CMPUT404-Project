@@ -9,70 +9,95 @@
 <style>
 
 .post--container{
-    width: 700px;
-    height: 160px;
-    background-color: #ddf0ff;
-    /*set border*/
-    border-width: 4px;
-    border-color: #a8cdec;
-    border-style: solid;
-    border-radius: 5px;
-}
-.input-field{
-  width: 99%;
-  height: 110px;
-  resize:none;
-  border-radius: 5px;
-  border-color: white;
-  
-}
-button{
+  width: 96%;
+  height: 210px;
   background-color: #ddf0ff;
-  color: #3d82ba;
-  font-size: 20px;
-  border: none;
-  margin-left: 15px;
-  padding: 5px 10px;
+  /*set border*/
+  border-width: 4px;
+  border-color: #a8cdec;
+  border-style: solid;
+  border-radius: 5px;
+  margin: auto;
+}
+.mainPost{
+display: flex; 
+}
+
+.title{
+  font-size: large;
+  width: 99%;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin:auto;
+  border:none;
+}
+
+.input-field{
+width: 99%;
+height: 110px;
+margin-left: 2px;
+resize:none;
+border-radius: 5px;
+border-color: white;
+
+}
+.dropdown {
+margin-left: 65%; 
+}
+.submit {
+border-color: rgb(164, 223, 255); 
+border: 1px solid; 
+border-radius: 5px; 
+}
+button {
+background-color: #ddf0ff;
+color: #3d82ba;
+font-size: 20px;
+border: none;
+margin-left: 15px;
+padding: 5px 10px;
 
 }
 
 /* Add a background color on hover */
 button:hover {
-  background-color: #86cdff;
-  color: #273144;
+background-color: #86cdff;
+color: #273144;
 }
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
-  position: relative;
-  display: inline-block;
+position: relative;
+display: inline-block;
 }
 
 select {
-  font-size: 20px;
-  outline: 0;
-  background: #f7fcff;
-  color: #273144;
-  border: 1px solid #86cdff;
-  padding: 5px;
-  border-radius: 5px;
+font-size: 20px;
+outline: 0;
+background: #f7fcff;
+color: #273144;
+border: 1px solid #86cdff;
+padding: 5px;
+border-radius: 5px;
 }
 
 </style>
 </head>
 <body>
   <div class="post--container">
+    <input class="title" type="text" placeholder="Title.." name="title" maxlength="52"></input>
     <textarea type="text"  class="input-field" placeholder="Create a new post.." maxlength="400" size="450"></textarea>
 
-    <div style="display: flex;">
+    <div class="mainPost">
       <div>
-        <button><i class="fa-solid fa-image"></i></button>
+        <button> <FontAwesomeIcon icon={faImage} /></button>
       </div>
-
-      <div class="dropdown" style="margin-left: 57%;">
+      
+      <div class="dropdown">
         <label for="post-category"></label>
         <select name="post-category" id="post-category">
-          <!-- The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected. -->
+        
           <option value="Public" selected>Public</option>
           <option value="Friends">Friends</option>
           <option value="Secret" >Secret</option>
@@ -80,7 +105,7 @@ select {
       </div>
 
       <div>
-        <button style="border-color: rgb(164, 223, 255); border: 1px solid; border-radius: 5px;"><b> Submit</b> </button> 
+        <button class="submit"><b> Submit</b> </button> 
       </div>
 
       
@@ -90,3 +115,4 @@ select {
   
 </body>
 </html>
+
