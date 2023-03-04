@@ -19,7 +19,7 @@ import json
 @login_required(login_url='/signin/')
 def home_page(request, userID):
     boolean_check = False
-    all_posts = Posts.objects.filter(unlisted=False, visibility="PUBLIC")
+    all_posts = Posts.objects.filter(visibility="PUBLIC")
     postcomments = {}
 
     # get comments from Comments model

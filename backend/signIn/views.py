@@ -24,7 +24,7 @@ def signIn(request):
                 current_user = request.user
                 current_author_id = Authors.objects.get(username=current_user).uuid
                 #url should be main/authorId
-                return HttpResponseRedirect(reverse("main",args=[current_author_id]))
+                return HttpResponseRedirect(reverse("home",args=[current_author_id]))
             else:
                 return HttpResponse("The username or password are incorrect.")
  
