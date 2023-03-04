@@ -1,24 +1,24 @@
-html {
+.signIn html {
     background-color: lightgray;
 }
-.signUp, .signIn {
+.signIn {
     vertical-align: middle;
 }
-h1, h2 {
+.signIn h1, .signIn h2 {
     text-align: center;
 }
-label {
+.signIn label {
     width: 80px;
     padding: 20px;
     padding-bottom: 20px;
 }
-input {
+.signIn input {
     border: 2px solid;
     border-radius: 4px;
     width: 100%;
     color: revert;
 }
-.container {
+.signIn .container {
     background-color: white;
     border: 3px solid gray;
     width: fit-content;
@@ -27,14 +27,14 @@ input {
     margin-left: auto;
     margin-right: auto;
 }
-button {
+.signIn button {
     margin-left: auto;
     margin-right: auto;
     margin-top: 40px;
     align-self: center;
     width: 100%;
 }
-.alert {
+.signIn .alert {
     color: red;
     visibility: hidden;
 }

@@ -5,7 +5,7 @@
     grid-template-columns: 1fr 1fr;
     grid-gap: 20px;
 }
-h2 {
+.friends h2 {
     margin: auto;
     text-align: center;
     padding: 20pt;

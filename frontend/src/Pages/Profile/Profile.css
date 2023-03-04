@@ -3,12 +3,12 @@
     margin: auto;
 }
 
-.profile-data {
+.profile .profile-data {
     text-align: center;
     padding-top: 5%;
 }
 
-img {
+.profile img {
     width: 20%;
     height: auto;
 }
