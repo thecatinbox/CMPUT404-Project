@@ -31,7 +31,7 @@ def signUp(request):
                 inbox.save()
             except:
                 return HttpResponse("Inbox creation failed")
-            return HttpResponseRedirect(reverse("userInfo",args=[author.uuid]))
+            return HttpResponseRedirect(reverse("home",args=[author.uuid]))
     else:
         return HttpResponse("Invalid request")
 '''

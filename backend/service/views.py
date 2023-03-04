@@ -533,12 +533,12 @@ def oneFollower(request, pk, foreignPk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post_likes(request, pk, postsId):
+def get_post_likes(request, pk, posts_id):
     """
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(post_id=postsId)
+        likes = Likes.objects.filter(post_id=posts_id)
 
         items_list = []
         for like in likes:
