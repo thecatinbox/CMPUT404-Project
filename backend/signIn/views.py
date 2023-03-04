@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
@@ -25,12 +24,13 @@ def signIn(request):
                 login(request, user)
                 current_user = request.user
                 current_author_id = Authors.objects.get(username=current_user).uuid
-                # url should be main/authorId
-                return HttpResponseRedirect(reverse("main", args=[current_author_id]))
+
+                #url should be main/authorId
+                return HttpResponseRedirect(reverse("main",args=[current_author_id]))
             else:
                 return HttpResponse("The username or password are incorrect.")
 
         else:
             return HttpResponse("Account is not active")
     else:
-        return render(request, "signIn.html", {'error': 'Invalid login credentials'})
+        return HttpResponse('Invalid login credentials')

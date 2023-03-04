@@ -136,7 +136,7 @@ def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    posts = Posts.objects.filter(unlisted=False, visibility='PUBLIC').prefetch_related('author', 'comments')
+    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author', 'comments')
     items_list = []
 
     for post in posts:
@@ -166,7 +166,7 @@ def getAllPublicPosts(request):
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def Posts(request, pk):
+def Post(request, pk):
     """
     This view is used to display posts of a given author and create a new post
     """
