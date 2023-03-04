@@ -256,13 +256,13 @@ POST Manipulation
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post(request, pk, postsId):
+def get_post(request, pk, post_id):
     """
     Get, update, delete or create a specific post.
     """
     # Get a specific post
     if request.method == 'GET':
-        post = Posts.objects.filter(uuid=postsId).first()
+        post = Posts.objects.filter(uuid=post_id).first()
         if not post:
             return Response(status=404)
 
@@ -296,7 +296,7 @@ def get_post(request, pk, postsId):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
         if not post:
             return Response(status=404)
 
@@ -319,7 +319,7 @@ def get_post(request, pk, postsId):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
         if not post:
             return Response(status=404)
 
