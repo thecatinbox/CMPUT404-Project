@@ -4,8 +4,9 @@ import Home from "./Pages/Home/Home";
 import Inbox from "./Pages/Inbox/Inbox";
 import Friends from "./Pages/Friends/Friends";
 import Profile from "./Pages/Profile/Profile";
-import SignIn from "./Pages/SignUpSignIn/SignIn";
-import SignUp from "./Pages/SignUpSignIn/SignUp";
+import SignIn from "./Pages/SignIn/SignIn";
+import SignUp from "./Pages/SignUp/SignUp";
+import './index.css';
 
 export default function App() {
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dropzone from 'react-dropzone';
-import './style.css';
+// import './SignUp.css';
 
 function SignUp() {
     const [inputs, setInputs] = useState({});
