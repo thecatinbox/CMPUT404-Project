@@ -36,11 +36,12 @@ function SignUp() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: inputs.username,
-                    password: inputs.password,
-                    displayname: inputs.displayName,
-                    githuburl: inputs.githubURL,
-                    img: image
+                    "type": "author",
+                    "url": "//service/author/1",
+                    "host": "//service",
+                    "github": inputs.githubURL,
+                    "profileImage": image,
+                    "displayName": inputs.displayName
                 }),
             })
             .then((response) => {
