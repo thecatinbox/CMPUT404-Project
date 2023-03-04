@@ -59,12 +59,12 @@ def home_page(request, userID):
             boolean_check = True
 
     masterauthor = Authors.objects.filter(uuid=userID)
-    return render(request, "post/index.html", {
-        "boolean_check": boolean_check,
-        "postcomments": postcomments,
-        "all_posts": all_posts,
-        "userId": userID,
-    })
+    # return render(request, "post/index.html", {
+    #     "boolean_check": boolean_check,
+    #     "postcomments": postcomments,
+    #     "all_posts": all_posts,
+    #     "userId": userID,
+    # })
 
 
 @login_required(login_url='/signin/')
@@ -98,12 +98,12 @@ def create_post(request, userID):
                     follower_inbox.items.add(newPost)
 
             return HttpResponseRedirect(reverse("home-page", args=[userID]))
-    else:
-        form = post_form()
-        return render(request, "post/create_new_post.html", {
-            'form': form,
-            'userId': userID,
-        })
+    # else:
+    #     form = post_form()
+        # return render(request, "post/create_new_post.html", {
+        #     'form': form,
+        #     'userId': userID,
+        # })
 
 
 @login_required(login_url='/signin/')
@@ -126,12 +126,12 @@ def create_comment(request, userID, postID):
             post_author_inbox.comments.add(newComment)
 
             return HttpResponseRedirect(reverse("home-page", args=[userID]))
-    else:
-        form = Comment_form()
-        return render(request, "post/create_new_post.html", {
-            'form': form,
-            'userId': userID
-        })
+    # else:
+    #     form = Comment_form()
+        # return render(request, "post/create_new_post.html", {
+        #     'form': form,
+        #     'userId': userID
+        # })
 
 
 @login_required(login_url='/signin/')
@@ -169,11 +169,11 @@ def share_post(request, userID, postID):
 
         return HttpResponseRedirect(reverse("home-page", args=[userID]))
 
-    else:
-        return render(request, "post/share_posts.html", {
-            'userId': userID,
-            'post': selectedPost,
-        })
+    # else:
+    #     return render(request, "post/share_posts.html", {
+    #         'userId': userID,
+    #         'post': selectedPost,
+    #     })
 
 
 def create_like_comment(request, userID, postID, commentID):
