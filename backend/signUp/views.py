@@ -5,22 +5,26 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from allModels.models import *
 from django.urls import reverse
+from django.contrib.auth.models import User
 import uuid
 
-def sign_up(request):
+def signUp(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        displayName = request.POST['displayName']
+        github = request.POST['github']
+        profileImage = request.FILES['profileImage']
 
         #check if username already exists
         if Authors.objects.filter(username=username).exists():
             return HttpResponse("Username already exists")
         else:
             #create user
-            user = Authors.objects.create_user(username=username, password=password)
+            user = User.objects.create_user(username=username, password=password)
             user.save()
             #create author
-            author = Authors.objects.create(username=username, password=password)
+            author = Authors.objects.create(username=username, password=password,displayName=displayName, github=github, profileImage=profileImage)
             author.save()
             #create inbox for author
             try:
@@ -31,7 +35,7 @@ def sign_up(request):
             return HttpResponseRedirect(reverse("userInfo",args=[author.uuid]))
     else:
         return render(request,"signUp.html")
-
+'''
 def user_info(request, author_id):
     if request.method == 'POST':
         #get author
@@ -45,5 +49,5 @@ def user_info(request, author_id):
         single_author.save()
         #create host
         #host = Host.objects.create(host="http://
-
+'''
             
