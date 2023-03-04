@@ -26,6 +26,7 @@ def home_page(request, userID):
     for post in all_posts:
         comment = Comments.objects.filter(post__uuid=post.uuid)
         postcomments[post] = comment
+
     if request.method == 'POST' and 'searched' in request.POST:
         searched = request.POST['searched']
         myself = Authors.objects.get(uuid=userID)
@@ -99,10 +100,10 @@ def create_post(request, userID):
             return HttpResponseRedirect(reverse("home-page", args=[userID]))
     # else:
     #     form = post_form()
-    #     return render(request, "post/create_new_post.html", {
-    #         'form': form,
-    #         'userId': userID,
-    #     })
+        # return render(request, "post/create_new_post.html", {
+        #     'form': form,
+        #     'userId': userID,
+        # })
 
 
 @login_required(login_url='/signin/')
@@ -127,10 +128,10 @@ def create_comment(request, userID, postID):
             return HttpResponseRedirect(reverse("home-page", args=[userID]))
     # else:
     #     form = Comment_form()
-    #     return render(request, "post/create_new_post.html", {
-    #         'form': form,
-    #         'userId': userID
-    #     })
+        # return render(request, "post/create_new_post.html", {
+        #     'form': form,
+        #     'userId': userID
+        # })
 
 
 @login_required(login_url='/signin/')
