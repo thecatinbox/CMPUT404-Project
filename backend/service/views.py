@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import permissions, authentication
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer
-from ..allModels.models import Authors, Followers, FollowRequests
-from ..allModels.models import Posts, Comments, Likes, Liked
-from ..allModels.models import Inbox
+from allModels.models import Authors, Followers, FollowRequests
+from allModels.models import Posts, Comments, Likes, Liked
+from allModels.models import Inbox
 import uuid
 
 
