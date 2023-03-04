@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
@@ -34,7 +33,7 @@ def signUp(request):
                 return HttpResponse("Inbox creation failed")
             return HttpResponseRedirect(reverse("userInfo",args=[author.uuid]))
     else:
-        return render(request,"signUp.html")
+        return HttpResponse("Invalid request")
 '''
 def user_info(request, author_id):
     if request.method == 'POST':
