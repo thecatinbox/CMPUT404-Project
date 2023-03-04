@@ -256,13 +256,13 @@ POST Manipulation
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post(request, pk, post_id):
+def get_post(request, pk, postId):
     """
     Get, update, delete or create a specific post.
     """
     # Get a specific post
     if request.method == 'GET':
-        post = Posts.objects.filter(uuid=post_id).first()
+        post = Posts.objects.filter(uuid=postId).first()
         if not post:
             return Response(status=404)
 
@@ -296,7 +296,7 @@ def get_post(request, pk, post_id):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=postId).first()
         if not post:
             return Response(status=404)
 
@@ -319,7 +319,7 @@ def get_post(request, pk, post_id):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=postId).first()
         if not post:
             return Response(status=404)
 
@@ -533,12 +533,12 @@ def oneFollower(request, pk, foreignPk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post_likes(request, pk, posts_id):
+def get_post_likes(request, pk, postsId):
     """
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(post_id=posts_id)
+        likes = Likes.objects.filter(post_id=postsId)
 
         items_list = []
         for like in likes:
