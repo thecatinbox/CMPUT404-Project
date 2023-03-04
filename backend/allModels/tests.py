@@ -2,6 +2,7 @@ from django.test import TestCase
 from .models import *
 from django.db.utils import IntegrityError
 import uuid
+
 '''
 class static():
     def users():
