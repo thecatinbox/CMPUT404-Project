@@ -3,6 +3,16 @@ from .models import *
 from django.db.utils import IntegrityError
 import uuid
 
+Authors.objects.create(
+    username="test_author_11111",
+    password="test_password11111",
+    uuid = uuid.uuid4(), 
+    host="//service", 
+    displayName="test_name_11111", 
+    url="//service/author/11111", 
+    github="http://github.com/test_author", 
+    profileImage="url_to_profile_image"
+)
 '''
 class static():
     def users():
