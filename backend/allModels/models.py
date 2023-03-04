@@ -11,7 +11,8 @@ class Authors(AbstractBaseUser):
     username = models.CharField(max_length = 255, unique = True, primary_key=True, default="", blank=False)
     password = models.CharField(max_length = 255, default="", blank=False)
     type = models.CharField(max_length = 255,default="author",editable=False)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    #remeber to change editable back to false！！！！！！！！！！！！！！！！！
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     id = models.CharField(unique=True, max_length=255, blank=True, null=True)
     url = models.CharField(max_length = 255, null=True, blank=True, default="")
     host = models.CharField(max_length = 255, null=True, blank=True, default="")

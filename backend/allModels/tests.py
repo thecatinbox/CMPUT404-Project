@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .models import *
 from django.db.utils import IntegrityError
+import uuid
 '''
 class static():
     def users():
@@ -227,6 +228,7 @@ class AuthorTestCase(TestCase):
         Authors.objects.create(
             username="test_author_1",
             password="test_password",
+            uuid = uuid.uuid4(),
             id="1", 
             host="//service", 
             displayName="test_author_1", 
