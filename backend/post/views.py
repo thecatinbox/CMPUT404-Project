@@ -18,14 +18,14 @@ import json
 # Create your views here.
 @login_required(login_url='/signin/')
 def home_page(request, userId):
-    # boolean_check = False
-    # all_posts = Posts.objects.filter(unlisted=False, visibility="PUBLIC")
-    # postcomments = {}
+    boolean_check = False
+    all_posts = Posts.objects.filter(unlisted=False, visibility="PUBLIC")
+    postcomments = {}
 
     # get comments from Comments model
-    # for post in all_posts:
-    #     comment = Comments.objects.filter(post__uuid=post.uuid)
-    #     postcomments[post] = comment
+    for post in all_posts:
+        comment = Comments.objects.filter(post__uuid=post.uuid)
+        postcomments[post] = comment
     if request.method == 'POST' and 'searched' in request.POST:
         searched = request.POST['searched']
         myself = Authors.objects.get(uuid=userId)
