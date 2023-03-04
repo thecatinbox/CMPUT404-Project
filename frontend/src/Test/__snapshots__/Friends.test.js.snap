@@ -1,0 +1,205 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`friends page renders correctly 1`] = `
+Array [
+  <div
+    className="topnav"
+  >
+    <a
+      href="/"
+      id="home"
+    >
+      Home
+    </a>
+    <a
+      href="/inbox"
+      id="inbox"
+    >
+      Inbox
+    </a>
+    <a
+      href="/friends"
+      id="friends"
+    >
+      Friends
+    </a>
+    <a
+      href="/profile"
+      id="profile"
+    >
+      Profile
+    </a>
+    <div
+      className="search-container"
+    >
+      <form
+        action="/action_page.php"
+      >
+        <input
+          name="search"
+          placeholder="Search.."
+          type="text"
+        />
+        <button
+          type="submit"
+        >
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-magnifying-glass "
+            data-icon="magnifying-glass"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={Object {}}
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+              fill="currentColor"
+              style={Object {}}
+            />
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>,
+  <div
+    className="friends"
+  >
+    <div
+      className="following"
+    >
+      <h2>
+        My Followings
+      </h2>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username1
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username2
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username3
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="follower"
+    >
+      <h2>
+        My Followers
+      </h2>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username1
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username4
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username5
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        className="user"
+      >
+        <div
+          className="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-pwngrv-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-46bh2p-MuiCardContent-root"
+          >
+            <p
+              className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+            >
+              Username6
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;

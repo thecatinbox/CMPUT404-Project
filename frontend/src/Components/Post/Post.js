@@ -113,7 +113,7 @@ function Post({post}) {
           <IconButton>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <IconButton className>
+          <IconButton>
             <FontAwesomeIcon icon={faShare} />
           </IconButton>
           <TextField hiddenLabel id="comment-text" size="small" label="Comment" variant="outlined" />
