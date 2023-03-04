@@ -8,14 +8,14 @@ from django.urls import reverse
 
 
 @login_required(login_url='/signin/')
-def search(request, userID):
+def search(request, userId):
     # user_object = User.objects.get(username=request.user.username)
     # user_profile = Profile.objects.get(user=user_object)
 
     if request.method == 'POST':
         username = request.POST['username']
         username_object = User.objects.filter(username__icontains=username)
-        author = User.objects.get(id=userID)
+        author = User.objects.get(id=userId)
         if not username_object:
             messages.error(request, "No users found for the given search query.")
         username_profile = []
@@ -23,7 +23,7 @@ def search(request, userID):
             username_profile.append(users.id)
         username_profile_list = list(username_profile)
         print(username_profile_list)
-    return HttpResponseRedirect(reverse("home-page", args=[userID]))
+    return HttpResponseRedirect(reverse("home-page", args=[userId]))
 
 
 @login_required(login_url='/signin/')

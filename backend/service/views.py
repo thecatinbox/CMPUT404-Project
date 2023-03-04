@@ -239,7 +239,6 @@ def Post(request, pk):
             Categories=new_post['categories'],
             count=0,
             visibility=new_post['visibility'],
-            unlisted=new_post['unlisted'],
             textType=new_post['contentType']
         )
         newPost.save()
@@ -276,7 +275,6 @@ def get_post(request, pk, post_id):
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
-            'unlisted': post.unlisted,
             'categories': post.Categories.split(),
             'author': {
                 'id': post.author.uuid,
@@ -308,7 +306,6 @@ def get_post(request, pk, post_id):
         post.origin = request.data.get('origin', post.origin)
         post.published = request.data.get('published', post.published)
         post.visibility = request.data.get('visibility', post.visibility)
-        post.unlisted = request.data.get('unlisted', post.unlisted)
         post.Categories = request.data.get('categories', post.Categories)
         post.save()
 
@@ -348,7 +345,6 @@ def get_post(request, pk, post_id):
             author=current_author,
             Categories=request.data.get('categories'),
             visibility=request.data.get('visibility', 'PUBLIC'),
-            unlisted=request.data.get('unlisted', False),
             textType=request.data.get('contentType'),
         )
         new_post.save()
@@ -533,12 +529,12 @@ def oneFollower(request, pk, foreignPk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post_likes(request, pk, posts_id):
+def get_post_likes(request, pk, postsId):
     """
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(post_id=posts_id)
+        likes = Likes.objects.filter(post_id=postsId)
 
         items_list = []
         for like in likes:
