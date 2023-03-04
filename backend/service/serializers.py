@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..allModels.models import Authors, FollowRequests, Posts, Comments, Likes
+from allModels.models import Authors, FollowRequests, Posts, Comments, Likes
 
 
 class AuthorSerializer(serializers.ModelSerializer):

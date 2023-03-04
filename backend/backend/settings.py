@@ -31,13 +31,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'allModels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djongo',
+    'rest_framework',
+    'signIn',
+    'signUp',
+    'authors',
+    'post',
     'service',
+    
 ]
 
 MIDDLEWARE = [
@@ -74,10 +82,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+#fix djongo error https://www.mongodb.com/community/forums/t/djongo-notimplementederror-database-objects-do-not-implement-truth-value-testing-or-bool/188912/4
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'cmput404',
+        'CLIENT': {
+            'host': 'mongodb+srv://123:123@cmput404.lsvdxyr.mongodb.net/test',
+            'username': '123',
+            'password': '123',
+        }
     }
 }
 
@@ -111,7 +126,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
