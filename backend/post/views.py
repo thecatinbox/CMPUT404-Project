@@ -109,7 +109,7 @@ def create_post(request, userId):
             "items": model_to_dict(new_post)
         }
 
-        return Response(status=200)
+        return Response(responseData,status=200)
     else:
         responseData = {
             "type": "post",
