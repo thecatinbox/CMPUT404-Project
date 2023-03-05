@@ -66,12 +66,12 @@ def authorsList(request):
     """
     authors = Authors.objects.all()
 
-    # Get page and size from query parameters
-    page = int(request.query_params.get('page', 1))
-    page_size = int(request.query_params.get('size', 10))
+    # # Get page and size from query parameters
+    # page = int(request.query_params.get('page', 1))
+    # page_size = int(request.query_params.get('size', 10))
 
-    paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
-
+    # paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
+    paginated_authors = paginate(authors)
     if not paginated_authors:
         return Response(status=404)
 
@@ -92,8 +92,6 @@ def authorsList(request):
     responseData = {
         "type": "authors",
         "items": itemsList,
-        "totalPages": total_pages,
-        "currentPage": current_page
     }
 
     return Response(responseData, status=200)
