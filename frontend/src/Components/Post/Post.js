@@ -93,7 +93,7 @@ function Post({post}) {
         
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {post.author.displayName}
+            {post.author}
           </Typography>
           <Typography variant="h5" component="div">
             {post.title}
