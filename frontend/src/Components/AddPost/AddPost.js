@@ -64,8 +64,9 @@ const AddPost = () => {
     <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
 
     <div className="mainPost">
-      <div>
-        <button> <FontAwesomeIcon icon={faImage} /></button>
+      <div className="upload-btn-wrapper">
+        <button class="image-button">Upload images</button>
+        <input id="inputFile" type="file" accept="image/*"/>
       </div>
       
       <div className="dropdown">
@@ -79,7 +80,7 @@ const AddPost = () => {
       </div>
 
       <div>
-        <button className="submit" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
+        <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
       </div>
 
       
