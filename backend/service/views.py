@@ -71,7 +71,7 @@ def authorsList(request):
     # page_size = int(request.query_params.get('size', 10))
 
     # paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
-    paginated_authors = paginate(authors)
+    paginated_authors = paginate(request,authors)
     if not paginated_authors:
         return Response(status=404)
 
