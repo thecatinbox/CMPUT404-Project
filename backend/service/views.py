@@ -8,6 +8,7 @@ from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, Com
 from allModels.models import Authors, Followers, FollowRequests
 from allModels.models import Posts, Comments, Likes, Liked
 from allModels.models import Inbox
+from rest_framework.permissions import AllowAny
 import uuid
 
 
@@ -64,6 +65,7 @@ Authors
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def authorsList(request):
     """
     This view is used to display all authors information
@@ -111,6 +113,7 @@ Single Author
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def singleAuthor(request, pk):
     """
     This view is used to display and update one author information
@@ -147,6 +150,7 @@ Posts
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getAllPublicPosts(request):
     """
     This view will get all public posts
@@ -178,6 +182,9 @@ def getAllPublicPosts(request):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def Post(request, pk):
     """
     This view is used to display posts of a given author and create a new post
@@ -288,6 +295,7 @@ POST Manipulation
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
     Get, update, delete or create a specific post.
@@ -391,6 +399,7 @@ Image Posts
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getImage(request, pk, postsId):
     """
     This is in order to display the image post or the image in the post
@@ -412,6 +421,7 @@ def getImage(request, pk, postsId):
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getComments(request, pk, postsId):
     """
     Get comments for a post and paginated
@@ -492,6 +502,7 @@ def getOneComment(request, pk, postsId, commentId):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
     Display a list of followers that followed by user<pk>
@@ -512,6 +523,7 @@ def getFollowers(request, pk):
 @api_view(['DELETE', 'PUT', 'GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
     Execute<br>
@@ -560,6 +572,7 @@ def oneFollower(request, pk, foreignPk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
     """
     Get a list of likes of a post
@@ -587,6 +600,7 @@ def get_post_likes(request, pk, postsId):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_liked(request, pk):
     """
     Get a list of posts liked by an author
@@ -614,6 +628,9 @@ def get_liked(request, pk):
 
 
 @api_view(['GET', 'DELETE', 'POST'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_inbox(request, pk):
     if request.method != 'GET':
         return Response(status=405)

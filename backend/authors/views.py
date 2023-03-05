@@ -5,9 +5,12 @@ from allModels.models import Followers, Authors
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 
 
 @login_required(login_url='/signin/')
+@permission_classes([AllowAny])
 def search(request, userId):
     # user_object = User.objects.get(username=request.user.username)
     # user_profile = Profile.objects.get(user=user_object)
@@ -27,6 +30,7 @@ def search(request, userId):
 
 
 @login_required(login_url='/signin/')
+@permission_classes([AllowAny])
 def logout(request):
     auth.logout(request)
     return redirect('/signin/')

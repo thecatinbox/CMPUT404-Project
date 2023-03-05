@@ -6,7 +6,10 @@ from allModels.models import *
 from django.urls import reverse
 from django.contrib.auth.models import User
 import uuid
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 
+@permission_classes([AllowAny])
 def signUp(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -32,8 +35,9 @@ def signUp(request):
             except:
                 return HttpResponse("Inbox creation failed")
             return HttpResponseRedirect(reverse("home",args=[author.uuid]))
-    else:
-        return HttpResponse("Invalid request")
+
+
+
 '''
 def user_info(request, author_id):
     if request.method == 'POST':

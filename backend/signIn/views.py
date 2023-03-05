@@ -3,8 +3,10 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from allModels.models import *
 from django.urls import reverse
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-
+@permission_classes([AllowAny])
 def signIn(request):
     # login by username and password
     if request.method == 'POST':
