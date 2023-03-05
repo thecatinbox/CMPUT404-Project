@@ -15,36 +15,28 @@ def getURLId(url):
     return url.split('/')[-1]
 
 
-def paginate(objects, page=1, page_size=10):
+def paginate(request,objects):
     """
     Paginates a list of objects.
 
     Args:
         objects (list): The list of objects to paginate.
-        page (int): The current page number (default is 1).
-        page_size (int): The number of items per page (default is 10).
 
     Returns:
-        A tuple containing:
         - The paginated objects.
-        - The total number of pages.
-        - The current page number.
     """
-    total_objects = len(objects)
-    total_pages = (total_objects + page_size - 1) // page_size
+    page=1
+    page_size=10
+    start_index = page * page_size - page_size
+    end_index = page * page_size
 
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-
-    paginated_objects = objects[start_index:end_index]
-
-    return paginated_objects, total_pages, page
+    objects = objects[start_index:end_index]
+    return objects
 
 
 """
 Authors 
 """
-
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
@@ -173,9 +165,9 @@ def Post(request, pk):
     # Display posts of a given author
     if request.method == 'GET':
         item_list = []
+        author = Authors.objects.get(uuid=pk)
+        serializeAuthor = AuthorSerializer(author)
         try:
-            author = Authors.objects.get(uuid=pk)
-            serializeAuthor = AuthorSerializer(author)
             posts = Posts.objects.filter(author=author)
             posts = paginate(request, posts)
             if not posts.exists():
@@ -218,7 +210,7 @@ def Post(request, pk):
                 "type": "posts",
                 "items": item_list
             }
-            return Response(responseData, status=200)
+            return Response(responseData, status=401)
 
     # Create new post
     elif request.method == 'POST':
@@ -355,7 +347,6 @@ def get_post(request, pk, postsId):
 """
 Image Posts
 """
-
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
@@ -534,7 +525,7 @@ def get_post_likes(request, pk, postsId):
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(post_id=postsId)
+        likes = Likes.objects.filter(uuid =postsId)
 
         items_list = []
         for like in likes:
@@ -577,9 +568,6 @@ def get_liked(request, pk):
         }
 
         return Response(response_data, status=200)
-
-
-
 
 
 @api_view(['GET', 'DELETE', 'POST'])
