@@ -77,10 +77,11 @@ def home_page(request, userID):
 @permission_classes([AllowAny])
 def create_post(request, userId):
     if request.method == 'POST':
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        visibility = request.POST.get('visibility')
-        content_type = request.POST.get('content_type')
+        data = json.loads(request.body.decode())
+        title = data('title')
+        content = data('content')
+        visibility = data('visibility')
+        content_type = data('content_type')
         #send_to = request.POST.get('Send_To')
 
         new_post = Posts()
@@ -89,7 +90,7 @@ def create_post(request, userId):
         new_post.visibility = visibility
         new_post.contentType = content_type
         new_post.uuid = uuid.uuid4()
-        new_post.id = f"{request.build_absolute_uri('/')[:-1]}service/authors/{userId}/posts/{new_post.uuid}"
+        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{userId}/posts/{new_post.uuid}"
         new_post.source = new_post.id
         new_post.origin = new_post.id
         current_author = Authors.objects.get(uuid=userId)
@@ -109,7 +110,7 @@ def create_post(request, userId):
             "items": model_to_dict(new_post)
         }
 
-        return Response(responseData,status=200)
+        return Response(status=200)
     else:
         responseData = {
             "type": "post",

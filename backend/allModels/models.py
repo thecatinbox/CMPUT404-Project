@@ -22,7 +22,7 @@ class Authors(AbstractBaseUser):
     #accepted = models.BooleanField(default = False)
 
     def __str__(self):
-        return "username"+self.username + "uuid"+str(self.uuid)
+        return f"username: {self.username} password: {self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
 
 class Posts(models.Model):
     class Meta:
@@ -55,7 +55,7 @@ class Posts(models.Model):
     visibility = models.CharField(max_length = 15, choices = visibility_choices, default = ('PUBLIC', 'PUBLIC'))
 
     def __str__(self):
-        return "title"+self.title + "uuid"+str(self.uuid) + "author"+str(self.author)
+        return f"uuid: {self.uuid} type: {type} title: {title} id: {id} source: {source} origin: {origin} description: {description} contentType: {contentType} content: {content} contentImage: {contentImage} author: {author} categories: {categories} count: {count} published: {published} visibility: {visibility}"
 
     
 
@@ -69,7 +69,7 @@ class Followers(models.Model):
     follower = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "follower")
 
     def __str__(self):
-        return "followedUser"+self.followedUser + "follower"+str(self.follower)
+         return f"followedId: {self.followedId} type: {self.type} followedUser: {self.followedUser} follower: {self.follower}"
 
 
 class FollowRequests(models.Model):
@@ -83,7 +83,7 @@ class FollowRequests(models.Model):
     object = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name='request_receiver')
 
     def __str__(self):
-        return "actor"+self.actor + "object"+str(self.object)
+        return f"belongTo{self.belongTo} type{type} summary{summary} actor{actor} object{object}"
 
 
 class Comments(models.Model):
@@ -104,7 +104,7 @@ class Comments(models.Model):
     id = models.CharField(max_length=255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid
     
     def __str__(self):
-        return "author"+self.author + "post"+str(self.post)
+        return f"uuid: {self.uuid} type: {type} author: {author} post: {post} comment: {comment} contentType: {contentType} published: {published} id: {id}"
 
 class Likes(models.Model):
     class Meta:
@@ -117,7 +117,7 @@ class Likes(models.Model):
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
     def __str__(self):
-        return "author"+self.author + "object"+str(self.object)
+        return f"MyClass(context={self.context} summary={self.summary} type={self.type} author={self.author} object={self.object})"
 
 class Liked(models.Model): 
     class Meta:
@@ -126,6 +126,9 @@ class Liked(models.Model):
     type = models.CharField(max_length = 255,default='liked', editable=False)
     items = models.ManyToManyField(Likes,blank=True)
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
+
+    def __str__(self):
+        return f"type{self.type} items{self.items} object{self.object}"
 
 class Inbox(models.Model):
     class Meta:
@@ -137,3 +140,6 @@ class Inbox(models.Model):
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
     likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)
+
+    def __str__(self):
+        return f"type{type} author{author} items{items} comments{comments} followRequests{followRequests} likes{likes}"
