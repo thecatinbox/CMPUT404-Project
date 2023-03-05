@@ -194,7 +194,12 @@ def Post(request, pk):
             
 
             if not posts.exists():
-                return Response(status=404)
+                responseData = {
+                    "type": "posts",
+                    "items": item_list
+                }
+                print(responseData)
+                return Response(responseData, status=200)
 
             for item in posts:
                 dict = {}
