@@ -4,15 +4,15 @@ from django.contrib.auth.models import AbstractBaseUser
 import uuid
 import os
 
-class Authors(AbstractBaseUser):
+class Authors(models.Model):
     class Meta:
         verbose_name_plural = 'Authors'
 
-    username = models.CharField(max_length = 255, unique = True, primary_key=True, default="", blank=False)
+    username = models.CharField(max_length = 255, unique = True, primary_key=True, default="")
     password = models.CharField(max_length = 255, default="", blank=False)
     type = models.CharField(max_length = 255,default="author",editable=False)
     #remeber to change editable back to false！！！！！！！！！！！！！！！！！
-    uuid = models.CharField(max_length = 255, editable=False, unique=True)
+    uuid = models.CharField(max_length = 255, editable=True, unique=True)
     id = models.CharField(unique=True, max_length=255, blank=True, null=True)
     url = models.CharField(max_length = 255, null=True, blank=True, default="")
     host = models.CharField(max_length = 255, null=True, blank=True, default="")
@@ -38,7 +38,7 @@ class Posts(models.Model):
         ('FRIENDS', 'FRIENDS'),
         ('PRIVATE', 'PRIVATE')
     ]
-    uuid = models.CharField(max_length = 255,default=str(uuid.uuid4()), editable=False, unique=True)
+    uuid = models.CharField(max_length = 255,default=str(uuid.uuid4()), editable=True, unique=True)
     type = models.CharField(max_length = 255, default = "post", editable = False)
     title = models.CharField(max_length = 255, default = "Untitled")
     id = models.CharField(max_length = 255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid

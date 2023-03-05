@@ -76,14 +76,14 @@ def home_page(request, userID):
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_post(request, userId):
-    return Response(f"POST request to create a post for user {request.body}",status=400)
+    #return Response(f"{request.body}", status=400)
     if request.method == 'POST':
         
-        data = json.loads(request.body.decode())
-        title = data['title']
-        content = data['content']
-        visibility = data['visibility']
-        content_type = data['content_type']
+        title = request.POST.get('title')
+        return Response(f"{title}", status=400)
+        content = request.POST.get('content')
+        visibility = request.POST.get('visibility')
+        content_type = request.POST.get('content_type')
 
         new_post = Posts()
         new_post.title = title

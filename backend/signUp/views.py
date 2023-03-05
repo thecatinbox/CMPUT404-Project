@@ -38,19 +38,30 @@ def signUp(request):
         #return Response({'error': f'Username:{username,password,displayName,github,profileImage}'}, status=400)
         #create user
         try:
+            user = User.objects.get(username=username)
+            return Response({'error': 'Username already exists'}, status=400)
+        except User.DoesNotExist:
             user = User.objects.create_user(username=username, password=password)
             user.is_active = False
             user.save()
-        except:
-            return Response({'error': 'Username already exists'}, status=400)
 
         
         #create author
         try:
-            uid = uuid.uuid4()
-            author = Authors.objects.create(username=username, password=password,displayName=displayName, github=github, profileImage=profileImage, uuid=str(uid), host=request.headers.get('host'), url="http://"+request.headers.get('host')+"/author/"+str(uid))
+            uid = str(uuid.uuid4())
+            author = Authors.objects.create(username=username, 
+                                            password=password,
+                                            displayName=displayName, 
+                                            github=github, 
+                                            profileImage=profileImage, 
+                                            uuid=uid,
+                                            host=request.headers.get('host'), 
+                                            id ="http://"+request.headers.get('host')+"/author/"+str(uid),
+                                            url="http://"+request.headers.get('host')+"/author/"+str(uid)
+                                            )
             author.save()
         except Exception as e:
+        
             return Response({'error': f'Author creation failed:{e}'}, status=500)
         #create inbox for author
 
