@@ -23,7 +23,7 @@ const TopBar = (params) => {
   return (
     <>
       <div className="topnav">
-        <a id="home" href="/">Home</a>
+        <a id="home" href="/home">Home</a>
         <a id="inbox" href="/inbox">Inbox</a>
         <a id="friends" href="/friends">Friends</a>
         <a id="profile" href="/profile">Profile</a>
