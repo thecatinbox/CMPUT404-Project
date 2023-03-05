@@ -31,7 +31,7 @@ const postData = [
 
 function Home() {
 
-  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+  const ENDPOINT = 'http://127.0.0.1:8000/server/posts/'
 
   const [postList, setPostList] = useState([]);
 

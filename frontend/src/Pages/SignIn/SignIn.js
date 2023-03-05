@@ -1,8 +1,19 @@
 import React, { useState } from "react";
 import './SignIn.css';
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
     const [inputs, setInputs] = useState({});
+    const navigate = useNavigate();
+    const ENDPOINT = 'http://127.0.0.1:8000/server/authors/'
+
+    const checkAuth = (userData) => {
+        if (inputs.username == userData.username && inputs.password == userData.password) {
+            navigate("/home");
+        } else {
+            alert("Incorrect username/password, please try again");
+        }
+    }; 
 
     // handle changes in the input box
     const handleChange = (event) => {
@@ -15,26 +26,22 @@ function SignIn() {
         event.preventDefault();
         // alert(JSON.stringify(inputs)); // check input
 
-        // Send form data to server
-        fetch('/api/signin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: inputs.username,
-                password: inputs.password,
-            }),
-        })
-        .then((response) => {
-            // Handle server response
+        fetch(ENDPOINT, {
+            headers: { "Accept": "application/json" },
+            method: "GET"
+        }).then(response => response.json()).then(data => {
+            console.log(data); 
+            const userData = {
+                "username": "apple", 
+                "password": "123"
+            }; 
+            checkAuth(userData); 
         })
         .catch((error) => {
             alert(error);
             // console.error('Error:', error);
         });
     };
-    
 
     return (
         <div className="signIn">

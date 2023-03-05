@@ -1,5 +1,5 @@
 import Post from '../../Components/Post/Post'; 
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import './Profile.css';
 import TopBar from "../../Components/TopBar/TopBar";
 
@@ -39,6 +39,19 @@ const postData = [
 function Profile() {
 
   const [open, setOpen] = React.useState(false);
+  const [postList, setPostList] = useState([]);
+
+  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+
+  useEffect(() => { 
+    fetch(ENDPOINT, {
+      headers: { "Accept": "application/json" },
+      method: "GET"
+    }).then(response => response.json()).then(postData => {
+      setPostList(postData.items);
+      console.log(postData)
+    }); 
+  })
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -71,7 +84,7 @@ function Profile() {
         </div>
 
         <div className='post-data'>
-          {postData.map(function(post){
+          {postList.map(function(post){
               return <Post post={post} key={post.id}/>;
           })}
         </div>
