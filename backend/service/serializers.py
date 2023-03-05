@@ -15,8 +15,8 @@ class PostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Posts
-        fields = ('uuid', 'type', 'title', 'id', 'source', 'description', 'contentType',
-                  'content', 'author', 'Categories', 'count', 'origin', 'published', 'visibility')
+        fields = ('uuid', 'type', 'title', 'id', 'source', 'description', 'contentType','contentImage',
+                  'content', 'author', 'categories', 'count', 'origin', 'published', 'visibility')
 
 
 class ImagePostsSerializer(serializers.ModelSerializer):
@@ -24,23 +24,23 @@ class ImagePostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Posts
-        fields = ('post_image',)
+        fields = ('contentImage',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
-        fields = ('uuid', 'type', 'author', 'comment', 'contentType', 'published', 'id')
+        fields = ('uuid', 'type', 'author','post', 'comment', 'contentType', 'published', 'id')
 
 
 
 class LikedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
-        fields = ('type', 'summary', 'author', 'object')
+        fields = ('context','type', 'summary', 'author', 'object')
 
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FollowRequests
-        fields = '__all__'
+        fields = ('belongTo','type','summary','actor','object')

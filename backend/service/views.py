@@ -8,6 +8,7 @@ from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, Com
 from allModels.models import Authors, Followers, FollowRequests
 from allModels.models import Posts, Comments, Likes, Liked
 from allModels.models import Inbox
+from rest_framework.permissions import AllowAny
 import uuid
 
 
@@ -31,9 +32,26 @@ def paginate(request,objects):
     end_index = page * page_size
 
     objects = objects[start_index:end_index]
+    
     return objects
 
+'''
+def pagination(request,object):
+    """
+    This function is hand write pagination method, to get the page and size of user want,
+    that returns the range of objects to them
+    """
+    absURL = request.build_absolute_uri()
+    value = absURL.split('?')[1].split('&')
+    page = int(value[0].split('=')[1])
+    size = int(value[1].split('=')[1])
+    fromNum = page * size - size
+    toNum = page * size
 
+    object = object[fromNum:toNum]
+
+    return object
+'''
 """
 Authors 
 """
@@ -41,6 +59,7 @@ Authors
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def authorsList(request):
     """
     This view is used to display all authors information
@@ -65,7 +84,7 @@ def authorsList(request):
         for k, v in data.items():
             dict[k] = v
 
-        dict['displayName'] = data['username']
+        dict['displayName'] = data['displayName']
         dict.pop('username')
 
         itemsList.append(dict)
@@ -88,6 +107,7 @@ Single Author
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def singleAuthor(request, pk):
     """
     This view is used to display and update one author information
@@ -100,7 +120,7 @@ def singleAuthor(request, pk):
     if request.method == 'GET':
         serializer = AuthorSerializer(author)
         data = serializer.data
-        data['displayName'] = data.pop('username')
+        data['displayName'] = data.pop('displayName')
         responseData = {
             "type": "authors",
             "items": data
@@ -124,25 +144,25 @@ Posts
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author', 'comments')
+    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author')
     items_list = []
 
     for post in posts:
         data = PostsSerializer(post).data
         author_data = AuthorSerializer(post.author).data
-        author_data['displayName'] = author_data.pop('username')
-        categories = data.pop('Categories').split()
-        comments_count = post.comments.count()
-        comments_url = reverse('post-comments', kwargs={'post_uuid': data['uuid']})
+        author_data['displayName'] = author_data.pop('displayName')
+        categories = data.pop('categories')
+        comments_count = data.pop('count')
+       
         item = {
             **data,
             'author': author_data,
             'categories': categories,
-            'comments': comments_url,
             'count': comments_count,
         }
         items_list.append(item)
@@ -158,6 +178,7 @@ def getAllPublicPosts(request):
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def Post(request, pk):
     """
     This view is used to display posts of a given author and create a new post
@@ -165,11 +186,15 @@ def Post(request, pk):
     # Display posts of a given author
     if request.method == 'GET':
         item_list = []
+            
         author = Authors.objects.get(uuid=pk)
         serializeAuthor = AuthorSerializer(author)
-        try:
+
+        try:     
             posts = Posts.objects.filter(author=author)
             posts = paginate(request, posts)
+            
+
             if not posts.exists():
                 return Response(status=404)
 
@@ -182,19 +207,14 @@ def Post(request, pk):
                     dict[k] = v
                 for k, v in serializeAuthor.data.items():
                     author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['username']
+                author_dict['displayName'] = serializeAuthor.data['displayName']
                 author_dict.pop('username')
-                categories = data['Categories']
-                catList = categories.split(' ')
+                categories = data['categories']
                 postsId = data['uuid']
-                comment = Comments.objects.filter(post__uuid=postsId)
-                count = len(comment)
-                commentURL = data['id'] + '/comments'
-                dict.pop('Categories')
-                dict['categories'] = catList
+                dict.pop('categories')
+                dict['categories'] = categories
                 dict['author'] = author_dict
-                dict['comments'] = commentURL
-                dict['count'] = count
+                dict['count'] = item.count
                 item_list.append(dict)
 
             responseData = {
@@ -204,13 +224,35 @@ def Post(request, pk):
 
             return Response(responseData, status=200)
 
-        except:
+        except Exception as e:
+
+            for item in posts:
+                dict = {}
+                serializer = PostsSerializer(item)
+                data = serializer.data
+                author_dict = {}
+                for k, v in data.items():
+                    dict[k] = v
+                for k, v in serializeAuthor.data.items():
+                    author_dict[k] = v
+                author_dict['displayName'] = serializeAuthor.data['displayName']
+                author_dict.pop('username')
+                categories = data['categories']
+                postsId = data['uuid']
+                dict.pop('categories')
+                dict['categories'] = categories
+                dict['author'] = author_dict
+                dict['count'] = item.count
+                item_list.append(dict)
+
+
             # Return empty item_list if there was an exception
             responseData = {
                 "type": "posts",
                 "items": item_list
             }
-            return Response(responseData, status=401)
+            print(responseData)
+            return Response(responseData, status=200)
 
     # Create new post
     elif request.method == 'POST':
@@ -228,14 +270,12 @@ def Post(request, pk):
             contentType=new_post['contentType'],
             content=new_post['content'],
             author=currentAuthor,
-            Categories=new_post['categories'],
+            categories=new_post['categories'],
             count=0,
             visibility=new_post['visibility'],
-            textType=new_post['contentType']
         )
         newPost.save()
         return Response(status=200)
-
     return Response(status=400)  # Return bad request if method is not GET or POST
 
 
@@ -247,6 +287,7 @@ POST Manipulation
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
     Get, update, delete or create a specific post.
@@ -267,7 +308,7 @@ def get_post(request, pk, postsId):
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
-            'categories': post.Categories.split(),
+            'categories': post.categories,
             'author': {
                 'id': post.author.uuid,
                 'displayName': post.author.username,
@@ -276,8 +317,7 @@ def get_post(request, pk, postsId):
                 'host': post.author.host,
                 'url': post.author.url,
             },
-            'count': post.comments.count(),
-            'comments': f"{post.id}/comments",
+            'count': post.count,
         }
         return Response(post_dict)
 
@@ -298,7 +338,7 @@ def get_post(request, pk, postsId):
         post.origin = request.data.get('origin', post.origin)
         post.published = request.data.get('published', post.published)
         post.visibility = request.data.get('visibility', post.visibility)
-        post.Categories = request.data.get('categories', post.Categories)
+        post.categories = request.data.get('categories', post.categories)
         post.save()
 
         return Response(status=200)
@@ -335,9 +375,8 @@ def get_post(request, pk, postsId):
             contentType=request.data.get('contentType'),
             content=request.data.get('content'),
             author=current_author,
-            Categories=request.data.get('categories'),
+            categories=request.data.get('categories'),
             visibility=request.data.get('visibility', 'PUBLIC'),
-            textType=request.data.get('contentType'),
         )
         new_post.save()
 
@@ -351,6 +390,7 @@ Image Posts
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getImage(request, pk, postsId):
     """
     This is in order to display the image post or the image in the post
@@ -372,6 +412,7 @@ def getImage(request, pk, postsId):
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getComments(request, pk, postsId):
     """
     Get comments for a post and paginated
@@ -388,7 +429,7 @@ def getComments(request, pk, postsId):
                 author = Authors.objects.get(username=data['author'])
                 serializeAuthor = AuthorSerializer(author)
                 author_data = serializeAuthor.data
-                author_data['displayName'] = author_data.pop('username')
+                author_data['displayName'] = author_data.pop('displayName')
                 comment_data = {**data, 'author': author_data}
                 item_list.append(comment_data)
 
@@ -405,7 +446,7 @@ def getComments(request, pk, postsId):
                 author = Authors.objects.get(username=data['author'])
                 serializeAuthor = AuthorSerializer(author)
                 author_data = serializeAuthor.data
-                author_data['displayName'] = author_data.pop('username')
+                author_data['displayName'] = author_data.pop('displayName')
                 comment_data = {**data, 'author': author_data}
                 item_list.append(comment_data)
 
@@ -437,7 +478,7 @@ def getOneComment(request, pk, postsId, commentId):
 
         author = Authors.objects.get(username=serializeComment['author'])
         serializeAuthor = AuthorSerializer(author).data
-        serializeAuthor['displayName'] = serializeAuthor.pop('username')
+        serializeAuthor['displayName'] = serializeAuthor.pop('displayName')
 
         serializeComment['author'] = serializeAuthor
 
@@ -452,6 +493,7 @@ def getOneComment(request, pk, postsId, commentId):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
     Display a list of followers that followed by user<pk>
@@ -472,6 +514,7 @@ def getFollowers(request, pk):
 @api_view(['DELETE', 'PUT', 'GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
     Execute<br>
@@ -520,18 +563,19 @@ def oneFollower(request, pk, foreignPk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
     """
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(uuid =postsId)
+        likes = Likes.objects.filter(object=postsId)
 
         items_list = []
         for like in likes:
-            author = Authors.objects.get(id=like.author_id)
+            author = Authors.objects.get(uuid=like.author.uuid)
             author_dict = AuthorSerializer(author).data
-            author_dict["displayName"] = author_dict.pop("username")
+            author_dict["displayName"] = author_dict.pop("displayName")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)
@@ -547,6 +591,7 @@ def get_post_likes(request, pk, postsId):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_liked(request, pk):
     """
     Get a list of posts liked by an author
@@ -557,7 +602,7 @@ def get_liked(request, pk):
         items_list = []
         for like in likes:
             author_dict = AuthorSerializer(like.author).data
-            author_dict["displayName"] = author_dict.pop("username")
+            author_dict["displayName"] = author_dict.pop("displayName")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)
@@ -571,6 +616,9 @@ def get_liked(request, pk):
 
 
 @api_view(['GET', 'DELETE', 'POST'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def get_inbox(request, pk):
     if request.method != 'GET':
         return Response(status=405)
@@ -585,10 +633,9 @@ def get_inbox(request, pk):
     for post in inbox.items.all():
         post_dict = PostsSerializer(post).data
         post_dict['author'] = AuthorSerializer(post.author).data
-        post_dict['categories'] = post.categories.split()
-        post_dict['comments'] = f"{post.id}/comments"
-        post_dict['count'] = post.comments.count()
-        post_dict.pop('Categories')
+        post_dict['categories'] = post.categories
+        post_dict['count'] = post.pop('count')
+        post_dict.pop('categories')
         post_list.append(post_dict)
 
     comment_list = []

@@ -3,8 +3,15 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from allModels.models import *
 from django.urls import reverse
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import permissions, authentication
+from django.forms.models import model_to_dict
+from rest_framework.response import Response
 
-
+@api_view(['GET', 'POST'])
+@authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def signIn(request):
     # login by username and password
     if request.method == 'POST':
@@ -31,6 +38,10 @@ def signIn(request):
                 return HttpResponse("The username or password are incorrect.")
 
         else:
-            return HttpResponse("Account is not active")
+            return Response(status=200)
     else:
-        return HttpResponse('Invalid login credentials')
+        responseData = {
+            "type": "Sign Up",
+            "items": '[]'
+        }
+        return Response(responseData, status=200)

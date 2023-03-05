@@ -6,7 +6,7 @@ import { faImage} from '@fortawesome/free-solid-svg-icons'
 //line22-24: The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected.
 const AddPost = () => {
 
-  const ENDPOINT = 'http://127.0.0.1:8000/authors/1/posts'
+  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/create/'
 
   const addPost = (title, content) => {
 
@@ -21,17 +21,14 @@ const AddPost = () => {
 
     const body = JSON.stringify({
       "title": title,
-      id: "http://localhost:../authors/author_uuid/post/post_uuid",
-      source: "http://localhost:../authors/author_uuid/post/post_uuid",
-      origin: "http://localhost:../authors/author_uuid/post/post_uuid",
-      description: "test_post_1",
-      contentType: "text/plain",
+      "description": "test_post_1",
+      "contentType": "text/plain",
       "content": content,
-      author: "user1",
-      categories: "test_post_1",
-      count: 0,
-      published: "2020-04-01T00:00:00Z",
-      visibility: "PUBLIC",
+      "author": "user1",
+      "categories": "test_post_1",
+      "count": 0,
+      "published": "2020-04-01T00:00:00Z",
+      "visibility": "PUBLIC",
     }); 
     /*
     const body = JSON.stringify({
@@ -57,7 +54,7 @@ const AddPost = () => {
     fetch(ENDPOINT, {
       headers: header,
       body: body, 
-      method: "POST"
+      method: "PUT"
     }).catch(error => console.log(error.message));
   }
 
@@ -67,8 +64,9 @@ const AddPost = () => {
     <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
 
     <div className="mainPost">
-      <div>
-        <button> <FontAwesomeIcon icon={faImage} /></button>
+      <div className="upload-btn-wrapper">
+        <button class="image-button">Upload images</button>
+        <input id="inputFile" type="file" accept="image/*"/>
       </div>
       
       <div className="dropdown">
@@ -82,7 +80,7 @@ const AddPost = () => {
       </div>
 
       <div>
-        <button className="submit" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
+        <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
       </div>
 
       

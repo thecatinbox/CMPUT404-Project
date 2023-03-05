@@ -1,3 +1,4 @@
+import React, {useState, useEffect} from 'react';
 import Post from '../../Components/Post/Post'; 
 import AddPost from '../../Components/AddPost/AddPost'; 
 import TopBar from "../../Components/TopBar/TopBar";
@@ -29,12 +30,27 @@ const postData = [
 
 
 function Home() {
+
+  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+
+  const [postList, setPostList] = useState([]);
+
+  useEffect(() => {
+    fetch(ENDPOINT, {
+      headers: { "Accept": "application/json" },
+      method: "GET"
+    }).then(response => response.json()).then(postData => {
+      setPostList(postData.items);
+      console.log(postData)
+    });
+  })
+
   return (
     <>
       <TopBar id="home"/>
       <div className="home">
         <AddPost/>
-        {postData.map(function(post){
+        {postList.map(function(post){
             return <Post post={post} key={post.id}/>;
         })}
         

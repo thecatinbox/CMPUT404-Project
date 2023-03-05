@@ -2,7 +2,7 @@ from django.test import TestCase
 from .models import *
 from django.db.utils import IntegrityError
 import uuid
-
+'''
 Authors.objects.create(
     username="test_author_11111",
     password="test_password11111",
@@ -13,6 +13,7 @@ Authors.objects.create(
     github="http://github.com/test_author", 
     profileImage="url_to_profile_image"
 )
+'''
 '''
 class static():
     def users():
@@ -58,12 +59,43 @@ class static():
             description="test_post_1",
             contentType="text/plain",
             content="test_post_1",
-            author=user1,
+            author={username="test_author_11111",
+    password="test_password11111",
+    uuid = uuid.uuid4(), 
+    host="//service", 
+    displayName="test_name_11111", 
+    url="//service/author/11111", 
+    github="http://github.com/test_author", 
+    profileImage="url_to_profile_image"},
             categories="test_post_1",
             count=0,
             published="2020-04-01T00:00:00Z",
             visibility="PUBLIC",
         )
+
+        {
+   "title":"test_post_1",
+   "id":"http://localhost:../authors/author_uuid/post/post_uuid",
+   "source":"http://localhost:../authors/author_uuid/post/post_uuid",
+   "origin":"http://localhost:../authors/author_uuid/post/post_uuid",
+   "description":"test_post_1",
+   "contentType":"text/plain",
+   "content":"test_post_1",
+   "author":{
+      "username":"test_author_11111",
+      "password":"test_password11111",
+      "uuid":"7dce957d-4ba2-4021-a76a-3ed8c4a06c97",
+      "host":"//service",
+      "displayName":"test_name_11111",
+      "url":"//service/author/11111",
+      "github":"http://github.com/test_author",
+      "profileImage":"url_to_profile_image"
+   },
+   "categories":"test_post_1",
+   "count":"0",
+   "published":"2020-04-01T00:00:00Z",
+   "visibility":"PUBLIC"
+}
 
         Posts.objects.create(
             title="test_post_2",

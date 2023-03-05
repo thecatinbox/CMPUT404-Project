@@ -32,23 +32,6 @@ border-radius: 5px;
 border-color: white;
 
 }
-.dropdown {
-margin-left: 68%; 
-}
-.submit {
-border-color: rgb(164, 223, 255); 
-border: 1px solid; 
-border-radius: 5px; 
-}
-button {
-background-color: #ddf0ff;
-color: #3d82ba;
-font-size: 20px;
-border: none;
-margin-left: 15px;
-padding: 5px 10px;
-
-}
 
 /* Add a background color on hover */
 button:hover {
@@ -60,6 +43,16 @@ color: #273144;
 .dropdown {
 position: relative;
 display: inline-block;
+margin-left: 58%;
+}
+.submit-button{
+  background-color: #ddf0ff;
+  color: #3d82ba;
+  border-color: #a8cdec;
+  font-size: 20px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 20px;
 }
 
 select {
@@ -70,4 +63,30 @@ color: #273144;
 border: 1px solid #86cdff;
 padding: 5px;
 border-radius: 5px;
+}
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.image-button {
+  border: 2px solid #a8cdec;
+  color: #3d82ba;
+  background-color: #f7fcff;
+  border-radius: 5px;
+  font-size: 20px;
+  padding: 5px 10px;
+  margin-left: 20px;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 10px;
+  position: absolute;
+  height: 30px;
+  width: 155px;
+  left: 21px;
+  top: 3px;
+  opacity: 0;
 }
