@@ -15,7 +15,7 @@ def getURLId(url):
     return url.split('/')[-1]
 
 
-def paginate(objects, page=1, page_size=10):
+def paginate(request,objects):
     """
     Paginates a list of objects.
 
@@ -30,17 +30,32 @@ def paginate(objects, page=1, page_size=10):
         - The total number of pages.
         - The current page number.
     """
-    total_objects = len(objects)
-    total_pages = (total_objects + page_size - 1) // page_size
+    page=1
+    page_size=10
+    start_index = page * page_size - page_size
+    end_index = page * page_size
 
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
+    objects = objects[start_index:end_index]
+    
+    return objects
 
-    paginated_objects = objects[start_index:end_index]
+'''
+def pagination(request,object):
+    """
+    This function is hand write pagination method, to get the page and size of user want,
+    that returns the range of objects to them
+    """
+    absURL = request.build_absolute_uri()
+    value = absURL.split('?')[1].split('&')
+    page = int(value[0].split('=')[1])
+    size = int(value[1].split('=')[1])
+    fromNum = page * size - size
+    toNum = page * size
 
-    return paginated_objects, total_pages, page
+    object = object[fromNum:toNum]
 
-
+    return object
+'''
 """
 Authors 
 """
@@ -163,8 +178,6 @@ def getAllPublicPosts(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 def Post(request, pk):
     """
     This view is used to display posts of a given author and create a new post
@@ -172,11 +185,15 @@ def Post(request, pk):
     # Display posts of a given author
     if request.method == 'GET':
         item_list = []
-        try:
-            author = Authors.objects.get(uuid=pk)
-            serializeAuthor = AuthorSerializer(author)
+            
+        author = Authors.objects.get(uuid=pk)
+        serializeAuthor = AuthorSerializer(author)
+
+        try:     
             posts = Posts.objects.filter(author=author)
             posts = paginate(request, posts)
+            
+
             if not posts.exists():
                 return Response(status=404)
 
@@ -194,14 +211,10 @@ def Post(request, pk):
                 categories = data['categories']
                 catList = categories.split(' ')
                 postsId = data['uuid']
-                comment = Comments.objects.filter(post__uuid=postsId)
-                count = len(comment)
-                commentURL = data['id'] + '/comments'
                 dict.pop('categories')
                 dict['categories'] = catList
                 dict['author'] = author_dict
-                dict['comments'] = commentURL
-                dict['count'] = count
+                dict['count'] = item.count
                 item_list.append(dict)
 
             responseData = {
@@ -211,12 +224,35 @@ def Post(request, pk):
 
             return Response(responseData, status=200)
 
-        except:
+        except Exception as e:
+
+            for item in posts:
+                dict = {}
+                serializer = PostsSerializer(item)
+                data = serializer.data
+                author_dict = {}
+                for k, v in data.items():
+                    dict[k] = v
+                for k, v in serializeAuthor.data.items():
+                    author_dict[k] = v
+                author_dict['displayName'] = serializeAuthor.data['displayName']
+                author_dict.pop('username')
+                categories = data['categories']
+                catList = categories.split(' ')
+                postsId = data['uuid']
+                dict.pop('categories')
+                dict['categories'] = catList
+                dict['author'] = author_dict
+                dict['count'] = item.count
+                item_list.append(dict)
+
+
             # Return empty item_list if there was an exception
             responseData = {
                 "type": "posts",
                 "items": item_list
             }
+            print(responseData)
             return Response(responseData, status=200)
 
     # Create new post
@@ -241,7 +277,6 @@ def Post(request, pk):
         )
         newPost.save()
         return Response(status=200)
-
     return Response(status=400)  # Return bad request if method is not GET or POST
 
 
