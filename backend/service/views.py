@@ -22,14 +22,9 @@ def paginate(request,objects):
 
     Args:
         objects (list): The list of objects to paginate.
-        page (int): The current page number (default is 1).
-        page_size (int): The number of items per page (default is 10).
 
     Returns:
-        A tuple containing:
         - The paginated objects.
-        - The total number of pages.
-        - The current page number.
     """
     page=1
     page_size=10
@@ -61,7 +56,6 @@ def pagination(request,object):
 Authors 
 """
 
-
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
@@ -72,12 +66,12 @@ def authorsList(request):
     """
     authors = Authors.objects.all()
 
-    # Get page and size from query parameters
-    page = int(request.query_params.get('page', 1))
-    page_size = int(request.query_params.get('size', 10))
+    # # Get page and size from query parameters
+    # page = int(request.query_params.get('page', 1))
+    # page_size = int(request.query_params.get('size', 10))
 
-    paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
-
+    # paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
+    paginated_authors = paginate(authors)
     if not paginated_authors:
         return Response(status=404)
 
@@ -98,8 +92,6 @@ def authorsList(request):
     responseData = {
         "type": "authors",
         "items": itemsList,
-        "totalPages": total_pages,
-        "currentPage": current_page
     }
 
     return Response(responseData, status=200)
@@ -393,7 +385,6 @@ def get_post(request, pk, postsId):
 Image Posts
 """
 
-
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
@@ -620,9 +611,6 @@ def get_liked(request, pk):
         }
 
         return Response(response_data, status=200)
-
-
-
 
 
 @api_view(['GET', 'DELETE', 'POST'])
