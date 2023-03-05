@@ -38,7 +38,7 @@ class Posts(models.Model):
         ('FRIENDS', 'FRIENDS'),
         ('PRIVATE', 'PRIVATE')
     ]
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.CharField(max_length = 255,default=uuid.uuid4, editable=True, unique=True)
     type = models.CharField(max_length = 255, default = "post", editable = False)
     title = models.CharField(max_length = 255, default = "Untitled")
     id = models.CharField(max_length = 255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid
@@ -94,7 +94,7 @@ class Comments(models.Model):
         ('text/plain', 'PLAINTEXT'),
         ('text/markdown', 'MARKDOWN')
     ]
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.CharField(max_length = 255,default=uuid.uuid4, editable=True, unique=True)
     type = models.CharField(max_length = 255,default = "comment", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     post = models.ForeignKey(Posts, on_delete = models.CASCADE)

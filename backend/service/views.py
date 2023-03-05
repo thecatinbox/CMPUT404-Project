@@ -73,7 +73,7 @@ def authorsList(request):
         for k, v in data.items():
             dict[k] = v
 
-        dict['displayName'] = data['username']
+        dict['displayName'] = data['displayName']
         dict.pop('username')
 
         itemsList.append(dict)
@@ -108,7 +108,7 @@ def singleAuthor(request, pk):
     if request.method == 'GET':
         serializer = AuthorSerializer(author)
         data = serializer.data
-        data['displayName'] = data.pop('username')
+        data['displayName'] = data.pop('displayName')
         responseData = {
             "type": "authors",
             "items": data
@@ -136,21 +136,20 @@ def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author', 'comments')
+    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author')
     items_list = []
 
     for post in posts:
         data = PostsSerializer(post).data
         author_data = AuthorSerializer(post.author).data
-        author_data['displayName'] = author_data.pop('username')
-        categories = data.pop('Categories').split()
-        comments_count = post.comments.count()
-        comments_url = reverse('post-comments', kwargs={'post_uuid': data['uuid']})
+        author_data['displayName'] = author_data.pop('displayName')
+        categories = data.pop('categories').split()
+        comments_count = data.pop('count')
+       
         item = {
             **data,
             'author': author_data,
             'categories': categories,
-            'comments': comments_url,
             'count': comments_count,
         }
         items_list.append(item)
@@ -190,15 +189,15 @@ def Post(request, pk):
                     dict[k] = v
                 for k, v in serializeAuthor.data.items():
                     author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['username']
+                author_dict['displayName'] = serializeAuthor.data['displayName']
                 author_dict.pop('username')
-                categories = data['Categories']
+                categories = data['categories']
                 catList = categories.split(' ')
                 postsId = data['uuid']
                 comment = Comments.objects.filter(post__uuid=postsId)
                 count = len(comment)
                 commentURL = data['id'] + '/comments'
-                dict.pop('Categories')
+                dict.pop('categories')
                 dict['categories'] = catList
                 dict['author'] = author_dict
                 dict['comments'] = commentURL
@@ -236,10 +235,9 @@ def Post(request, pk):
             contentType=new_post['contentType'],
             content=new_post['content'],
             author=currentAuthor,
-            Categories=new_post['categories'],
+            categories=new_post['categories'],
             count=0,
             visibility=new_post['visibility'],
-            textType=new_post['contentType']
         )
         newPost.save()
         return Response(status=200)
@@ -255,13 +253,13 @@ POST Manipulation
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 @authentication_classes([authentication.BasicAuthentication])
-def get_post(request, pk, post_id):
+def get_post(request, pk, postsId):
     """
     Get, update, delete or create a specific post.
     """
     # Get a specific post
     if request.method == 'GET':
-        post = Posts.objects.filter(uuid=post_id).first()
+        post = Posts.objects.filter(uuid=postsId).first()
         if not post:
             return Response(status=404)
 
@@ -275,7 +273,7 @@ def get_post(request, pk, post_id):
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
-            'categories': post.Categories.split(),
+            'categories': post.categories.split(),
             'author': {
                 'id': post.author.uuid,
                 'displayName': post.author.username,
@@ -284,8 +282,7 @@ def get_post(request, pk, post_id):
                 'host': post.author.host,
                 'url': post.author.url,
             },
-            'count': post.comments.count(),
-            'comments': f"{post.id}/comments",
+            'count': post.count,
         }
         return Response(post_dict)
 
@@ -294,7 +291,7 @@ def get_post(request, pk, post_id):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
         if not post:
             return Response(status=404)
 
@@ -306,7 +303,7 @@ def get_post(request, pk, post_id):
         post.origin = request.data.get('origin', post.origin)
         post.published = request.data.get('published', post.published)
         post.visibility = request.data.get('visibility', post.visibility)
-        post.Categories = request.data.get('categories', post.Categories)
+        post.categories = request.data.get('categories', post.categories)
         post.save()
 
         return Response(status=200)
@@ -316,7 +313,7 @@ def get_post(request, pk, post_id):
         if not request.user.is_authenticated:
             return Response(status=401)
 
-        post = Posts.objects.filter(author__uuid=pk, uuid=post_id).first()
+        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
         if not post:
             return Response(status=404)
 
@@ -343,9 +340,8 @@ def get_post(request, pk, post_id):
             contentType=request.data.get('contentType'),
             content=request.data.get('content'),
             author=current_author,
-            Categories=request.data.get('categories'),
+            categories=request.data.get('categories'),
             visibility=request.data.get('visibility', 'PUBLIC'),
-            textType=request.data.get('contentType'),
         )
         new_post.save()
 
@@ -397,7 +393,7 @@ def getComments(request, pk, postsId):
                 author = Authors.objects.get(username=data['author'])
                 serializeAuthor = AuthorSerializer(author)
                 author_data = serializeAuthor.data
-                author_data['displayName'] = author_data.pop('username')
+                author_data['displayName'] = author_data.pop('displayName')
                 comment_data = {**data, 'author': author_data}
                 item_list.append(comment_data)
 
@@ -414,7 +410,7 @@ def getComments(request, pk, postsId):
                 author = Authors.objects.get(username=data['author'])
                 serializeAuthor = AuthorSerializer(author)
                 author_data = serializeAuthor.data
-                author_data['displayName'] = author_data.pop('username')
+                author_data['displayName'] = author_data.pop('displayName')
                 comment_data = {**data, 'author': author_data}
                 item_list.append(comment_data)
 
@@ -446,7 +442,7 @@ def getOneComment(request, pk, postsId, commentId):
 
         author = Authors.objects.get(username=serializeComment['author'])
         serializeAuthor = AuthorSerializer(author).data
-        serializeAuthor['displayName'] = serializeAuthor.pop('username')
+        serializeAuthor['displayName'] = serializeAuthor.pop('displayName')
 
         serializeComment['author'] = serializeAuthor
 
@@ -534,13 +530,13 @@ def get_post_likes(request, pk, postsId):
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(post_id=postsId)
+        likes = Likes.objects.filter(object=postsId)
 
         items_list = []
         for like in likes:
-            author = Authors.objects.get(id=like.author_id)
+            author = Authors.objects.get(uuid=like.author.uuid)
             author_dict = AuthorSerializer(author).data
-            author_dict["displayName"] = author_dict.pop("username")
+            author_dict["displayName"] = author_dict.pop("displayName")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)
@@ -566,7 +562,7 @@ def get_liked(request, pk):
         items_list = []
         for like in likes:
             author_dict = AuthorSerializer(like.author).data
-            author_dict["displayName"] = author_dict.pop("username")
+            author_dict["displayName"] = author_dict.pop("displayName")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)
@@ -598,9 +594,8 @@ def get_inbox(request, pk):
         post_dict = PostsSerializer(post).data
         post_dict['author'] = AuthorSerializer(post.author).data
         post_dict['categories'] = post.categories.split()
-        post_dict['comments'] = f"{post.id}/comments"
-        post_dict['count'] = post.comments.count()
-        post_dict.pop('Categories')
+        post_dict['count'] = post.pop('count')
+        post_dict.pop('categories')
         post_list.append(post_dict)
 
     comment_list = []
