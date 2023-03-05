@@ -162,7 +162,7 @@ def getAllPublicPosts(request):
         data = PostsSerializer(post).data
         author_data = AuthorSerializer(post.author).data
         author_data['displayName'] = author_data.pop('displayName')
-        categories = data.pop('categories').split()
+        categories = data.pop('categories')
         comments_count = data.pop('count')
        
         item = {
@@ -216,10 +216,9 @@ def Post(request, pk):
                 author_dict['displayName'] = serializeAuthor.data['displayName']
                 author_dict.pop('username')
                 categories = data['categories']
-                catList = categories.split(' ')
                 postsId = data['uuid']
                 dict.pop('categories')
-                dict['categories'] = catList
+                dict['categories'] = categories
                 dict['author'] = author_dict
                 dict['count'] = item.count
                 item_list.append(dict)
@@ -245,10 +244,9 @@ def Post(request, pk):
                 author_dict['displayName'] = serializeAuthor.data['displayName']
                 author_dict.pop('username')
                 categories = data['categories']
-                catList = categories.split(' ')
                 postsId = data['uuid']
                 dict.pop('categories')
-                dict['categories'] = catList
+                dict['categories'] = categories
                 dict['author'] = author_dict
                 dict['count'] = item.count
                 item_list.append(dict)
@@ -316,7 +314,7 @@ def get_post(request, pk, postsId):
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
-            'categories': post.categories.split(),
+            'categories': post.categories,
             'author': {
                 'id': post.author.uuid,
                 'displayName': post.author.username,
@@ -645,7 +643,7 @@ def get_inbox(request, pk):
     for post in inbox.items.all():
         post_dict = PostsSerializer(post).data
         post_dict['author'] = AuthorSerializer(post.author).data
-        post_dict['categories'] = post.categories.split()
+        post_dict['categories'] = post.categories
         post_dict['count'] = post.pop('count')
         post_dict.pop('categories')
         post_list.append(post_dict)

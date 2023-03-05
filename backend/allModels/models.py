@@ -12,11 +12,11 @@ class Authors(AbstractBaseUser):
     password = models.CharField(max_length = 255, default="", blank=False)
     type = models.CharField(max_length = 255,default="author",editable=False)
     #remeber to change editable back to false！！！！！！！！！！！！！！！！！
-    uuid = models.CharField(max_length = 255,default=uuid.uuid4, editable=True, unique=True)
+    uuid = models.CharField(max_length = 255, editable=False, unique=True)
     id = models.CharField(unique=True, max_length=255, blank=True, null=True)
     url = models.CharField(max_length = 255, null=True, blank=True, default="")
     host = models.CharField(max_length = 255, null=True, blank=True, default="")
-    displayName = models.CharField(max_length = 20, null=True, blank=True, default="")
+    displayName = models.CharField(max_length = 255, null=True, blank=True, default="")
     github = models.CharField(max_length = 255, null=True, blank=True, default="")
     profileImage = models.ImageField(upload_to='profile_images', blank=True, null=True)
     #accepted = models.BooleanField(default = False)
@@ -38,7 +38,7 @@ class Posts(models.Model):
         ('FRIENDS', 'FRIENDS'),
         ('PRIVATE', 'PRIVATE')
     ]
-    uuid = models.CharField(max_length = 255,default=uuid.uuid4, editable=True, unique=True)
+    uuid = models.CharField(max_length = 255,default=str(uuid.uuid4()), editable=False, unique=True)
     type = models.CharField(max_length = 255, default = "post", editable = False)
     title = models.CharField(max_length = 255, default = "Untitled")
     id = models.CharField(max_length = 255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid
@@ -94,7 +94,7 @@ class Comments(models.Model):
         ('text/plain', 'PLAINTEXT'),
         ('text/markdown', 'MARKDOWN')
     ]
-    uuid = models.CharField(max_length = 255,default=uuid.uuid4, editable=True, unique=True)
+    uuid = models.CharField(max_length = 255,default=str(uuid.uuid4()), editable=True, unique=True)
     type = models.CharField(max_length = 255,default = "comment", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
     post = models.ForeignKey(Posts, on_delete = models.CASCADE)
