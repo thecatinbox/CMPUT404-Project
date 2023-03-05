@@ -8,10 +8,12 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons'
 function setActive(id) {
   if (id) {
     console.log(id); 
-    document.getElementById(id).className = 'active';
+    if (document.getElementById(id)) {
+      document.getElementById(id).className = 'active';
+    }
+    
   }
 }; 
-
 
 const TopBar = (params) => {
 
@@ -28,8 +30,8 @@ const TopBar = (params) => {
         <a id="friends" href="/friends">Friends</a>
         <a id="profile" href="/profile">Profile</a>
         <div className="search-container">
-          <form action="/action_page.php">
-            <input type="text" placeholder="Search.." name="search"></input>
+          <form action="/search">
+            <input type="text" placeholder="Search.." name="username"></input>
             <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
           </form>
         </div>

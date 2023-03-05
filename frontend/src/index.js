@@ -6,6 +6,7 @@ import Friends from "./Pages/Friends/Friends";
 import Profile from "./Pages/Profile/Profile";
 import SignIn from "./Pages/SignIn/SignIn";
 import SignUp from "./Pages/SignUp/SignUp";
+import Search from "./Pages/Search/Search";
 import './index.css';
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="inbox" element={<Inbox />} />
         <Route path="friends" element={<Friends />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="search" element={<Search />} />
       </Routes>
     </BrowserRouter>
   );
