@@ -57,8 +57,6 @@ Authors
 """
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def authorsList(request):
     """
@@ -103,8 +101,6 @@ Single Author
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def singleAuthor(request, pk):
     """
@@ -140,8 +136,6 @@ Posts
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def getAllPublicPosts(request):
     """
@@ -174,8 +168,6 @@ def getAllPublicPosts(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def Post(request, pk):
     """
@@ -288,8 +280,6 @@ POST Manipulation
 
 
 @api_view(['GET', 'DELETE', 'POST', 'PUT'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
@@ -391,8 +381,6 @@ Image Posts
 """
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def getImage(request, pk, postsId):
     """
@@ -413,8 +401,6 @@ def getImage(request, pk, postsId):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def getComments(request, pk, postsId):
     """
@@ -494,8 +480,6 @@ def getOneComment(request, pk, postsId, commentId):
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
@@ -515,8 +499,6 @@ def getFollowers(request, pk):
 
 
 @api_view(['DELETE', 'PUT', 'GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
@@ -564,8 +546,6 @@ def oneFollower(request, pk, foreignPk):
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
     """
@@ -592,8 +572,6 @@ def get_post_likes(request, pk, postsId):
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def get_liked(request, pk):
     """
@@ -619,8 +597,6 @@ def get_liked(request, pk):
 
 
 @api_view(['GET', 'DELETE', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def get_inbox(request, pk):
     if request.method != 'GET':

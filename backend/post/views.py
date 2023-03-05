@@ -74,7 +74,6 @@ def home_page(request, userID):
 '''
 @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def create_post(request, userId):
     if request.method == 'POST':
