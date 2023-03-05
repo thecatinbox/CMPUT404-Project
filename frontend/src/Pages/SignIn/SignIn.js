@@ -11,7 +11,7 @@ function SignIn() {
         if (inputs.username == userData.username && inputs.password == userData.password) {
             navigate("/home");
         } else {
-            alert("Incorrect username/password, please try again");
+            alert("Incorrect password, please try again. ");
         }
     }; 
 
@@ -30,12 +30,15 @@ function SignIn() {
             headers: { "Accept": "application/json" },
             method: "GET"
         }).then(response => response.json()).then(data => {
-            console.log(data); 
-            const userData = {
-                "username": "apple", 
-                "password": "123"
-            }; 
-            checkAuth(userData); 
+            console.log(data.items); 
+            var result = data.items.find(item => item.username === inputs.username);
+            if (result) {
+                console.log(result.username); 
+                console.log(result.password); 
+                checkAuth(result); 
+            } else {
+                alert("User does not exist. ");
+            }
         })
         .catch((error) => {
             alert(error);
