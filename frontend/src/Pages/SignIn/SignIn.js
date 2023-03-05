@@ -30,12 +30,13 @@ function SignIn() {
             headers: { "Accept": "application/json" },
             method: "GET"
         }).then(response => response.json()).then(data => {
-            console.log(data); 
-            const userData = {
-                "username": "apple", 
-                "password": "123"
-            }; 
-            checkAuth(userData); 
+            console.log(data.items); 
+            var result = data.items.find(item => item.username === inputs.username);
+            if (result) {
+                console.log(result.username); 
+                console.log(result.password); 
+                checkAuth(result); 
+            }
         })
         .catch((error) => {
             alert(error);
