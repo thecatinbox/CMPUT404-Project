@@ -83,7 +83,6 @@ def authorsList(request):
             dict[k] = v
 
         dict['displayName'] = data['displayName']
-        dict.pop('username')
 
         itemsList.append(dict)
 

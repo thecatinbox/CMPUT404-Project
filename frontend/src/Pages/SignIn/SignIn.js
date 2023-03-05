@@ -11,7 +11,7 @@ function SignIn() {
         if (inputs.username == userData.username && inputs.password == userData.password) {
             navigate("/home");
         } else {
-            alert("Incorrect username/password, please try again");
+            alert("Incorrect password, please try again. ");
         }
     }; 
 
@@ -36,6 +36,8 @@ function SignIn() {
                 console.log(result.username); 
                 console.log(result.password); 
                 checkAuth(result); 
+            } else {
+                alert("User does not exist. ");
             }
         })
         .catch((error) => {
