@@ -8,7 +8,7 @@ function SignIn() {
     const ENDPOINT = 'http://127.0.0.1:8000/server/authors/'
 
     const checkAuth = (userData) => {
-        if (inputs.username == userData.username && inputs.password == userData.password) {
+        if (inputs.username === userData.username && inputs.password === userData.password) {
             localStorage.setItem('uuid', userData.uuid); 
             navigate("/home");
         } else {
