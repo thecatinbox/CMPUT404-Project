@@ -76,26 +76,47 @@ def home_page(request, userID):
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_post(request, userId):
-    #return Response(f"{request.body}", status=400)
+    #return Response(f"{request.data}", status=400)
     if request.method == 'POST':
         
-        title = request.POST.get('title')
-        return Response(f"{title}", status=400)
-        content = request.POST.get('content')
-        visibility = request.POST.get('visibility')
-        content_type = request.POST.get('content_type')
+        title = request.data.get('title')
+        #return Response(f"{title}", status=400)
+        if "description" in request.data:
+            description = request.data.get('description')
+        else:
+            description = ""
+        if "content" in request.data:
+            content = request.data.get('content')
+        else:
+            content = ""
+        if "visibility" in request.data:
+            visibility = request.data.get('visibility')
+        else:
+            visibility = "PUBLIC"
+        if "contentType" in request.data:
+            content_type = request.data.get('content_type')
+        else:
+            content_type = "text/plain"
+        if "categories" in request.data:
+            categories = request.data.get('categories')
+        else:
+            categories = ""
+        uid = str(uuid.uuid4())
 
         new_post = Posts()
         new_post.title = title
+        new_post.description = description
         new_post.content = content
         new_post.visibility = visibility
         new_post.contentType = content_type
-        new_post.uuid = uuid.uuid4()
-        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{userId}/posts/{new_post.uuid}"
+        new_post.uuid = uid
+        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{userId}/posts/{uid}"
         new_post.source = new_post.id
         new_post.origin = new_post.id
         current_author = Authors.objects.get(uuid=userId)
         new_post.author = current_author
+        new_post.categories = categories
+        new_post.count = "0"
         new_post.save()
 
         # notice a new post from me
