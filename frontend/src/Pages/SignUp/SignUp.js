@@ -64,33 +64,29 @@ function SignUp() {
             <div className="container">
                 <h2 className="signUnTitle">Sign Up</h2>
                 <form onSubmit={handleSubmit}>
-                    <label>
-                        Username: <br />
-                        <input type="text" name="username" placeholder="Username" value={inputs.username || ""} onChange={handleChange} required />
-                    </label>
+                    <label>Username: <br /></label>
+                    <input type="text" name="username" placeholder="Username" onChange={handleChange} required />
+                    
                     <br />
-                    <label>
-                        Password: <br />
-                        <input type="password" name="password" placeholder="Password" value={inputs.password || ""} onChange={handleChange} required />
-                    </label>
+                    <label>Password: <br /></label>
+                    <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+
                     <br />
-                    <label>
-                        Confirm Password: <br />
-                        <input type="password" name="password2" placeholder="Confirm Password" value={inputs.password2 || ""} onChange={handleChange} required />
-                    </label>
+                    <label>Confirm Password: <br /></label>
+                    <input type="password" name="password2" placeholder="Confirm Password" onChange={handleChange} required />
+                    
                     {!passwordMatch && (
                         <p style={{ color: 'red' }}>Passwords do not match.</p>
                     )}
+
                     <br />
-                    <label>
-                        Display Name: <br />
-                        <input type="text" name="displayname" placeholder="Display Name" value={inputs.displayName || ""} onChange={handleChange} required />
-                    </label>
+                    <label>Display Name: <br /></label>
+                    <input type="text" name="displayname" placeholder="Display Name" onChange={handleChange} required />
+                    
                     <br />
-                    <label>
-                        GitHub URL: <br />
-                        <input type="url" name="githuburl" placeholder="GitHub URL: https://github.com/...." value={inputs.githubURL || ""} onChange={handleChange} required />
-                    </label>
+                    <label>GitHub URL: <br /></label>
+                    <input type="url" name="githuburl" placeholder="GitHub URL: https://github.com/...." onChange={handleChange} required />
+                    
                     <br />
                     <label>
                         Upload Profile Image: <br />

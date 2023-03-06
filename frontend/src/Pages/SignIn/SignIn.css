@@ -1,4 +1,10 @@
-.signIn html {
+.signIn {
+    text-align: center;
+    max-width: 40%;
+    margin: auto;
+}
+
+/* .signIn html {
     background-color: lightgray;
 }
 .signIn {
@@ -37,4 +43,4 @@
 .signIn .alert {
     color: red;
     visibility: hidden;
-}
+} */ 
