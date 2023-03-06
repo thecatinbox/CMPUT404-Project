@@ -4,6 +4,11 @@
     margin: auto;
 }
 
+.signIn .alert {
+    color: red;
+    visibility: hidden;
+}
+
 /* .signIn html {
     background-color: lightgray;
 }
