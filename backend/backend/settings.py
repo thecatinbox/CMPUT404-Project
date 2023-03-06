@@ -72,7 +72,7 @@ INSTALLED_APPS = [
     'authors',
     'post',
     'service',
-    
+    "drf_yasg"
 ]
 
 MIDDLEWARE = [
