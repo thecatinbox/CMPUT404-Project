@@ -31,7 +31,9 @@ const postData = [
 
 function Home() {
 
-  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/ca63698f-8c52-423d-8a2f-034aaccb72ce/posts/'
+  const uuid = localStorage.getItem('uuid'); 
+  // console.log(uuid); 
+  const ENDPOINT = 'http://localhost:8000/server/posts/'; 
 
   const [postList, setPostList] = useState([]);
 
@@ -50,7 +52,7 @@ function Home() {
       <TopBar id="home"/>
       <div className="home">
         <AddPost/>
-        {postList.map(function(post){
+        {postList.reverse().map(function(post){
             return <Post post={post} key={post.id}/>;
         })}
         

@@ -2,18 +2,20 @@ import React from "react";
 import "./AddPost.css"; 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faImage} from '@fortawesome/free-solid-svg-icons'
+import { faImage } from '@fortawesome/free-solid-svg-icons'
 //line22-24: The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected.
 const AddPost = () => {
 
-  const ENDPOINT = 'http://127.0.0.1:8000/post/authors/ff852d80-bfdc-4c8a-a302-309b5a3dadf4/posts/create'
+  const uuid = localStorage.getItem('uuid'); 
+  const ENDPOINT = 'http://127.0.0.1:8000/post/authors/' + uuid + '/posts/create'; 
+  // console.log(ENDPOINT); 
 
   const addPost = (title, content) => {
 
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000', 
+      "Origin": 'http://localhost:3000'
     }
 
     console.log(title); 
@@ -22,28 +24,8 @@ const AddPost = () => {
     const body = JSON.stringify({
       "title": title,
       "content": content,
-      "categories": "test_post_1",
-      "count": 0,
-      "published": "2020-04-01T00:00:00Z",
       "visibility": "PUBLIC"
     }); 
-    /*
-    const body = JSON.stringify({
-      title: new_post['title'],
-      uuid: new_postId,
-      id: id,
-      source: new_post['source'],
-      origin: new_post['origin'],
-      description: new_post['description'],
-      contentType: new_post['contentType'],
-      content: new_post['content'],
-      author: currentAuthor,
-      Categories: new_post['categories'],
-      count: 0,
-      visibility: new_post['visibility'],
-      unlisted: new_post['unlisted'],
-      textType: new_post['contentType']
-    })*/ 
 
     // console.log(header); 
     console.log(body); 
@@ -53,14 +35,9 @@ const AddPost = () => {
       body: body, 
       method: "POST"
     }).then((response) => {
-      console.log(response.status); 
-      if(!response.ok) throw new Error(response.status);
-      else return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
+      // console.log(response); 
+      // window.location.reload(false);
+    }).catch((error) => {
       console.log('error: ' + error);
     }); 
     
@@ -74,8 +51,8 @@ const AddPost = () => {
 
     <div className="mainPost">
       <div className="upload-btn-wrapper">
-        <button class="image-button">Upload images</button>
-        <input id="inputFile" type="file" accept="image/*"/>
+        <input type="file" id="actual-btn"/>
+        <label for="actual-btn"><FontAwesomeIcon icon={faImage} /> Choose Image</label>
       </div>
       
       <div className="dropdown">
