@@ -33,7 +33,7 @@ function Home() {
 
   const uuid = localStorage.getItem('uuid'); 
   // console.log(uuid); 
-  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/' + uuid + '/posts/'; 
+  const ENDPOINT = 'http://localhost:8000/server/posts/'; 
 
   const [postList, setPostList] = useState([]);
 
