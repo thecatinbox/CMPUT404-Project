@@ -6,7 +6,7 @@ Array [
     className="topnav"
   >
     <a
-      href="/"
+      href="/home"
       id="home"
     >
       Home

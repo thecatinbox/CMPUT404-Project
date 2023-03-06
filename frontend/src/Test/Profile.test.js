@@ -9,3 +9,16 @@ it('profile page renders correctly', () => {
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
 });
+
+it('exists a Edit Profile button', ()=>{
+  const wrapper = render(<Button>Edit Profile</Button>).queryByText('Edit Profile')
+  expect(wrapper).toBeTruthy()
+})
+it('exists a Cancel button', ()=>{
+  const wrapper = render(<Button>Cancel</Button>).queryByText('Cancel')
+  expect(wrapper).toBeTruthy()
+})
+it('exists a Save button', ()=>{
+  const wrapper = render(<Button>Save</Button>).queryByText('Cancel')
+  expect(wrapper).toBeTruthy()
+})

@@ -1,5 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`changes the color of Friends button on the Top Bar when they hovered 1`] = `
+<a
+  href="/friends"
+  id="friends"
+>
+  Friends
+</a>
+`;
+
+exports[`changes the color of Inbox button on the Top Bar when they hovered 1`] = `
+<a
+  href="/inbox"
+  id="inbox"
+>
+  Inbox
+</a>
+`;
+
+exports[`changes the color of Profile button on the Top Bar when they hovered 1`] = `
+<a
+  href="/profile"
+  id="profile"
+>
+  Profile
+</a>
+`;
+
+exports[`changes the color of inbox button on the Top Bar when they hovered 1`] = `
+<a
+  href="/inbox"
+  id="inbox"
+>
+  Inbox
+</a>
+`;
+
 exports[`home page renders correctly 1`] = `
 Array [
   <div
