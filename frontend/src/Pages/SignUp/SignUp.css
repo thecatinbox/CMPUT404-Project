@@ -1,4 +1,10 @@
-.signUp html {
+.signUp {
+    text-align: center;
+    max-width: 40%;
+    margin: auto;
+}
+
+/* .signUp html {
     background-color: lightgray;
 }
 .signUp {
@@ -38,3 +44,4 @@
     color: red;
     visibility: hidden;
 }
+*/ 
