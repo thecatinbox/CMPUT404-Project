@@ -47,20 +47,21 @@ function Profile() {
     setOpen(false);
   };
 
+  // <img src={userData.profileImage} alt="Profile Image"></img>
   return (
     <>
       <TopBar id="profile"/>
       <div className="profile">
         <div className='profile-data'>
-          <img src={userData.profileImage} alt="Profile Image"></img>
+          <img src="https://i.imgur.com/k7XVwpB.jpeg" alt="Profile Image"></img>
           <h2>{userData.displayName}</h2>
           <button onClick={handleClickOpen}>Edit Profile</button>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Edit User Profile</DialogTitle>
             <DialogContent>
-              <TextField margin="dense" id="displayName}" label="Display Name" value={userData.displayName} variant="standard" fullWidth/>
-              <TextField margin="dense" id="github" label="GitHub URL" value={userData.github} variant="standard" fullWidth/>
-              <TextField margin="dense" id="profileImage" label="Profile Image URL" value={userData.profileImage} variant="standard" fullWidth/>
+              <TextField margin="dense" id="displayName}" label="Display Name" defaultValue={userData.displayName} variant="standard" fullWidth/>
+              <TextField margin="dense" id="github" label="GitHub URL" defaultValue={userData.github} variant="standard" fullWidth/>
+              <TextField margin="dense" id="profileImage" label="Profile Image URL" defaultValue={userData.profileImage} variant="standard" fullWidth/>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>

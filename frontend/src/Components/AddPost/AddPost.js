@@ -12,19 +12,28 @@ const AddPost = () => {
 
   const addPost = (title, content) => {
 
+    if (!title) {
+      alert("title is required for creating a post! "); 
+      return; 
+    }
+
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
       "Origin": 'http://localhost:3000'
     }
 
+    var e = document.getElementById("post-category");
+    var visibility = e.options[e.selectedIndex].value;
+
     console.log(title); 
     console.log(content); 
+    console.log(visibility); 
 
     const body = JSON.stringify({
       "title": title,
       "content": content,
-      "visibility": "PUBLIC"
+      "visibility": visibility
     }); 
 
     // console.log(header); 
@@ -58,10 +67,9 @@ const AddPost = () => {
       <div className="dropdown">
         <label htmlFor="post-category"></label>
         <select name="post-category" id="post-category">
-        
-          <option value="Public" selected>Public</option>
-          <option value="Friends">Friends</option>
-          <option value="Private" >Private</option>
+          <option value="PUBLIC" selected>Public</option>
+          <option value="FRIENDS">Friends</option>
+          <option value="PRIVATE">Private</option>
         </select>
       </div>
 
