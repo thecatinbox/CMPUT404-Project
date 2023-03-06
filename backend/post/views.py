@@ -72,7 +72,6 @@ def home_page(request, userID):
     # })
 
 '''
-@login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_post(request, userId):
@@ -190,7 +189,6 @@ def create_post(request, userId):
         # })
 '''
 
-@login_required(login_url='/signin/')
 @permission_classes([AllowAny])
 def create_comment(request, userId, postId):
     if request.method == 'POST':
@@ -219,7 +217,6 @@ def create_comment(request, userId, postId):
         # })
 
 
-@login_required(login_url='/signin/')
 @permission_classes([AllowAny])
 def create_like(request, userId, postId):
     post = Posts.objects.get(uuid=postId).id

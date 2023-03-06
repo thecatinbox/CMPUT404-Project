@@ -52,7 +52,7 @@ function Home() {
       <TopBar id="home"/>
       <div className="home">
         <AddPost/>
-        {postList.map(function(post){
+        {postList.reverse().map(function(post){
             return <Post post={post} key={post.id}/>;
         })}
         

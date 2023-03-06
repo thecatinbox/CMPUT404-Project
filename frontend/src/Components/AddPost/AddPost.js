@@ -8,45 +8,24 @@ const AddPost = () => {
 
   const uuid = localStorage.getItem('uuid'); 
   const ENDPOINT = 'http://127.0.0.1:8000/post/authors/' + uuid + '/posts/create'; 
+  // console.log(ENDPOINT); 
 
   const addPost = (title, content) => {
 
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000', 
+      "Origin": 'http://localhost:3000'
     }
 
     console.log(title); 
     console.log(content); 
 
-    const date = new Date().toJSON();
-
     const body = JSON.stringify({
       "title": title,
       "content": content,
-      "categories": "test_post_1",
-      "count": 0,
-      "published": date,
       "visibility": "PUBLIC"
     }); 
-    /*
-    const body = JSON.stringify({
-      title: new_post['title'],
-      uuid: new_postId,
-      id: id,
-      source: new_post['source'],
-      origin: new_post['origin'],
-      description: new_post['description'],
-      contentType: new_post['contentType'],
-      content: new_post['content'],
-      author: currentAuthor,
-      Categories: new_post['categories'],
-      count: 0,
-      visibility: new_post['visibility'],
-      unlisted: new_post['unlisted'],
-      textType: new_post['contentType']
-    })*/ 
 
     // console.log(header); 
     console.log(body); 
@@ -56,14 +35,9 @@ const AddPost = () => {
       body: body, 
       method: "POST"
     }).then((response) => {
-      console.log(response.status); 
-      if(!response.ok) throw new Error(response.status);
-      else return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
+      // console.log(response); 
+      // window.location.reload(false);
+    }).catch((error) => {
       console.log('error: ' + error);
     }); 
     

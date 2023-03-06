@@ -99,7 +99,7 @@ function Post({post}) {
             {post.title}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {post.date}
+            {post.published}
           </Typography>
           <Typography variant="body2">
             {post.content}
