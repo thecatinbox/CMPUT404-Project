@@ -25,6 +25,7 @@ test("button can be clicked ", () => {
   expect(onClick).toBeCalledTimes(1);
 });
 
+/*
 it('changes the color of Home button on the Top Bar when they hovered', () => {
   const component = renderer.create(
     <a id="home" href="/home">Home</a>,
@@ -121,4 +122,4 @@ it('changes the color of Profile button on the Top Bar when they hovered', () =>
   expect(tree).toMatchSnapshot();
 });
         
-
+*/

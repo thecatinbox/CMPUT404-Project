@@ -25,6 +25,11 @@ body {
   color: white;
 }
 
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
 .topnav .search-container {
   float: right;
 }

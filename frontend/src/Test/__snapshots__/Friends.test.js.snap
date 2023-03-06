@@ -33,10 +33,10 @@ Array [
       className="search-container"
     >
       <form
-        action="/action_page.php"
+        action="/search"
       >
         <input
-          name="search"
+          name="username"
           placeholder="Search.."
           type="text"
         />
