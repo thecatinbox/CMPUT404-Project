@@ -9,6 +9,7 @@ function SignIn() {
 
     const checkAuth = (userData) => {
         if (inputs.username == userData.username && inputs.password == userData.password) {
+            localStorage.setItem('uuid', userData.uuid); 
             navigate("/home");
         } else {
             alert("Incorrect password, please try again. ");
@@ -33,8 +34,8 @@ function SignIn() {
             console.log(data.items); 
             var result = data.items.find(item => item.username === inputs.username);
             if (result) {
-                console.log(result.username); 
-                console.log(result.password); 
+                // console.log(result.username); 
+                // console.log(result.password); 
                 checkAuth(result); 
             } else {
                 alert("User does not exist. ");
