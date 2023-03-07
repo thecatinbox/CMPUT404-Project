@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import "./TopBar.css"; 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faSearch , faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 
 function setActive(id) {
   if (id) {
@@ -29,6 +29,7 @@ const TopBar = (params) => {
         <a id="inbox" href="/inbox">Inbox</a>
         <a id="friends" href="/friends">Friends</a>
         <a id="profile" href="/profile">Profile</a>
+        <a id="logout" href="/signin"><FontAwesomeIcon icon={faRightFromBracket} /></a>
         <div className="search-container">
           <form action="/search">
             <input type="text" placeholder="Search.." name="username"></input>

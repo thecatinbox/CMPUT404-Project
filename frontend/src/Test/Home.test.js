@@ -12,7 +12,59 @@ it('home page renders correctly', () => {
     expect(tree).toMatchSnapshot();
 });
 
-test("button can be clicked ", () => {
+
+test("enter title ", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+
+test("enter content", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+test("submit button can be clicked ", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+test("enter search content", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+test("search button can be clicked ", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+test("add image button can be clicked ", () => {
+  const component = renderer.create(
+    <Home />
+  );
+  let tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+
+/*
+test("add image button can be clicked ", () => {
   const onClick = jest.fn(); 
   
   const { getByLabelText } = render(
@@ -25,7 +77,6 @@ test("button can be clicked ", () => {
   expect(onClick).toBeCalledTimes(1);
 });
 
-/*
 it('changes the color of Home button on the Top Bar when they hovered', () => {
   const component = renderer.create(
     <a id="home" href="/home">Home</a>,
