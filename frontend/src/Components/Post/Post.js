@@ -19,6 +19,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 
+const comments = [
+{"user": "user1", "comment": "this is a comment"}, 
+{"user": "user2", "comment": "this is a comment"}, 
+{"user": "user1", "comment": "this is a comment"}, 
+]
+
 function Post({post}) { 
 
   /* https://mui.com/material-ui/react-menu/ */ 
@@ -165,6 +171,16 @@ function Post({post}) {
           <TextField hiddenLabel id="comment-text" size="small" label="Comment" variant="outlined" />
           <Button size="small">Send</Button>
         </CardActions>
+
+
+        <CardContent>
+          {comments.map(function(comment){
+            return (<Typography variant="body2">
+              {comment.comment}
+            </Typography>)
+        })}
+          
+        </CardContent>
       </Card>
     </div>
   );
