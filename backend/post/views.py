@@ -173,6 +173,10 @@ def create_comment(request, userId, postId):
         newComment.post = currentPost
         newComment.save()
 
+        # Increment the post count and save the post
+        currentPost.count = str(int(currentPost.count) + 1)
+        currentPost.save()
+
         # comment added to inbox
         post_author = Posts.objects.get(uuid=postId).author
         post_author_inbox = Inbox.objects.get(author=post_author)
@@ -244,11 +248,17 @@ def share_post(request, userId, postId):
     selectedPost = Posts.objects.get(uuid=postId)
 
     if request.method == 'POST':
-        sendTo = request.data.get('Send_To')
+        sendTo = request.data.get('sendTo')
+        sendToAuthor = Authors.objects.get(uuid=sendTo)
 
-        inbox = Inbox.objects.get(author=sendTo)
+        inbox = Inbox.objects.get(author=sendToAuthor)
 
         inbox.items.add(selectedPost)
+
+        responseData = {
+                    "type": "successfully shared",
+                    "items": "[]"
+                }
 
         return Response(responseData,status=200)
 
@@ -263,9 +273,9 @@ def share_post(request, userId, postId):
 @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
-def create_like_comment(request, userId, postId, commentID):
+def create_like_comment(request, userId, postId, commentId):
     if request.method == 'POST':
-        comment = Comments.objects.get(uuid=commentID)
+        comment = Comments.objects.get(uuid=commentId)
         comment_author = comment.author
         currentAuthor = Authors.objects.get(uuid=userId)
         summary = currentAuthor.displayName + " Likes your comment"
