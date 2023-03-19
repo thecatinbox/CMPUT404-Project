@@ -271,7 +271,7 @@ class AuthorTestCase(TestCase):
         Authors.objects.create(
             username="test_author_1",
             password="test_password",
-            uuid = uuid.uuid4(),
+            uuid = str(uuid.uuid4()),
             id="1", 
             host="//service", 
             displayName="test_author_1", 
@@ -283,6 +283,7 @@ class AuthorTestCase(TestCase):
         Authors.objects.create(
             username="test_author_2",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id="2", 
             host="//service", 
             displayName="test_author_2", 
@@ -293,6 +294,7 @@ class AuthorTestCase(TestCase):
         Authors.objects.create(
             username="test_author_3",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id="3", 
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
@@ -336,6 +338,7 @@ class PostTestCase(TestCase):
         Authors.objects.create(
             username="test_author_111",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id=11, 
             host="//service", 
             displayName="test_author_11", 
@@ -347,6 +350,7 @@ class PostTestCase(TestCase):
         Authors.objects.create(
             username="test_author_222",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id=22, 
             host="//service", 
             displayName="test_author_22", 
@@ -357,6 +361,7 @@ class PostTestCase(TestCase):
         Authors.objects.create(
             username="test_author_333",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id=33, 
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
@@ -367,6 +372,7 @@ class PostTestCase(TestCase):
             id="http://localhost:../authors/author_uuid/post/post_uuid1",
             source="http://localhost:../authors/author_uuid/post/post_uuid1",
             origin="http://localhost:../authors/author_uuid/post/post_uuid1",
+            uuid = str(uuid.uuid4()),
             description="test_post_1",
             contentType="text/plain",
             content="test_post_1",
@@ -381,6 +387,7 @@ class PostTestCase(TestCase):
             title="test_post_2",
             id="http://localhost:../authors/author_uuid/post/post_uuid2",
             origin="http://localhost:../authors/author_uuid/post/post_uuid2",
+            uuid = str(uuid.uuid4()),
             description="test_post_2",
             contentType="text/markdown",
             content="test_post_2",
@@ -397,6 +404,7 @@ class PostTestCase(TestCase):
             source="http://localhost:../authors/author_uuid/post/post_uuid3",
             origin="http://localhost:../authors/author_uuid/post/post_uuid3",
             description="test_post_3",
+            uuid = str(uuid.uuid4()),
             contentType="image",
             content="test_post_3",
             author=Authors.objects.get(id=33),
@@ -456,6 +464,7 @@ class FollowersTestCase(TestCase):
         Authors.objects.create(
             username="test_author_1",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id=1, 
             host="//service", 
             displayName="test_author_11", 
@@ -468,6 +477,7 @@ class FollowersTestCase(TestCase):
             username="test_author_2",
             password="test_password",
             id=2, 
+            uuid = str(uuid.uuid4()),
             host="//service", 
             displayName="test_author_22", 
             url=f"//service/author/2", 
@@ -477,6 +487,7 @@ class FollowersTestCase(TestCase):
         Authors.objects.create(
             username="test_author_3",
             password="test_password",
+            uuid = str(uuid.uuid4()),
             id=3, 
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
@@ -526,6 +537,7 @@ class FollowRequestsTestCase(TestCase):
             id=1, 
             host="//service", 
             displayName="test_author_11", 
+            uuid = str(uuid.uuid4()),
             url="//service/author/1", 
             github="http://github.com/test_author", 
             profileImage="url_to_profile_image"
@@ -535,6 +547,7 @@ class FollowRequestsTestCase(TestCase):
             username="test_author_2",
             password="test_password",
             id=2, 
+            uuid = str(uuid.uuid4()),
             host="//service", 
             displayName="test_author_22", 
             url=f"//service/author/2", 
@@ -545,6 +558,7 @@ class FollowRequestsTestCase(TestCase):
             username="test_author_3",
             password="test_password",
             id=3, 
+            uuid = str(uuid.uuid4()),
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
         )
@@ -592,12 +606,14 @@ class FollowRequestsTestCase(TestCase):
 
 class CommentsTestCase(TestCase):
     def setUp(self):
+        
         print("test comments model-----------------")
         Authors.objects.create(
             username="test_author_1",
             password="test_password",
             id=1, 
             host="//service", 
+            uuid = str(uuid.uuid4()),
             displayName="test_author_11", 
             url="//service/author/1", 
             github="http://github.com/test_author", 
@@ -609,6 +625,7 @@ class CommentsTestCase(TestCase):
             password="test_password",
             id=2, 
             host="//service", 
+            uuid = str(uuid.uuid4()),
             displayName="test_author_22", 
             url=f"//service/author/2", 
             profileImage="url_to_profile_image"
@@ -618,6 +635,7 @@ class CommentsTestCase(TestCase):
             username="test_author_3",
             password="test_password",
             id=3, 
+            uuid = str(uuid.uuid4()),
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
         )
@@ -630,6 +648,7 @@ class CommentsTestCase(TestCase):
             description="test_post_1",
             contentType="text/plain",
             content="test_post_1",
+            uuid = str(uuid.uuid4()),
             author=Authors.objects.get(id=1),
             categories="test_post_1",
             count=0,
@@ -643,6 +662,7 @@ class CommentsTestCase(TestCase):
             origin="http://localhost:../authors/author_uuid/post/post_uuid2",
             description="test_post_2",
             contentType="text/markdown",
+            uuid = str(uuid.uuid4()),
             content="test_post_2",
             author=Authors.objects.get(id=2),
             categories="test_post_2",
@@ -659,6 +679,7 @@ class CommentsTestCase(TestCase):
             description="test_post_3",
             contentType="image",
             content="test_post_3",
+            uuid = str(uuid.uuid4()),
             author=Authors.objects.get(id=3),
             count=100,
             published="2020-04-01T00:00:00Z",
@@ -666,6 +687,7 @@ class CommentsTestCase(TestCase):
         )
 
         Comments.objects.create(
+            uuid = str(uuid.uuid4()),
             author=Authors.objects.get(id=1),
             post=Posts.objects.get(id="http://localhost:../authors/author_uuid/post/post_uuid1"),
             comment="test1",
@@ -675,6 +697,7 @@ class CommentsTestCase(TestCase):
         )
 
         Comments.objects.create(
+            uuid = str(uuid.uuid4()),
             author=Authors.objects.get(id=2),
             post=Posts.objects.get(id="http://localhost:../authors/author_uuid/post/post_uuid2"),
             comment="test2",
@@ -684,6 +707,7 @@ class CommentsTestCase(TestCase):
         )
 
         Comments.objects.create(
+            uuid = str(uuid.uuid4()),
             author=Authors.objects.get(id=3),
             post=Posts.objects.get(id="http://localhost:../authors/author_uuid/post/post_uuid3"),
             comment="test3",
@@ -693,6 +717,7 @@ class CommentsTestCase(TestCase):
         )
 
     def testExist(self):
+        
         comment1 = Comments.objects.get(id="http://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid1")
         self.assertEqual(comment1.author, Authors.objects.get(id=1))
         self.assertEqual(comment1.post, Posts.objects.get(id="http://localhost:../authors/author_uuid/post/post_uuid1"))
@@ -728,6 +753,7 @@ class LikesTestCase(TestCase):
             username="test_author_1",
             password="test_password",
             id=1, 
+            uuid = str(uuid.uuid4()),
             host="//service", 
             displayName="test_author_11", 
             url="//service/author/1", 
@@ -740,6 +766,7 @@ class LikesTestCase(TestCase):
             password="test_password",
             id=2, 
             host="//service", 
+            uuid = str(uuid.uuid4()),
             displayName="test_author_22", 
             url=f"//service/author/2", 
             profileImage="url_to_profile_image"
@@ -749,6 +776,7 @@ class LikesTestCase(TestCase):
             username="test_author_3",
             password="test_password",
             id=3, 
+            uuid = str(uuid.uuid4()),
             url=f"//service/author/3", 
             profileImage="url_to_profile_image"
         )
