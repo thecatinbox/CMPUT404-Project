@@ -17,6 +17,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import Comment from '../Comment/Comment'; 
+
 import "./Post.css"; 
 
 function Post({post}) { 
@@ -287,9 +289,7 @@ function Post({post}) {
         <>
           <CardContent>
             {commentList.map(function(comment){
-              return (<Typography variant="body2">
-                {comment.comment}
-              </Typography>)
+              return (<Comment comment={comment} key={comment.id}/>)
           })}
           </CardContent>
           <CardContent id="commentSession">
@@ -298,6 +298,7 @@ function Post({post}) {
           </CardContent>
         </>
         }
+
       </Card>
     </div>
   );
