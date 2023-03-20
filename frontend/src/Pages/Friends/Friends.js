@@ -3,49 +3,13 @@ import TopBar from "../../Components/TopBar/TopBar";
 import './Friends.css';
 import React, { useState, useEffect } from "react";
 
-/* 
-const followingData = [
-  {
-    id: 1, 
-    displayName: "Username1"
-  },
-  {
-    id: 2, 
-    displayName: "Username2"
-  },
-  {
-    id: 3, 
-    displayName: "Username3"
-  },
-];
-
-const followerData = [
-  {
-    id: 1, 
-    displayName: "Username1"
-  },
-  {
-    id: 4, 
-    displayName: "Username4"
-  },
-  {
-    id: 5, 
-    displayName: "Username5"
-  },
-  {
-    id: 6, 
-    displayName: "Username6"
-  },
-];
-*/ 
-
 function Friends() {
 
   const uuid = localStorage.getItem('uuid'); 
   const app_url = localStorage.getItem('url'); 
 
-  var FOLLOWER_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/"; 
-  var FOLLOWING_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/following/"; 
+  const FOLLOWER_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/"; 
+  const FOLLOWING_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/following/"; 
 
   const [followerData, setFollowerData] = useState([]);
   const [followingData, setFollowingData] = useState([]);
@@ -86,14 +50,14 @@ function Friends() {
         <div className="following">
           <h2>My Followings</h2>
           {followingData.map(function(user){
-              return <User user={user} key={user.id}/>;
+              return <User user={user} followed={true} key={user.id}/>;
           })}
         </div>
 
         <div className="follower">
           <h2>My Followers</h2>
           {followerData.map(function(user){
-              return <User user={user} key={user.id}/>;
+              return <User user={user} followed={false} key={user.id}/>;
           })}
         </div>
 
