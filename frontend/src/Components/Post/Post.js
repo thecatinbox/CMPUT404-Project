@@ -36,6 +36,7 @@ function Post({post}) {
 
   // Get comment list 
   const [commentList, setCommentList] = useState([]);
+  /* 
   async function fetchData() {
     try {
       const response = await fetch(COMMENT_ENDPOINT, {
@@ -49,11 +50,24 @@ function Post({post}) {
     } catch (error) {
       console.error('Error:', error);
     }
+  }*/
+
+  function fetchData() {
+    try {
+      fetch(COMMENT_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      }).then(response => response.json()).then(postData => {
+        setCommentList(postData.items);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
-  
+
   useEffect(() => {
     fetchData();
-  }, []); 
+  }); 
   
   // Handle input change 
   const [inputs, setInputs] = useState({});
