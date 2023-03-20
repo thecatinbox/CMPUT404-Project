@@ -1,0 +1,26 @@
+.comment {
+    width: inherit;
+    border-bottom: 2px solid gray;
+}
+
+.commentText {
+    /* float:left; */
+    width: 70%;
+    height: max-content;
+    margin: 5px;
+    border-bottom: 5px;
+    left: 30px;
+    position: relative;
+    /* display: inline; */
+}
+
+.userName {
+    margin-bottom: 10px;
+}
+
+.likeComment {
+    position: fixed;
+    float: left;
+    right: 0%;
+    /* display: inline; */
+}
