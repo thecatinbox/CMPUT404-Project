@@ -33,7 +33,11 @@ function Post({post}) {
 
   const uuid = localStorage.getItem('uuid'); 
   const puid = post.uuid; 
-  var ENDPOINT = "http://127.0.0.1:8000/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  const app_url = localStorage.getItem('url'); 
+
+  var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
+  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/424b52d2-bf9d-4b0d-86dd-c055890aac32/posts/f13c869a-54f1-415f-9df6-c2f467103851/comment"
   // console.log(ENDPOINT); 
   
   const [inputs, setInputs] = useState({});
@@ -81,7 +85,7 @@ function Post({post}) {
     // console.log(header); 
     console.log(body); 
 
-    fetch(ENDPOINT, {
+    fetch(POST_ENDPOINT, {
       headers: header,
       body: body, 
       method: "PUT"

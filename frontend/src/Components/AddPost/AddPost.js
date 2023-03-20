@@ -7,7 +7,8 @@ import { faImage } from '@fortawesome/free-solid-svg-icons'
 const AddPost = () => {
 
   const uuid = localStorage.getItem('uuid'); 
-  const ENDPOINT = 'http://127.0.0.1:8000/post/authors/' + uuid + '/posts/create'; 
+  const app_url = localStorage.getItem('url'); 
+  const ENDPOINT = 'http://' + app_url + '/post/authors/' + uuid + '/posts/create'; 
   // console.log(ENDPOINT); 
 
   const addPost = (title, content) => {

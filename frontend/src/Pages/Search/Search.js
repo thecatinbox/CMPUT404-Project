@@ -6,9 +6,10 @@ import React, {useState, useEffect} from 'react';
 function Search() {
   const queryString = window.location.search;
   const parameter = queryString.split('=')[1].toLowerCase();
-  console.log(parameter);
+  // console.log(parameter);
+  const app_url = localStorage.getItem('url'); 
 
-  const ENDPOINT = 'http://127.0.0.1:8000/server/authors/';
+  const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
   const [userList, setUserList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 function SignIn() {
     const [inputs, setInputs] = useState({});
     const navigate = useNavigate();
-    const ENDPOINT = 'http://127.0.0.1:8000/server/authors/'
+    const app_url = localStorage.getItem('url'); 
+
+    const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
 
     const checkAuth = (userData) => {
         if (inputs.username === userData.username && inputs.password === userData.password) {

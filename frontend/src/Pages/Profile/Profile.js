@@ -17,10 +17,12 @@ function Profile() {
   const [userData, setUserData] = useState([]);
 
   // const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+  const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
+
   // console.log(uuid); 
-  const POSTS_ENDPOINT = 'http://127.0.0.1:8000/server/authors/' + uuid + '/posts/'; 
-  const USER_ENDPOINT = 'http://localhost:8000/server/authors/' + uuid + '/'; 
+  const POSTS_ENDPOINT = 'http://' + app_url + '/server/authors/' + uuid + '/posts/'; 
+  const USER_ENDPOINT = 'http://' + app_url + '/server/authors/' + uuid + '/'; 
 
   useEffect(() => { 
     fetch(POSTS_ENDPOINT, {
