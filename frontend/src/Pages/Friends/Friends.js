@@ -45,7 +45,7 @@ function Friends() {
   const app_url = localStorage.getItem('url'); 
 
   var FOLLOWER_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/"; 
-  var FOLLOWING_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/"; 
+  var FOLLOWING_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/following/"; 
 
   const [followerData, setFollowerData] = useState([]);
   const [followingData, setFollowingData] = useState([]);
