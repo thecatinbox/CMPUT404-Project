@@ -7,10 +7,11 @@ function SignUp() {
     const [inputs, setInputs] = useState({});
     const [image, setImage] = useState(null);
     const [passwordMatch, setPassWordMatch] = useState(true);
+    const app_url = localStorage.getItem('url'); 
 
     const navigate = useNavigate();
-    const SIGNUP_ENDPOINT = 'http://localhost:8000/signup/'
-    const AUTHORS_ENDPOINT = 'http://127.0.0.1:8000/server/authors/'
+    const SIGNUP_ENDPOINT = 'http://' + app_url + '/signup/'; 
+    const AUTHORS_ENDPOINT = 'http://' + app_url + '/server/authors/'; 
 
     // handle changes in the input box
     const handleChange = (event) => {

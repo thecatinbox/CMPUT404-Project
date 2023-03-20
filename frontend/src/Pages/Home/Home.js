@@ -8,7 +8,8 @@ function Home() {
 
   // const uuid = localStorage.getItem('uuid'); 
   // console.log(uuid); 
-  const ENDPOINT = 'http://localhost:8000/server/posts/'; 
+  const app_url = localStorage.getItem('url'); 
+  const ENDPOINT = 'http://' + app_url + '/server/posts/'; 
 
   const [postList, setPostList] = useState([]);
 
@@ -18,7 +19,6 @@ function Home() {
       method: "GET"
     }).then(response => response.json()).then(postData => {
       setPostList(postData.items);
-      // console.log(postData)
     });
   })
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -19,12 +19,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 
-const comments = [
-{"user": "user1", "comment": "this is a comment"}, 
-{"user": "user2", "comment": "this is a comment"}, 
-{"user": "user1", "comment": "this is a comment"}, 
-]
-
 function Post({post}) { 
 
   /* https://mui.com/material-ui/react-menu/ */ 
@@ -33,9 +27,65 @@ function Post({post}) {
 
   const uuid = localStorage.getItem('uuid'); 
   const puid = post.uuid; 
-  var ENDPOINT = "http://127.0.0.1:8000/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  const app_url = localStorage.getItem('url'); 
+
+  var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
+  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
+  var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
+  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/ + puid"; 
   // console.log(ENDPOINT); 
+
+  // Get comment list 
+  const [showComments, setShowComments] = useState(false);
+  const [commentList, setCommentList] = useState([]);
+  const [likeNum, setLlikeNum] = useState();
+
+  /* 
+  async function fetchData() {
+    try {
+      const response = await fetch(COMMENT_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      });
   
+      const data = await response.json();
+      setCommentList(data.items);
+      console.log(commentList); 
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }*/
+
+  function fetchData() {
+    try {
+      fetch(COMMENT_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      }).then(response => response.json()).then(postData => {
+        setCommentList(postData.items);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    try {
+      fetch(LIKE_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      }).then(response => response.json()).then(likeData => {
+        setLlikeNum(likeData.items.length); 
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }); 
+  
+  // Handle input change 
   const [inputs, setInputs] = useState({});
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -43,8 +93,59 @@ function Post({post}) {
     console.log(inputs); 
   };
 
+  // Handle add new comment 
+  const handleNewComment = () => {
+    console.log(inputs.comment); 
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    console.log(inputs.comment); 
+    console.log(inputs.content); 
+
+    const body = JSON.stringify({
+      "comment": inputs.comment,
+    }); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(ADD_COMMENT_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  }
+
+  // Handle add new comment 
+  const handleNewLike = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    const body = JSON.stringify({ }); 
+
+    fetch(ADD_LIKE_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+
+    fetchData();
+  }
+
+  // Handle right top menu 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    console.log(POST_ENDPOINT); 
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -62,7 +163,6 @@ function Post({post}) {
   };
 
   const handleEditSave = () => {
-
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
@@ -81,7 +181,7 @@ function Post({post}) {
     // console.log(header); 
     console.log(body); 
 
-    fetch(ENDPOINT, {
+    fetch(POST_ENDPOINT, {
       headers: header,
       body: body, 
       method: "PUT"
@@ -151,7 +251,7 @@ function Post({post}) {
             {post.title}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {post.published}
+            {post.published.slice(0, 10)}
           </Typography>
           <Typography variant="body2">
             {post.content}
@@ -159,28 +259,33 @@ function Post({post}) {
         </CardContent>
 
         <CardActions disableSpacing>
-          <IconButton>
+          <IconButton onClick={handleNewLike}>
             <FontAwesomeIcon icon={faHeart} />
+            <Typography variant="body2" marginLeft={"8px"}>{likeNum}</Typography>
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
           <IconButton>
             <FontAwesomeIcon icon={faShare} />
           </IconButton>
-          <TextField hiddenLabel id="comment-text" size="small" label="Comment" variant="outlined" />
-          <Button size="small">Send</Button>
         </CardActions>
 
-
-        <CardContent>
-          {comments.map(function(comment){
-            return (<Typography variant="body2">
-              {comment.comment}
-            </Typography>)
-        })}
-          
-        </CardContent>
+        {showComments &&
+        <>
+          <CardContent>
+            {commentList.map(function(comment){
+              return (<Typography variant="body2">
+                {comment.comment}
+              </Typography>)
+          })}
+          </CardContent>
+          <CardContent id="commentSession">
+            <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
+            <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
+          </CardContent>
+        </>
+        }
       </Card>
     </div>
   );

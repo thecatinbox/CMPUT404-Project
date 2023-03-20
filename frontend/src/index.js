@@ -10,6 +10,8 @@ import Search from "./Pages/Search/Search";
 import './index.css';
 
 export default function App() {
+  localStorage.setItem('url', "127.0.0.1:8000"); 
+
   return (
     <BrowserRouter>
       <Routes>
