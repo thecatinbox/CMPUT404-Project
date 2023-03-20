@@ -143,7 +143,7 @@ def create_post(request, userId):
             "items": model_to_dict(new_post)
         }
 
-        return Response(status=200)
+        return Response(status=201)
     else:
         responseData = {
             "type": "creat post",
@@ -187,7 +187,7 @@ def create_comment(request, userId, postId):
             "items": model_to_dict(newComment)
         }
 
-        return Response(responseData,status=200)
+        return Response(responseData,status=201)
 
     else:
         responseData = {
@@ -231,7 +231,7 @@ def create_like(request, userId, postId):
                     "items": '[]'
                 }
 
-        return Response(responseData,status=200)
+        return Response(responseData,status=201)
 
     else:
         responseData = {
@@ -260,7 +260,7 @@ def share_post(request, userId, postId):
                     "items": "[]"
                 }
 
-        return Response(responseData,status=200)
+        return Response(responseData,status=201)
 
 
     else:
@@ -304,7 +304,7 @@ def create_like_comment(request, userId, postId, commentId):
                     "items": '[]'
                 }
 
-        return Response(responseData,status=200)
+        return Response(responseData,status=201)
 
     else:
         responseData = {

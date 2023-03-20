@@ -40,19 +40,19 @@ class Posts(models.Model):
     ]
     uuid = models.CharField(max_length = 255,default=str(uuid.uuid4()), editable=True, unique=True)
     type = models.CharField(max_length = 255, default = "post", editable = False)
-    title = models.CharField(max_length = 255, default = "Untitled")
+    title = models.CharField(max_length = 255, default = "Untitled",editable=True)
     id = models.CharField(max_length = 255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid
-    source = models.CharField(max_length = 255, null=True, blank=True)
+    source = models.CharField(max_length = 255, null=True, blank=True,editable=True)
     origin = models.CharField(max_length = 255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    contentType = models.CharField(max_length = 15, choices = content_type_choices, default = ('text/plain', 'PLAINTEXT'))
-    content = models.TextField(max_length=500, null=True, blank=True)
+    description = models.TextField(null=True, blank=True,editable=True)
+    contentType = models.CharField(max_length = 15, choices = content_type_choices, default = ('text/plain', 'PLAINTEXT'),editable=True)
+    content = models.TextField(max_length=500, null=True, blank=True,editable=True)
     contentImage = models.ImageField(upload_to='post_images', blank=True, null=True)
     author = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "poster")
-    categories  = models.CharField(max_length = 255, null=True, blank=True)
+    categories  = models.CharField(max_length = 255, null=True, blank=True,editable=True)
     count = models.IntegerField(default = 0)
     published = models.DateTimeField(auto_now_add=True)
-    visibility = models.CharField(max_length = 15, choices = visibility_choices, default = ('PUBLIC', 'PUBLIC'))
+    visibility = models.CharField(max_length = 15, choices = visibility_choices, default = ('PUBLIC', 'PUBLIC'),editable=True)
 
     def __str__(self):
         return f"uuid: {self.uuid} type: {type} title: {title} id: {id} source: {source} origin: {origin} description: {description} contentType: {contentType} content: {content} contentImage: {contentImage} author: {author} categories: {categories} count: {count} published: {published} visibility: {visibility}"
