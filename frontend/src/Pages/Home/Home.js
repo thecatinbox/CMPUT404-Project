@@ -13,15 +13,24 @@ function Home() {
 
   const [postList, setPostList] = useState([]);
 
+  async function fetchData() {
+    try {
+      const response = await fetch(ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      });
+  
+      const data = await response.json();
+      setPostList(data.items);
+      // console.log(postList); 
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
   useEffect(() => {
-    fetch(ENDPOINT, {
-      headers: { "Accept": "application/json" },
-      method: "GET"
-    }).then(response => response.json()).then(postData => {
-      setPostList(postData.items);
-      // console.log(postData)
-    });
-  })
+    fetchData();
+  }, []); 
 
   return (
     <>

@@ -66,6 +66,31 @@ function Post({post}) {
   // Handle add new comment 
   const handleNewComment = () => {
     console.log(inputs.comment); 
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    console.log(inputs.comment); 
+    console.log(inputs.content); 
+
+    const body = JSON.stringify({
+      "comment": inputs.comment,
+    }); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(ADD_COMMENT_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+
+    fetchData();
   }
 
   // Handle right top menu 
