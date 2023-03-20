@@ -35,7 +35,9 @@ function Post({post}) {
   // console.log(ENDPOINT); 
 
   // Get comment list 
+  const [showComments, setShowComments] = useState(false);
   const [commentList, setCommentList] = useState([]);
+
   /* 
   async function fetchData() {
     try {
@@ -226,25 +228,29 @@ function Post({post}) {
           <IconButton>
             <FontAwesomeIcon icon={faHeart} />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
           <IconButton>
             <FontAwesomeIcon icon={faShare} />
           </IconButton>
-          <TextField hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
-          <Button size="small" onClick={handleNewComment}>Send</Button>
         </CardActions>
 
-
-        <CardContent>
-          {commentList.map(function(comment){
-            return (<Typography variant="body2">
-              {comment.comment}
-            </Typography>)
-        })}
-          
-        </CardContent>
+        {showComments &&
+        <>
+          <CardContent>
+            {commentList.map(function(comment){
+              return (<Typography variant="body2">
+                {comment.comment}
+              </Typography>)
+          })}
+          </CardContent>
+          <CardContent id="commentSession">
+            <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
+            <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
+          </CardContent>
+        </>
+        }
       </Card>
     </div>
   );
