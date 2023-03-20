@@ -59,33 +59,38 @@ function Post({post}) {
     }
   }
 
-  function fetchData() {
+  async function fetchComments() {
     try {
-      fetch(COMMENT_ENDPOINT, {
+      const response = await fetch(COMMENT_ENDPOINT, {
         headers: { "Accept": "application/json" },
         method: "GET"
-      }).then(response => response.json()).then(postData => {
-        setCommentList(postData.items);
       });
+  
+      const data = await response.json();
+      setCommentList(data.items);
     } catch (error) {
       console.error('Error:', error);
     }
+  }
 
+  async function fetchLikes() {
     try {
-      fetch(LIKE_ENDPOINT, {
+      const response = await fetch(LIKE_ENDPOINT, {
         headers: { "Accept": "application/json" },
         method: "GET"
-      }).then(response => response.json()).then(likeData => {
-        setLikeNum(likeData.total_likes); 
       });
+  
+      const data = await response.json();
+      setLikeNum(data.total_likes); 
     } catch (error) {
       console.error('Error:', error);
     }
   }
 
   useEffect(() => {
-    fetchData();
     checkLiked(); 
+    fetchLikes(); 
+    fetchComments(); 
   }); 
   
   // Handle input change 
