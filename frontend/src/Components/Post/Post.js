@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -19,12 +19,30 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 
+const comments = [
+{"user": "user1", "comment": "this is a comment"}, 
+{"user": "user2", "comment": "this is a comment"}, 
+{"user": "user1", "comment": "this is a comment"}, 
+]
+
 function Post({post}) { 
 
   /* https://mui.com/material-ui/react-menu/ */ 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  const uuid = localStorage.getItem('uuid'); 
+  const puid = post.uuid; 
+  var ENDPOINT = "http://127.0.0.1:8000/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  // console.log(ENDPOINT); 
   
+  const [inputs, setInputs] = useState({});
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setInputs((prevInputs) => ({ ...prevInputs, [name]: value }));
+    console.log(inputs); 
+  };
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -40,6 +58,40 @@ function Post({post}) {
   };
 
   const handleEditClose = () => {
+    setEditOpen(false);
+  };
+
+  const handleEditSave = () => {
+
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    console.log(inputs.title); 
+    console.log(inputs.content); 
+
+    const body = JSON.stringify({
+      "title": inputs.title,
+      "content": inputs.content,
+      "visibility": "PUBLIC"
+    }); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "PUT"
+    }).then((response) => {
+      // console.log(response); 
+      // window.location.reload(false);
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+
     setEditOpen(false);
   };
 
@@ -80,12 +132,12 @@ function Post({post}) {
             <Dialog open={editOpen} onClose={handleEditClose}>
               <DialogTitle>Edit Post</DialogTitle>
               <DialogContent>
-                <TextField margin="dense" id="displayName}" label="Title" value={post.title} variant="standard" fullWidth/>
-                <TextField margin="dense" id="github" label="Post Content" value={post.content} variant="standard" fullWidth/>
+                <TextField margin="dense" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
+                <TextField margin="dense" id="content" label="Post Content" defaultValue={post.content} onChange={handleChange} variant="standard" fullWidth/>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleEditClose}>Cancel</Button>
-                <Button onClick={handleEditClose}>Save</Button>
+                <Button onClick={handleEditSave}>Save</Button>
               </DialogActions>
             </Dialog>
           </div>
@@ -93,13 +145,13 @@ function Post({post}) {
         
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {post.author}
+            {post.author.displayName}
           </Typography>
           <Typography variant="h5" component="div">
             {post.title}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {post.date}
+            {post.published}
           </Typography>
           <Typography variant="body2">
             {post.content}
@@ -113,12 +165,22 @@ function Post({post}) {
           <IconButton>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <IconButton className>
+          <IconButton>
             <FontAwesomeIcon icon={faShare} />
           </IconButton>
           <TextField hiddenLabel id="comment-text" size="small" label="Comment" variant="outlined" />
           <Button size="small">Send</Button>
         </CardActions>
+
+
+        <CardContent>
+          {comments.map(function(comment){
+            return (<Typography variant="body2">
+              {comment.comment}
+            </Typography>)
+        })}
+          
+        </CardContent>
       </Card>
     </div>
   );

@@ -1,6 +1,6 @@
 from django import forms
-from ..allModels.models import Posts, Comments
-from ..allModels.models import Followers
+from allModels.models import Posts, Comments
+from allModels.models import Followers
 from django.db.models import Q
 
 
@@ -36,8 +36,9 @@ class post_form(forms.ModelForm):
 
     class Meta:
         model = Posts
-        fields = ['title', 'description', 'textType', 'content', 'contentType', 'Categories', 'visibility',
-                  "post_image"]
+        fields = ( 'title', 'id', 'source', 'description', 'contentType','contentImage',
+                  'content', 'author', 'categories', 'count', 'origin', 'visibility')
+
 
 
 class Comment_form(forms.ModelForm):
@@ -50,5 +51,4 @@ class Comment_form(forms.ModelForm):
 
     class Meta:
         model = Comments
-        fields = ['comment', 'contentType']
-
+        fields = ('uuid', 'author','post', 'comment', 'contentType', 'id')

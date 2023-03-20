@@ -1,5 +1,5 @@
 import Post from '../../Components/Post/Post'; 
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import './Profile.css';
 import TopBar from "../../Components/TopBar/TopBar";
 
@@ -10,35 +10,34 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-const userData = {
-  "type":"author",
-  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-  "host":"http://127.0.0.1:5454/",
-  "displayName":"Lara Croft",
-  "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-  "github": "http://github.com/laracroft",
-  "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
-}
-
-
-const postData = [
-  {
-    author: "Username1", 
-    title: "Title1", 
-    date: "2023-02-28", 
-    content: "This is my first post. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
-  },
-  {
-    author: "Username1", 
-    title: "Title2", 
-    date: "2023-02-28", 
-    content: "This is my second post. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups."
-  },
-];
-
 function Profile() {
 
   const [open, setOpen] = React.useState(false);
+  const [postList, setPostList] = useState([]);
+  const [userData, setUserData] = useState([]);
+
+  // const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+  const uuid = localStorage.getItem('uuid'); 
+  // console.log(uuid); 
+  const POSTS_ENDPOINT = 'http://127.0.0.1:8000/server/authors/' + uuid + '/posts/'; 
+  const USER_ENDPOINT = 'http://localhost:8000/server/authors/' + uuid + '/'; 
+
+  useEffect(() => { 
+    fetch(POSTS_ENDPOINT, {
+      headers: { "Accept": "application/json" },
+      method: "GET"
+    }).then(response => response.json()).then(postData => {
+      setPostList(postData.items);
+      // console.log(postData); 
+    }); 
+
+    fetch(USER_ENDPOINT , {
+      headers: { "Accept": "application/json" },
+      method: "GET"
+    }).then(response => response.json()).then(userData => {
+      setUserData(userData.items);
+    }); 
+  })
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -48,20 +47,21 @@ function Profile() {
     setOpen(false);
   };
 
+  // <img src={userData.profileImage} alt="Profile Image"></img>
   return (
     <>
       <TopBar id="profile"/>
       <div className="profile">
         <div className='profile-data'>
-          <img src={userData.profileImage} alt="Image Description"></img>
+          <img src="https://i.imgur.com/k7XVwpB.jpeg" alt="Profile Image"></img>
           <h2>{userData.displayName}</h2>
           <button onClick={handleClickOpen}>Edit Profile</button>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Edit User Profile</DialogTitle>
             <DialogContent>
-              <TextField margin="dense" id="displayName}" label="Display Name" value={userData.displayName} variant="standard" fullWidth/>
-              <TextField margin="dense" id="github" label="GitHub URL" value={userData.github} variant="standard" fullWidth/>
-              <TextField margin="dense" id="profileImage" label="Profile Image URL" value={userData.profileImage} variant="standard" fullWidth/>
+              <TextField margin="dense" id="displayName}" label="Display Name" defaultValue={userData.displayName} variant="standard" fullWidth/>
+              <TextField margin="dense" id="github" label="GitHub URL" defaultValue={userData.github} variant="standard" fullWidth/>
+              <TextField margin="dense" id="profileImage" label="Profile Image URL" defaultValue={userData.profileImage} variant="standard" fullWidth/>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
@@ -71,8 +71,8 @@ function Profile() {
         </div>
 
         <div className='post-data'>
-          {postData.map(function(post){
-              return <Post post={post}/>;
+          {postList.map(function(post){
+              return <Post post={post} key={post.id}/>;
           })}
         </div>
       </div>
