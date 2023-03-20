@@ -208,10 +208,10 @@ def create_like(request, userId, postId):
         author_name = currentAuthor.displayName
         summary = author_name + " Likes your post"
 
-        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post).exists():
+        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post):
             like = Likes.objects.create(author=currentAuthor, summary=summary, object=post)
             like.save()
-            if not Liked.objects.filter(object=post).exists():
+            if not Liked.objects.filter(object=post):
                 receiver_liked = Liked.objects.create(object=post)
             liked = Liked.objects.get(object=post)
             liked.items.add(like)
@@ -281,10 +281,10 @@ def create_like_comment(request, userId, postId, commentId):
         summary = currentAuthor.displayName + " Likes your comment"
         obj = comment.id
 
-        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=obj).exists():
+        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=obj):
             like = Likes.objects.create(author=currentAuthor, summary=summary, object=obj)
             like.save()
-            if not Liked.objects.filter(object=obj).exists():
+            if not Liked.objects.filter(object=obj):
                 receiver_liked = Liked.objects.create(object=obj)
             liked = Liked.objects.get(object=obj)
             liked.items.add(like)

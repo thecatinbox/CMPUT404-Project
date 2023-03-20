@@ -184,7 +184,7 @@ def Post(request, pk):
             posts = paginate(request, posts)
             
 
-            if not posts.exists():
+            if not posts:
                 responseData = {
                     "type": "posts",
                     "items": item_list
@@ -531,7 +531,7 @@ def oneFollower(request, pk, foreignPk):
             return Response({"message": "No such follower relationship"}, status=404)
 
     elif request.method == 'PUT':
-        if Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+        if Followers.objects.filter(follower=current_user, followedUser=foreign_user):
             return Response({"message": "Already followed"}, status=400)
         else:
             if current_user == foreign_user:
@@ -541,7 +541,7 @@ def oneFollower(request, pk, foreignPk):
             return Response({"message": "Followed successfully"}, status=200)
 
     elif request.method == 'GET':
-        if Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+        if Followers.objects.filter(follower=current_user, followedUser=foreign_user):
             data = {
                 "isFollowed": True,
                 "author": AuthorSerializer(foreign_user).data,
@@ -571,7 +571,7 @@ def followRequest(request, pk, foreignPk):
     summary = author_name + " wants to follow " + object_name
     
     if request.method == 'POST':
-        if not Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+        if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
             makeRequest = FollowRequest.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
             makeRequest.save()
 
