@@ -253,7 +253,7 @@ def Post(request, pk):
         currentAuthor = Authors.objects.filter(uuid=pk).first()
         new_post = request.data
         new_postId = uuid.uuid4()
-        id = f"{request.build_absolute_uri('/')}service/authors/{str(pk)}/posts/{str(new_postId)}"
+        id = f"{request.build_absolute_uri('/')[:-1]}/authors/{str(pk)}/posts/{str(new_postId)}"
         newPost = Posts.objects.create(
             title=new_post['title'],
             uuid=new_postId,
@@ -277,8 +277,8 @@ def Post(request, pk):
 POST Manipulation
 """
 
-
-@api_view(['GET', 'DELETE', 'POST', 'PUT'])
+##############################################################
+@api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
@@ -305,7 +305,6 @@ def get_post(request, pk, postsId):
                 'id': post.author.uuid,
                 'displayName': post.author.username,
                 'github': post.author.github,
-                'bio': post.author.bio,
                 'host': post.author.host,
                 'url': post.author.url,
             },
@@ -314,21 +313,16 @@ def get_post(request, pk, postsId):
         return Response(post_dict)
 
     # Update an existing post
-    elif request.method == 'POST':
-        if not request.user.is_authenticated:
-            return Response(status=401)
-
+    elif request.method == 'PUT':
         post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
         if not post:
-            return Response(status=404)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         post.title = request.data.get('title', post.title)
         post.source = request.data.get('source', post.source)
         post.description = request.data.get('description', post.description)
         post.contentType = request.data.get('contentType', post.contentType)
         post.content = request.data.get('content', post.content)
-        post.origin = request.data.get('origin', post.origin)
-        post.published = request.data.get('published', post.published)
         post.visibility = request.data.get('visibility', post.visibility)
         post.categories = request.data.get('categories', post.categories)
         post.save()
@@ -337,9 +331,6 @@ def get_post(request, pk, postsId):
 
     # Delete a post
     elif request.method == 'DELETE':
-        if not request.user.is_authenticated:
-            return Response(status=401)
-
         post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
         if not post:
             return Response(status=404)
@@ -348,31 +339,31 @@ def get_post(request, pk, postsId):
         return Response(status=204)
 
     # Create a new post
-    elif request.method == 'PUT':
-        if not request.user.is_authenticated:
-            return Response(status=401)
+    # elif request.method == 'POST':
+    #     if not request.user.is_authenticated:
+    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        current_author = Authors.objects.filter(uuid=pk).first()
-        if not current_author:
-            return Response(status=404)
+    #     current_author = Authors.objects.filter(uuid=pk).first()
+    #     if not current_author:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
 
-        new_post_id = uuid.uuid4()
-        new_post = Posts.objects.create(
-            title=request.data.get('title'),
-            uuid=new_post_id,
-            id=f"{request.build_absolute_uri('/')}/service/authors/{pk}/posts/{new_post_id}",
-            source=request.data.get('source'),
-            origin=request.data.get('origin'),
-            description=request.data.get('description'),
-            contentType=request.data.get('contentType'),
-            content=request.data.get('content'),
-            author=current_author,
-            categories=request.data.get('categories'),
-            visibility=request.data.get('visibility', 'PUBLIC'),
-        )
-        new_post.save()
+    #     new_post_id = uuid.uuid4()
+    #     new_post = Posts.objects.create(
+    #         title=request.data.get('title'),
+    #         uuid=new_post_id,
+    #         id=f"{request.build_absolute_uri('/')}/service/authors/{pk}/posts/{new_post_id}",
+    #         source=request.data.get('source'),
+    #         origin=request.data.get('origin'),
+    #         description=request.data.get('description'),
+    #         contentType=request.data.get('contentType'),
+    #         content=request.data.get('content'),
+    #         author=current_author,
+    #         categories=request.data.get('categories'),
+    #         visibility=request.data.get('visibility', 'PUBLIC'),
+    #     )
+    #     new_post.save()
 
-        return Response(status=201)
+    #     return Response(status=201)
 
 
 """
@@ -543,7 +534,7 @@ def oneFollower(request, pk, foreignPk):
         except Authors.DoesNotExist:
             return Response({"isFollowed": False}, status=404)
 
-
+######################################################
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
@@ -551,25 +542,32 @@ def get_post_likes(request, pk, postsId):
     Get a list of likes of a post
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(object=postsId)
+        try:
+            post = Posts.objects.get(uuid=postsId)
+            likes = Likes.objects.filter(object=post.id)
+        except Posts.DoesNotExist:
+            return Response({"detail":"Post not found"},status=404)
 
         items_list = []
         for like in likes:
             author = Authors.objects.get(uuid=like.author.uuid)
             author_dict = AuthorSerializer(author).data
-            author_dict["displayName"] = author_dict.pop("displayName")
+            author_dict.pop("username")
+            author_dict.pop("password")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)
 
         response_data = {
             "type": "likes",
+            "total_likes": len(items_list),
             "items": items_list,
+            
         }
 
         return Response(response_data, status=200)
 
-
+#########################################################
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_liked(request, pk):
@@ -577,23 +575,89 @@ def get_liked(request, pk):
     Get a list of posts liked by an author
     """
     if request.method == "GET":
-        likes = Likes.objects.filter(author__uuid=pk)
-
+        author = Authors.objects.get(uuid=pk)
+        likes = Likes.objects.filter(author=author)
+        
         items_list = []
         for like in likes:
-            author_dict = AuthorSerializer(like.author).data
-            author_dict["displayName"] = author_dict.pop("displayName")
-            like_dict = LikedSerializer(like).data
-            like_dict["author"] = author_dict
-            items_list.append(like_dict)
-
+            try:
+                post = Posts.objects.get(id=like.object)
+                
+                post_dict = PostsSerializer(post).data
+                
+                items_list.append(post_dict)
+            except Exception as e:
+                print(e)
+                continue
         response_data = {
             "type": "liked",
+            "total_liked": len(items_list),
             "items": items_list,
         }
 
         return Response(response_data, status=200)
 
+#########################################################
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_liked_comments(request, pk):
+    """
+    Get a list of comments liked by an author
+    """
+    if request.method == "GET":
+        author = Authors.objects.get(uuid=pk)
+        likes = Likes.objects.filter(author=author)
+        
+        items_list = []
+        for like in likes:
+            try:
+                comment = Comments.objects.get(id=like.object)
+                
+                comment_dict = CommentSerializer(comment).data
+                
+                items_list.append(comment_dict)
+            except Exception as e:
+                print(e)
+                continue
+        response_data = {
+            "type": "liked",
+            "total_liked": len(items_list),
+            "items": items_list,
+        }
+
+        return Response(response_data, status=200)
+
+######################################################
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_comment_likes(request, pk, commentId):
+    """
+    Get a list of likes of a comment
+    """
+    if request.method == "GET":
+        try:
+            comment = Comments.objects.get(uuid=commentId)
+            likes = Likes.objects.filter(object=comment.id)
+        except Comments.DoesNotExist:
+            return Response({"detail": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        likes_list = []
+        for like in likes:
+            author = Authors.objects.get(uuid=like.author.uuid)
+            author_dict = AuthorSerializer(author).data
+            author_dict.pop("username")
+            author_dict.pop("password")
+            like_dict = LikedSerializer(like).data
+            like_dict["author"] = author_dict
+            likes_list.append(like_dict)
+
+        response_data = {
+            "type": "likes",
+            "total_likes": len(likes_list),
+            "items": likes_list,
+        }
+
+        return Response(response_data, status=200)
 
 @api_view(['GET', 'DELETE', 'POST'])
 @permission_classes([AllowAny])
