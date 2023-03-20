@@ -506,7 +506,7 @@ def getFollowing(request, pk):
     if request.method == 'GET':
         oneFollowers = Followers.objects.filter(follower__uuid=pk)
 
-        followerList = [AuthorSerializer(followers.author).data for followers in oneFollowers]
+        followerList = [AuthorSerializer(followers.followedUser).data for followers in oneFollowers]
 
         data = {
             "type": "following",
