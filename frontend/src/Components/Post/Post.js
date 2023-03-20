@@ -32,11 +32,14 @@ function Post({post}) {
   var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
   var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
   var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
+  var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
+  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/ + puid"; 
   // console.log(ENDPOINT); 
 
   // Get comment list 
   const [showComments, setShowComments] = useState(false);
   const [commentList, setCommentList] = useState([]);
+  const [likeNum, setLlikeNum] = useState();
 
   /* 
   async function fetchData() {
@@ -61,6 +64,17 @@ function Post({post}) {
         method: "GET"
       }).then(response => response.json()).then(postData => {
         setCommentList(postData.items);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    try {
+      fetch(LIKE_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      }).then(response => response.json()).then(likeData => {
+        setLlikeNum(likeData.items.length); 
       });
     } catch (error) {
       console.error('Error:', error);
@@ -105,6 +119,25 @@ function Post({post}) {
     }).catch((error) => {
       console.log('error: ' + error);
     }); 
+  }
+
+  // Handle add new comment 
+  const handleNewLike = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    const body = JSON.stringify({ }); 
+
+    fetch(ADD_LIKE_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
 
     fetchData();
   }
@@ -112,6 +145,7 @@ function Post({post}) {
   // Handle right top menu 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    console.log(POST_ENDPOINT); 
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -217,7 +251,7 @@ function Post({post}) {
             {post.title}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {post.published}
+            {post.published.slice(0, 10)}
           </Typography>
           <Typography variant="body2">
             {post.content}
@@ -225,8 +259,9 @@ function Post({post}) {
         </CardContent>
 
         <CardActions disableSpacing>
-          <IconButton>
+          <IconButton onClick={handleNewLike}>
             <FontAwesomeIcon icon={faHeart} />
+            <Typography variant="body2" marginLeft={"8px"}>{likeNum}</Typography>
           </IconButton>
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
