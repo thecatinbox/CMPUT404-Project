@@ -770,7 +770,7 @@ def get_inbox(request, pk):
     '''
     
 @api_view(['GET', 'DELETE', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def inbox(request, pk):
     if request.method == 'GET':
         return get_inbox(request, pk)
