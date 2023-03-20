@@ -17,6 +17,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import Comment from '../Comment/Comment'; 
+
 import "./Post.css"; 
 
 const comments = [
@@ -173,12 +175,18 @@ function Post({post}) {
         </CardActions>
 
 
-        <CardContent>
+        {/* <CardContent>
           {comments.map(function(comment){
             return (<Typography variant="body2">
               {comment.comment}
             </Typography>)
         })}
+          
+        </CardContent> */}
+        <CardContent>
+          {comments.map(function(comment){
+            return (<Comment comment={comment} key={comment.id}/>)
+          })}
           
         </CardContent>
       </Card>
