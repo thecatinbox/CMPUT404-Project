@@ -579,8 +579,7 @@ def followRequest(request, pk, foreignPk):
             send_author_inbox.items.add(makeRequest)
 
             responseData = {
-                "type": "creat like",
-                "items": model_to_dict(makeRequest)
+                "type": "creat like" 
             }
             return Response(responseData, status=201)
     else:
