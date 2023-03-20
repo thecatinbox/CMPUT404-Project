@@ -62,7 +62,11 @@ class Posts(models.Model):
 class Followers(models.Model):
     class Meta:
         verbose_name_plural = 'Followers'
-    
+        
+    author = models.ForeignKey(Authors, on_delete=models.CASCADE)
+    following = models.ForeignKey(Authors, related_name='following', on_delete=models.CASCADE)
+    followed_date = models.DateTimeField(auto_now_add=True)
+
     followedId = models.CharField(max_length = 255, primary_key = True)#store uuid of author being followed
     type = models.CharField(max_length = 255,default="followers",editable=False)
     followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followedUser")

@@ -482,12 +482,12 @@ def getOneComment(request, pk, postsId, commentId):
 @permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
-    Display a list of followers that followed by user<pk>
+    Display a list of followers that follow user<pk>
     """
     if request.method == 'GET':
-        oneFollowers = Followers.objects.filter(follower__uuid=pk)
+        oneFollowers = Followers.objects.filter(author__uuid=pk)
 
-        followerList = [AuthorSerializer(followers.author).data for followers in oneFollowers]
+        followerList = [AuthorSerializer(followers.follower).data for followers in oneFollowers]
 
         data = {
             "type": "followers",
@@ -497,8 +497,29 @@ def getFollowers(request, pk):
         return Response(data, status=200)
 
 
-@api_view(['DELETE', 'PUT', 'GET'])
+@api_view(['GET'])
 @permission_classes([AllowAny])
+def getFollowing(request, pk):
+    """
+    Display a list of followers that followed by user<pk>
+    """
+    if request.method == 'GET':
+        oneFollowers = Followers.objects.filter(follower__uuid=pk)
+
+        followerList = [AuthorSerializer(followers.author).data for followers in oneFollowers]
+
+        data = {
+            "type": "following",
+            "items": followerList,
+        }
+
+        return Response(data, status=200)
+
+
+
+@api_view(['DELETE', 'PUT', 'GET'])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([authentication.BasicAuthentication])
 def oneFollower(request, pk, foreignPk):
     """
     Execute<br>
@@ -507,10 +528,16 @@ def oneFollower(request, pk, foreignPk):
     GET: if author<foreignPk> followed author<pk>, author details will be displayed
     """
 
+    # if request.method == 'DELETE':
+    #     Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).delete()
+    #     return Response(status=200)
     if request.method == 'DELETE':
-        Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).delete()
-        return Response(status=200)
-
+            # Delete the follower relationship if it exists
+            try:
+                Followers.objects.get(follower__uuid=pk, author__uuid=foreignPk).delete()
+                return Response({"message": "Unfollowed successfully"}, status=200)
+            except Followers.DoesNotExist:
+                return Response({"message": "No such follower relationship"}, status=404)
     elif request.method == 'PUT':
         """
         Followers author ---follows----> follower
@@ -521,28 +548,30 @@ def oneFollower(request, pk, foreignPk):
         currentUserName = Authors.objects.get(uuid=foreignPk).username
 
         if request.user.is_authenticated:
-            followedBy = Authors.objects.get(uuid=foreignPk)
-            followTo = Authors.objects.get(uuid=pk)
-            newFollow = Followers(author=followedBy, follower=followTo)
-            newFollow.save()
-            return Response(status=200)
-
+            # Check if the follower relationship already exists
+            if Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).exists():
+                return Response({"message": "Already followed"}, status=400)
+            else:
+                followedBy = Authors.objects.get(uuid=foreignPk)
+                followTo = Authors.objects.get(uuid=pk)
+                newFollow = Followers(author=followedBy, follower=followTo)
+                newFollow.save()
+                return Response({"message": "Followed successfully"}, status=200)
         else:
             return HttpResponseRedirect(reverse("login"), status=303)
-
-
+        
     elif request.method == 'GET':
-        try:
-            selectedFollower = Authors.objects.get(uuid=foreignPk, followers__follower__uuid=pk)
-            data = {
-                "isFollowed": True,
-                "author": AuthorSerializer(selectedFollower).data
-            }
-            return Response(data, status=200)
+            # Use Followers model to query the existence of the follower relationship
+            if Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).exists():
+                selectedFollower = Authors.objects.get(uuid=foreignPk)
+                data = {
+                    "isFollowed": True,
+                    "author": AuthorSerializer(selectedFollower).data
+                }
+                return Response(data, status=200)
 
-        except Authors.DoesNotExist:
-            return Response({"isFollowed": False}, status=404)
-
+            else:
+                return Response({"isFollowed": False}, status=404)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
