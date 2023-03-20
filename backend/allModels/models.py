@@ -62,7 +62,7 @@ class Posts(models.Model):
 class Followers(models.Model):
     class Meta:
         verbose_name_plural = 'Followers'
-    
+        
     followedId = models.CharField(max_length = 255, primary_key = True)#store uuid of author being followed
     type = models.CharField(max_length = 255,default="followers",editable=False)
     followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followedUser")
