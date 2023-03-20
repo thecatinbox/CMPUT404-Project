@@ -33,29 +33,31 @@ function Post({post}) {
   var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
   var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
   var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/ + puid"; 
+  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/" + puid; 
+  var LIKED_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/liked"; 
   // console.log(ENDPOINT); 
 
   // Get comment list 
   const [showComments, setShowComments] = useState(false);
   const [commentList, setCommentList] = useState([]);
-  const [likeNum, setLlikeNum] = useState();
+  const [likeNum, setLikeNum] = useState();
+  const [liked, setLiked] = useState(false);
 
-  /* 
-  async function fetchData() {
+  async function checkLiked() {
     try {
-      const response = await fetch(COMMENT_ENDPOINT, {
+      const response = await fetch(LIKED_ENDPOINT, {
         headers: { "Accept": "application/json" },
         method: "GET"
       });
   
       const data = await response.json();
-      setCommentList(data.items);
-      console.log(commentList); 
+      if (data.items.some(item => item.uuid === puid)) {
+        setLiked(true); 
+      }
     } catch (error) {
       console.error('Error:', error);
     }
-  }*/
+  }
 
   function fetchData() {
     try {
@@ -74,7 +76,7 @@ function Post({post}) {
         headers: { "Accept": "application/json" },
         method: "GET"
       }).then(response => response.json()).then(likeData => {
-        setLlikeNum(likeData.items.length); 
+        setLikeNum(likeData.total_likes); 
       });
     } catch (error) {
       console.error('Error:', error);
@@ -83,6 +85,7 @@ function Post({post}) {
 
   useEffect(() => {
     fetchData();
+    checkLiked(); 
   }); 
   
   // Handle input change 
@@ -95,6 +98,7 @@ function Post({post}) {
 
   // Handle add new comment 
   const handleNewComment = () => {
+
     console.log(inputs.comment); 
     const header = {
       "Content-Type": 'application/json',
@@ -123,23 +127,26 @@ function Post({post}) {
 
   // Handle add new comment 
   const handleNewLike = () => {
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+    if (liked == false) {
+      setLikeNum(likeNum + 1); 
+      setLiked(true); 
+
+      const header = {
+        "Content-Type": 'application/json',
+        "Accept": 'application/json', 
+        "Origin": 'http://localhost:3000'
+      }
+
+      const body = JSON.stringify({ "context": "" }); 
+
+      fetch(ADD_LIKE_ENDPOINT, {
+        headers: header,
+        body: body, 
+        method: "POST"
+      }).catch((error) => {
+        console.log('error: ' + error);
+      }); 
     }
-
-    const body = JSON.stringify({ }); 
-
-    fetch(ADD_LIKE_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "POST"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
-
-    fetchData();
   }
 
   // Handle right top menu 
@@ -260,7 +267,7 @@ function Post({post}) {
 
         <CardActions disableSpacing>
           <IconButton onClick={handleNewLike}>
-            <FontAwesomeIcon icon={faHeart} />
+            <FontAwesomeIcon id="like_button" icon={faHeart} color={liked ? 'red' : ''}/>
             <Typography variant="body2" marginLeft={"8px"}>{likeNum}</Typography>
           </IconButton>
           <IconButton onClick={() => setShowComments(!showComments)}>
