@@ -72,7 +72,7 @@ def home_page(request, userID):
     # })
 
 '''
-@login_required(login_url='/signin/')
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_post(request, userId):
@@ -151,7 +151,7 @@ def create_post(request, userId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_comment(request, userId, postId):
@@ -197,7 +197,7 @@ def create_comment(request, userId, postId):
         return Response(responseData, status=200)
 
 
-@login_required(login_url='/signin/')
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_like(request, userId, postId):
@@ -240,7 +240,7 @@ def create_like(request, userId, postId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def share_post(request, userId, postId):
@@ -270,7 +270,7 @@ def share_post(request, userId, postId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def create_like_comment(request, userId, postId, commentId):
