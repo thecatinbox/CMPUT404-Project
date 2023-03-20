@@ -459,6 +459,7 @@ def getComments(request, pk, postsId):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def getOneComment(request, pk, postsId, commentId):
     if request.method == "GET":
         comment = Comments.objects.get(uuid=commentId)
@@ -485,12 +486,13 @@ def getFollowers(request, pk):
     Display a list of followers that follow user<pk>
     """
     if request.method == 'GET':
-        oneFollowers = Followers.objects.filter(author__uuid=pk)
+        oneFollowers = Followers.objects.filter(followedUser__uuid=pk)
 
         followerList = [AuthorSerializer(followers.follower).data for followers in oneFollowers]
 
         data = {
-            "type": "followers",
+            "type": "followed user",
+            "followersNum": len(followerList),
             "items": followerList,
         }
 
@@ -509,69 +511,92 @@ def getFollowing(request, pk):
         followerList = [AuthorSerializer(followers.followedUser).data for followers in oneFollowers]
 
         data = {
-            "type": "following",
+            "type": "followed by user",
+            "followedNum": len(followerList),
             "items": followerList,
         }
 
         return Response(data, status=200)
 
-
-
 @api_view(['DELETE', 'PUT', 'GET'])
-@permission_classes([permissions.IsAuthenticated])
-@authentication_classes([authentication.BasicAuthentication])
+@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
-    Execute<br>
     DELETE: delete the author<foreignPk> from author<pk>'s follower list<br>
     PUT: add a new author<foreignPk> to the author<pk>'s follower list<br>
     GET: if author<foreignPk> followed author<pk>, author details will be displayed
     """
+    try:
+        current_user = Authors.objects.get(uuid=pk)
+        foreign_user = Authors.objects.get(uuid=foreignPk)
+    except Authors.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
 
-    # if request.method == 'DELETE':
-    #     Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).delete()
-    #     return Response(status=200)
     if request.method == 'DELETE':
-            # Delete the follower relationship if it exists
-            try:
-                Followers.objects.get(follower__uuid=pk, author__uuid=foreignPk).delete()
-                return Response({"message": "Unfollowed successfully"}, status=200)
-            except Followers.DoesNotExist:
-                return Response({"message": "No such follower relationship"}, status=404)
+        try:
+            Followers.objects.get(follower=current_user, followedUser=foreign_user).delete()
+            return Response({"message": "Unfollowed successfully"}, status=200)
+        except Followers.DoesNotExist:
+            return Response({"message": "No such follower relationship"}, status=404)
+
     elif request.method == 'PUT':
-        """
-        Followers author ---follows----> follower
-                  author is a follower of follower
-        add foreignPk --> follower.author
-        add pk --> follower.follower
-        """
-        currentUserName = Authors.objects.get(uuid=foreignPk).username
-
-        if request.user.is_authenticated:
-            # Check if the follower relationship already exists
-            if Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).exists():
-                return Response({"message": "Already followed"}, status=400)
-            else:
-                followedBy = Authors.objects.get(uuid=foreignPk)
-                followTo = Authors.objects.get(uuid=pk)
-                newFollow = Followers(author=followedBy, follower=followTo)
-                newFollow.save()
-                return Response({"message": "Followed successfully"}, status=200)
+        if Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+            return Response({"message": "Already followed"}, status=400)
         else:
-            return HttpResponseRedirect(reverse("login"), status=303)
-        
-    elif request.method == 'GET':
-            # Use Followers model to query the existence of the follower relationship
-            if Followers.objects.filter(follower__uuid=pk, author__uuid=foreignPk).exists():
-                selectedFollower = Authors.objects.get(uuid=foreignPk)
-                data = {
-                    "isFollowed": True,
-                    "author": AuthorSerializer(selectedFollower).data
-                }
-                return Response(data, status=200)
+            if current_user == foreign_user:
+                return Response({"message": "You cannot follow yourself"}, status=400)
+            new_follow = Followers(followedUser=foreign_user, follower=current_user)
+            new_follow.save()
+            return Response({"message": "Followed successfully"}, status=200)
 
-            else:
-                return Response({"isFollowed": False}, status=404)
+    elif request.method == 'GET':
+        if Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+            data = {
+                "isFollowed": True,
+                "author": AuthorSerializer(foreign_user).data,
+                "followed by": AuthorSerializer(current_user).data
+            }
+            return Response(data, status=200)
+        else:
+            return Response({"isFollowed": False}, status=404)
+
+#don't use this GET method, use getFollowers instead
+@api_view(['GET','POST'])
+@permission_classes([AllowAny])
+def followRequest(request, pk, foreignPk):
+    try:
+        current_user = Authors.objects.get(uuid=pk)
+        foreign_user = Authors.objects.get(uuid=foreignPk)
+    except Authors.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
+
+    if current_user == foreign_user:
+        return Response({"message": "You cannot follow yourself"}, status=400)
+        
+    author_name = current_user.displayName
+    object_name = foreign_user.displayName
+    belongTo = foreign_user.uuid
+    summary = author_name + " wants to follow " + object_name
+    
+    if request.method == 'POST':
+        if not Followers.objects.filter(follower=current_user, followedUser=foreign_user).exists():
+            makeRequest = FollowRequest.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
+            makeRequest.save()
+
+            send_author_inbox = Inbox.objects.get(author=object_user)
+            send_author_inbox.items.add(makeRequest)
+
+            responseData = {
+                "type": "creat like",
+                "items": model_to_dict(makeRequest)
+            }
+            return Response(responseData, status=201)
+    else:
+        responseData = {
+            "type": "creat comment",
+            "items": '[]'
+        }
+        return Response(responseData, status=200)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
