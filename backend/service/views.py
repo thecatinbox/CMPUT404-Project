@@ -658,7 +658,7 @@ def get_comment_likes(request, pk, commentId):
         }
 
         return Response(response_data, status=200)
-
+'''
 @api_view(['GET', 'DELETE', 'POST'])
 @permission_classes([AllowAny])
 def get_inbox(request, pk):
@@ -710,3 +710,89 @@ def get_inbox(request, pk):
     }
 
     return Response(response_data, status=200)
+    '''
+    
+@api_view(['GET', 'DELETE', 'POST'])
+@permission_classes([IsAuthenticated])
+def inbox(request, pk):
+    if request.method == 'GET':
+        return get_inbox(request, pk)
+    elif request.method == 'POST':
+        return post_inbox(request, pk)
+    elif request.method == 'DELETE':
+        return delete_inbox(request, pk)
+    else:
+        return Response(status=405)
+
+def get_inbox(request, pk):
+    try:
+        author = Authors.objects.get(uuid=pk)
+        following = Followers.objects.filter(follower=author)
+        followed_authors = [follow.followedUser for follow in following]
+    except Authors.DoesNotExist:
+        return Response(status=404)
+
+    post_list = Posts.objects.filter(author__in=followed_authors).order_by('-published')
+
+    serialized_posts = []
+    for post in post_list:
+        post_dict = PostsSerializer(post).data
+        post_dict['author'] = AuthorSerializer(post.author).data
+        post_dict['categories'] = post.categories
+        post_dict['count'] = post.count
+        serialized_posts.append(post_dict)
+
+    response_data = {
+        "type": "inbox",
+        "author": author.id,
+        "items": serialized_posts,
+    }
+
+    return Response(response_data, status=200)
+
+def post_inbox(request, pk):
+    try:
+        author = Authors.objects.get(uuid=pk)
+        inbox = Inbox.objects.get(author=author)
+    except (Authors.DoesNotExist, Inbox.DoesNotExist):
+        return Response(status=404)
+
+    post_type = request.data.get('type')
+
+    if post_type == 'post':
+        post = Posts.objects.create(**request.data)
+        inbox.items.add(post)
+
+    elif post_type == 'follow':
+        follow_request = FollowRequests.objects.create(**request.data)
+        inbox.followRequests.add(follow_request)
+
+    elif post_type == 'like':
+        like = Likes.objects.create(**request.data)
+        liked, _ = Liked.objects.get_or_create(object=like.object)
+        liked.items.add(like)
+        inbox.likes.add(liked)
+
+    elif post_type == 'comment':
+        comment = Comments.objects.create(**request.data)
+        inbox.comments.add(comment)
+
+    else:
+        return Response(status=400)
+
+    inbox.save()
+    return Response(status=201)
+
+def delete_inbox(request, pk):
+    try:
+        author = Authors.objects.get(uuid=pk)
+        inbox = Inbox.objects.get(author=author)
+    except (Authors.DoesNotExist, Inbox.DoesNotExist):
+        return Response(status=404)
+
+    inbox.items.clear()
+    inbox.comments.clear()
+    inbox.followRequests.clear()
+    inbox.likes.clear()
+
+    return Response(status=204)
