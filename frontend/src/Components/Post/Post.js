@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -19,12 +19,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 
-const comments = [
-{"user": "user1", "comment": "this is a comment"}, 
-{"user": "user2", "comment": "this is a comment"}, 
-{"user": "user1", "comment": "this is a comment"}, 
-]
-
 function Post({post}) { 
 
   /* https://mui.com/material-ui/react-menu/ */ 
@@ -37,9 +31,31 @@ function Post({post}) {
 
   var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
   var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/424b52d2-bf9d-4b0d-86dd-c055890aac32/posts/f13c869a-54f1-415f-9df6-c2f467103851/comment"
+  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
   // console.log(ENDPOINT); 
+
+  // Get comment list 
+  const [commentList, setCommentList] = useState([]);
+  async function fetchData() {
+    try {
+      const response = await fetch(COMMENT_ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      });
   
+      const data = await response.json();
+      setCommentList(data.items);
+      console.log(commentList); 
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  useEffect(() => {
+    fetchData();
+  }, []); 
+  
+  // Handle input change 
   const [inputs, setInputs] = useState({});
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -47,6 +63,12 @@ function Post({post}) {
     console.log(inputs); 
   };
 
+  // Handle add new comment 
+  const handleNewComment = () => {
+    console.log(inputs.comment); 
+  }
+
+  // Handle right top menu 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -66,7 +88,6 @@ function Post({post}) {
   };
 
   const handleEditSave = () => {
-
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
@@ -172,13 +193,13 @@ function Post({post}) {
           <IconButton>
             <FontAwesomeIcon icon={faShare} />
           </IconButton>
-          <TextField hiddenLabel id="comment-text" size="small" label="Comment" variant="outlined" />
-          <Button size="small">Send</Button>
+          <TextField hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
+          <Button size="small" onClick={handleNewComment}>Send</Button>
         </CardActions>
 
 
         <CardContent>
-          {comments.map(function(comment){
+          {commentList.map(function(comment){
             return (<Typography variant="body2">
               {comment.comment}
             </Typography>)

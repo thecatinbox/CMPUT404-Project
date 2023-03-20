@@ -8,6 +8,7 @@ const AddPost = () => {
 
   const uuid = localStorage.getItem('uuid'); 
   const app_url = localStorage.getItem('url'); 
+  // console.log(app_url); 
   const ENDPOINT = 'http://' + app_url + '/post/authors/' + uuid + '/posts/create'; 
   // console.log(ENDPOINT); 
 
@@ -27,9 +28,9 @@ const AddPost = () => {
     var e = document.getElementById("post-category");
     var visibility = e.options[e.selectedIndex].value;
 
-    console.log(title); 
-    console.log(content); 
-    console.log(visibility); 
+    // console.log(title); 
+    // console.log(content); 
+    // console.log(visibility); 
 
     const body = JSON.stringify({
       "title": title,
@@ -45,8 +46,7 @@ const AddPost = () => {
       body: body, 
       method: "POST"
     }).then((response) => {
-      // console.log(response); 
-      // window.location.reload(false);
+      console.log(response); 
     }).catch((error) => {
       console.log('error: ' + error);
     }); 
