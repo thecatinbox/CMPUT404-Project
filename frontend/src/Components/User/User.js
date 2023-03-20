@@ -7,9 +7,90 @@ import Button from '@mui/material/Button';
 
 import "./User.css"; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faUserMinus } from '@fortawesome/free-solid-svg-icons'
 
-function User({user}) { 
+function User({user, followed}) { 
+
+  const uid = localStorage.getItem('uuid'); 
+  const uuid = user.uuid; 
+  const app_url = localStorage.getItem('url'); 
+
+  var FOLLOW_REQUEST_ENDPOINT = "http://" + app_url + "/server/authors/" + uid + "/followRequests/" + uuid; 
+  var FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uid + "/followers/" + uuid; 
+  // console.log(FOLLOW_REQUEST_ENDPOINT); 
+  // console.log(FOLLOW_ENDPOINT); 
+
+  // Handle add new comment 
+  const sendFollowRequest = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    const body = JSON.stringify({}); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(FOLLOW_REQUEST_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  }
+
+  // Handle add new comment 
+  const acceptFollowRequest = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    const body = JSON.stringify({
+      "isFollowed": true
+    }); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(FOLLOW_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "PUT"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  }
+
+  // Handle add new comment 
+  const removeFollower = () => {
+    // console.log('try remove user');
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    fetch(FOLLOW_ENDPOINT, {
+      headers: header,
+      method: "DELETE"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  }
+
+  const handleFollow = () => {
+    if (!followed) {
+      sendFollowRequest(); 
+      acceptFollowRequest(); 
+    } else {
+      removeFollower(); 
+    }
+  }
 
   return (
     <div className='user'>
@@ -19,8 +100,8 @@ function User({user}) {
           {user.displayName}
         </Typography>
         <Typography sx={{ alignSelf: 'flex-end' }}>
-          <Button>
-            <FontAwesomeIcon icon={faUserPlus} />
+          <Button onClick={handleFollow}>
+            <FontAwesomeIcon icon={followed ? faUserMinus : faUserPlus} />
           </Button>
         </Typography>
       </CardContent>
