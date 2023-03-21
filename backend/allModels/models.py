@@ -136,7 +136,7 @@ class Inbox(models.Model):
     
     type = models.CharField(max_length = 255,default = "inbox", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    items = models.ManyToManyField(Posts, blank=True)
+    posts = models.ManyToManyField(Posts, blank=True, symmetrical=False)
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
     likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)

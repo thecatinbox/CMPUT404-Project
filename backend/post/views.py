@@ -136,7 +136,7 @@ def create_post(request, userId):
             for item in current_author_followers:
                 follower = item.author
                 follower_inbox = Inbox.objects.get(author=follower)
-                follower_inbox.items.add(new_post)
+                follower_inbox.posts.add(new_post)
         
         responseData = {
             "type": "post",
@@ -203,7 +203,6 @@ def create_comment(request, userId, postId):
 def create_like(request, userId, postId):
     if request.method == 'POST':
         post = Posts.objects.get(uuid=postId).id
-        post_uuid = Posts.objects.get(uuid=postId).uuid
         currentAuthor = Authors.objects.get(uuid=userId)
         author_name = currentAuthor.displayName
         summary = author_name + " Likes your post"
@@ -219,7 +218,7 @@ def create_like(request, userId, postId):
             # Liked added to inbox
             post_author = Posts.objects.get(uuid=postId).author
             post_author_inbox = Inbox.objects.get(author=post_author)
-            post_author_inbox.likes.add(liked)
+            post_author_inbox.likes.add(like)
 
             responseData = {
                     "type": "creat like",
@@ -253,7 +252,7 @@ def share_post(request, userId, postId):
 
         inbox = Inbox.objects.get(author=sendToAuthor)
 
-        inbox.items.add(selectedPost)
+        inbox.posts.add(selectedPost)
 
         responseData = {
                     "type": "successfully shared",
@@ -290,8 +289,9 @@ def create_like_comment(request, userId, postId, commentId):
             liked.items.add(like)
 
             # Liked added to inbox
-            post_author_inbox = Inbox.objects.get(author=comment_author)
-            post_author_inbox.likes.add(receiver_liked)
+            comment_author = Comments.objects.get(uuid=commentId).author
+            comment_author_inbox = Inbox.objects.get(author=comment_author)
+            comment_author_inbox.likes.add(like)
 
             responseData = {
                     "type": "creat comment like",

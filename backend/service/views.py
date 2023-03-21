@@ -3,7 +3,9 @@ from django.http import HttpResponseRedirect, FileResponse, Http404, HttpRespons
 from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework import permissions, authentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from django.core.paginator import Paginator
+from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer
 from allModels.models import Authors, Followers, FollowRequests
 from allModels.models import Posts, Comments, Likes, Liked
@@ -565,7 +567,7 @@ def followRequest(request, pk, foreignPk):
         return Response({"message": "User not found"}, status=404)
 
     if current_user == foreign_user:
-        return Response({"message": "You cannot follow yourself"}, status=400)
+        return Response({"message": "You cannot follow yourself"}, status=404)
         
     author_name = current_user.displayName
     object_name = foreign_user.displayName
@@ -578,12 +580,14 @@ def followRequest(request, pk, foreignPk):
             makeRequest.save()
 
             send_author_inbox = Inbox.objects.get(author=object_user)
-            send_author_inbox.items.add(makeRequest)
+            send_author_inbox.followRequests.add(makeRequest)
 
             responseData = {
                 "type": "creat like" 
             }
             return Response(responseData, status=201)
+        else:
+                return Response({"message": "You are already following this user"}, status=404)
     else:
         responseData = {
             "type": "creat comment",
@@ -774,83 +778,194 @@ def get_inbox(request, pk):
 @permission_classes([AllowAny])
 def inbox(request, pk):
     if request.method == 'GET':
-        return get_inbox(request, pk)
+        try:
+            author = Authors.objects.get(uuid=pk)
+            author_inbox = Inbox.objects.get(author=author)
+        except Authors.DoesNotExist:
+            return Response(status=404)
+
+        posts_list = list(author_inbox.posts.all())
+        comments_list = list(author_inbox.comments.all())
+        follow_requests_list = list(author_inbox.followRequests.all())
+        likes_list = list(author_inbox.likes.all())
+
+        data_list = []
+        data_list.append(posts_list)
+        data_list.append(comments_list)
+        data_list.append(follow_requests_list)
+        data_list.append(likes_list)
+
+        response_data = {
+            "type": "inbox",
+            "author": author.id,
+            "items": data_list,
+        }
+
+        return Response(response_data, status=200)
+
     elif request.method == 'POST':
-        return post_inbox(request, pk)
+        try:
+            author = Authors.objects.get(uuid=pk)
+            inbox = Inbox.objects.get(author=author)
+        except (Authors.DoesNotExist, Inbox.DoesNotExist):
+            return Response(status=404)
+
+        post_type = request.data.get('type')
+
+        if post_type == 'post':
+            title = request.data.get('title')
+            #return Response(f"{title}", status=400)
+            if "description" in request.data:
+                description = request.data.get('description')
+            else:
+                description = ""
+            if "content" in request.data:
+                content = request.data.get('content')
+            else:
+                content = ""
+            if "visibility" in request.data:
+                visibility = request.data.get('visibility')
+            else:
+                visibility = "PUBLIC"
+            if "contentType" in request.data:
+                content_type = request.data.get('content_type')
+            else:
+                content_type = "text/plain"
+            if "categories" in request.data:
+                categories = request.data.get('categories')
+            else:
+                categories = ""
+            uid = str(uuid.uuid4())
+
+            tempCheck = 0
+            if 'image' in request.FILES:
+                image = request.FILES['image']
+                image_path = default_storage.save(f'uploads/{userId}/{image.name}', image)
+                contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
+                content_type = 'image'  
+                tempCheck = 1
+
+            new_post = Posts()
+            new_post.title = title
+            new_post.description = description
+            if tempCheck == 1:
+                new_post.contentImage = contentImage
+            else:
+                new_post.content = content
+            new_post.visibility = visibility
+            new_post.contentType = content_type
+            new_post.uuid = uid
+            new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{userId}/posts/{uid}"
+            new_post.source = new_post.id
+            new_post.origin = new_post.id
+            current_author = Authors.objects.get(uuid=userId)
+            new_post.author = current_author
+            new_post.categories = categories
+            new_post.count = "0"
+            new_post.save()
+            inbox.posts.add(new_post)
+
+        elif post_type == 'follow':
+
+            try:
+                follower_user = request.data.get('follower')
+                current_user = Authors.objects.get(uuid=follower_user)
+                foreign_user = Authors.objects.get(uuid=pk)
+            except Authors.DoesNotExist:
+                return Response({"message": "User not found"}, status=404)
+
+            if current_user == foreign_user:
+                return Response({"message": "You cannot follow yourself"}, status=404)
+                
+            author_name = current_user.displayName
+            object_name = foreign_user.displayName
+            belongTo = foreign_user.uuid
+            summary = author_name + " wants to follow " + object_name
+            
+            if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                makeRequest = FollowRequest.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
+                makeRequest.save()
+                inbox.followRequests.add(makeRequest)
+            else:
+                return Response({"message": "You are already following this user"}, status=404)
+
+        elif post_type == 'like':
+            p_or_c = request.data.get('p_or_c')#get post or comment
+            try:
+                userId = request.data.get('userId')
+                currentAuthor = Authors.objects.get(uuid=userId)
+                author_name = currentAuthor.displayName
+                
+                if p_or_c == "post":
+                    postId = request.data.get('postId')
+                    post = Posts.objects.get(uuid=postId).id
+                elif p_or_c == "comment":
+                    commentId = request.data.get('commentId')
+                    post = Comments.objects.get(uuid=commentId).id
+                
+                summary = author_name + " Likes your "+p_or_c
+            except:
+                return Response({"message": "Post not found"}, status=404)
+
+
+            if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post):
+                like = Likes.objects.create(author=currentAuthor, summary=summary, object=post)
+                like.save()
+                if not Liked.objects.filter(object=post):
+                    receiver_liked = Liked.objects.create(object=post)
+                liked = Liked.objects.get(object=post)
+                liked.items.add(like)
+
+                inbox.likes.add(like)
+            else:
+                return Response({"message": "You have already liked this post"}, status=404)
+
+
+        elif post_type == 'comment':
+            comment = request.data.get('comment')
+            postId = request.data.get('postId')
+            userId = request.data.get('userId')
+            content_type = request.data.get('content_type', 'text/plain')
+            uid = str(uuid.uuid4())
+
+            newComment = Comments()
+            newComment.comment = comment
+            newComment.contentType = content_type
+            newComment.uuid = uid
+            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+            
+            currentAuthor = Authors.objects.get(uuid=userId)
+            newComment.author = currentAuthor
+
+            currentPost = Posts.objects.get(uuid=postId)
+            newComment.post = currentPost
+            newComment.save()
+
+            # Increment the post count and save the post
+            currentPost.count = str(int(currentPost.count) + 1)
+            currentPost.save()
+
+            inbox.comments.add(newComment)
+
+        else:
+            return Response(status=400)
+
+        inbox.save()
+        return Response(status=201)
+
     elif request.method == 'DELETE':
-        return delete_inbox(request, pk)
+        try:
+            author = Authors.objects.get(uuid=pk)
+            inbox = Inbox.objects.get(author=author)
+        except (Authors.DoesNotExist, Inbox.DoesNotExist):
+            return Response(status=404)
+
+        inbox.posts.clear()
+        inbox.comments.clear()
+        inbox.followRequests.clear()
+        inbox.likes.clear()
+
+        return Response(status=204)
+
     else:
         return Response(status=405)
-
-def get_inbox(request, pk):
-    try:
-        author = Authors.objects.get(uuid=pk)
-        following = Followers.objects.filter(follower=author)
-        followed_authors = [follow.followedUser for follow in following]
-    except Authors.DoesNotExist:
-        return Response(status=404)
-
-    post_list = Posts.objects.filter(author__in=followed_authors).order_by('-published')
-
-    serialized_posts = []
-    for post in post_list:
-        post_dict = PostsSerializer(post).data
-        post_dict['author'] = AuthorSerializer(post.author).data
-        post_dict['categories'] = post.categories
-        post_dict['count'] = post.count
-        serialized_posts.append(post_dict)
-
-    response_data = {
-        "type": "inbox",
-        "author": author.id,
-        "items": serialized_posts,
-    }
-
-    return Response(response_data, status=200)
-
-def post_inbox(request, pk):
-    try:
-        author = Authors.objects.get(uuid=pk)
-        inbox = Inbox.objects.get(author=author)
-    except (Authors.DoesNotExist, Inbox.DoesNotExist):
-        return Response(status=404)
-
-    post_type = request.data.get('type')
-
-    if post_type == 'post':
-        post = Posts.objects.create(**request.data)
-        inbox.items.add(post)
-
-    elif post_type == 'follow':
-        follow_request = FollowRequests.objects.create(**request.data)
-        inbox.followRequests.add(follow_request)
-
-    elif post_type == 'like':
-        like = Likes.objects.create(**request.data)
-        liked, _ = Liked.objects.get_or_create(object=like.object)
-        liked.items.add(like)
-        inbox.likes.add(liked)
-
-    elif post_type == 'comment':
-        comment = Comments.objects.create(**request.data)
-        inbox.comments.add(comment)
-
-    else:
-        return Response(status=400)
-
-    inbox.save()
-    return Response(status=201)
-
-def delete_inbox(request, pk):
-    try:
-        author = Authors.objects.get(uuid=pk)
-        inbox = Inbox.objects.get(author=author)
-    except (Authors.DoesNotExist, Inbox.DoesNotExist):
-        return Response(status=404)
-
-    inbox.items.clear()
-    inbox.comments.clear()
-    inbox.followRequests.clear()
-    inbox.likes.clear()
-
-    return Response(status=204)
