@@ -19,5 +19,5 @@ urlpatterns = [
     path('authors/<str:pk>/posts/<str:postsId>/likes',views.get_post_likes,name="get_Posts Likes"),
     path('authors/<str:pk>/comments/liked',views.get_liked_comments,name="get_LikedComments"),
     path('authors/<str:pk>/comments/<str:commentId>/likes',views.get_comment_likes,name="get_Comments Likes"),
-    path('authors/<str:pk>/inbox',views.get_inbox,name="ones_Inbox"),
+    path('authors/<str:pk>/inbox',views.inbox,name="ones_Inbox"),
 ]
