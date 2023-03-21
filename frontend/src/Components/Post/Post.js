@@ -28,6 +28,7 @@ function Post({post}) {
   const open = Boolean(anchorEl);
 
   const uuid = localStorage.getItem('uuid'); 
+  const post_uuid = post.author.uuid; 
   const puid = post.uuid; 
   const app_url = localStorage.getItem('url'); 
 
@@ -183,13 +184,12 @@ function Post({post}) {
       "Origin": 'http://localhost:3000'
     }
 
-    console.log(inputs.title); 
-    console.log(inputs.content); 
+    // console.log(inputs.title); 
+    // console.log(inputs.content); 
 
     const body = JSON.stringify({
       "title": inputs.title,
-      "content": inputs.content,
-      "visibility": "PUBLIC"
+      "content": inputs.content 
     }); 
 
     // console.log(header); 
@@ -209,6 +209,21 @@ function Post({post}) {
     setEditOpen(false);
   };
 
+  const handleDelete = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    fetch(POST_ENDPOINT, {
+      headers: header,
+      method: "DELETE"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  };
+
   return (
     <div className='post'>
       <Card sx={{ minWidth: 275 }}>
@@ -220,6 +235,8 @@ function Post({post}) {
             alignItems: "flex-start",
             p: 0,
           }}>
+            {post_uuid===uuid ? ( // Display a loading message while isLoading is true
+
           <div>
             <Button
               id="basic-button"
@@ -240,21 +257,23 @@ function Post({post}) {
               }}
             >
               <MenuItem onClick={handleEditOpen}>Edit Post</MenuItem>
-              <MenuItem onClick={handleClose}>Delete Post</MenuItem>
+              <MenuItem onClick={handleDelete}>Delete Post</MenuItem>
             </Menu>
 
             <Dialog open={editOpen} onClose={handleEditClose}>
               <DialogTitle>Edit Post</DialogTitle>
               <DialogContent>
-                <TextField margin="dense" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
-                <TextField margin="dense" id="content" label="Post Content" defaultValue={post.content} onChange={handleChange} variant="standard" fullWidth/>
+                <TextField margin="dense" name="title" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
+                <TextField margin="dense" name="content" id="content" label="Post Content" defaultValue={post.content} onChange={handleChange} variant="standard" fullWidth/>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleEditClose}>Cancel</Button>
                 <Button onClick={handleEditSave}>Save</Button>
               </DialogActions>
             </Dialog>
-          </div>
+          </div>) : (
+          <div></div> 
+          )}
         </CardActions>
         
         <CardContent>

@@ -286,13 +286,14 @@ def get_post(request, pk, postsId):
     """
     # Get a specific post
     if request.method == 'GET':
-        post = Posts.objects.filter(uuid=postsId).first()
+        post = Posts.objects.get(uuid=postsId)
         if not post:
             return Response(status=404)
 
         post_dict = {
             'title': post.title,
             'id': post.id,
+            'uuid': post.uuid,
             'source': post.source,
             'description': post.description,
             'contentType': post.contentType,
@@ -302,7 +303,8 @@ def get_post(request, pk, postsId):
             'visibility': post.visibility,
             'categories': post.categories,
             'author': {
-                'id': post.author.uuid,
+                'id': post.author.id,
+                'uuid': post.author.uuid,
                 'displayName': post.author.username,
                 'github': post.author.github,
                 'host': post.author.host,
@@ -314,9 +316,9 @@ def get_post(request, pk, postsId):
 
     # Update an existing post
     elif request.method == 'PUT':
-        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
+        post = Posts.objects.get(author__uuid=pk, uuid=postsId)
         if not post:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=404)
 
         post.title = request.data.get('title', post.title)
         post.source = request.data.get('source', post.source)
@@ -331,7 +333,7 @@ def get_post(request, pk, postsId):
 
     # Delete a post
     elif request.method == 'DELETE':
-        post = Posts.objects.filter(author__uuid=pk, uuid=postsId).first()
+        post = Posts.objects.get(author__uuid=pk, uuid=postsId)
         if not post:
             return Response(status=404)
 
@@ -695,7 +697,7 @@ def get_comment_likes(request, pk, commentId):
             comment = Comments.objects.get(uuid=commentId)
             likes = Likes.objects.filter(object=comment.id)
         except Comments.DoesNotExist:
-            return Response({"detail": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Comment not found."}, status=404)
 
         likes_list = []
         for like in likes:
