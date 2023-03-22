@@ -734,7 +734,7 @@ def get_inbox(request, pk):
         return Response(status=404)
 
     post_list = []
-    for post in inbox.items.all():
+    for post in 1.all():
         post_dict = PostsSerializer(post).data
         post_dict['author'] = AuthorSerializer(post.author).data
         post_dict['categories'] = post.categories
@@ -840,7 +840,7 @@ def inbox(request, pk):
             tempCheck = 0
             if 'image' in request.FILES:
                 image = request.FILES['image']
-                image_path = default_storage.save(f'uploads/{userId}/{image.name}', image)
+                image_path = default_storage.save(f'uploads/{pk}/{image.name}', image)
                 contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
                 content_type = 'image'  
                 tempCheck = 1
@@ -855,10 +855,10 @@ def inbox(request, pk):
             new_post.visibility = visibility
             new_post.contentType = content_type
             new_post.uuid = uid
-            new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{userId}/posts/{uid}"
+            new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{pk}/posts/{uid}"
             new_post.source = new_post.id
             new_post.origin = new_post.id
-            current_author = Authors.objects.get(uuid=userId)
+            current_author = Authors.objects.get(uuid=pk)
             new_post.author = current_author
             new_post.categories = categories
             new_post.count = "0"
