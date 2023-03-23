@@ -30,7 +30,7 @@ function Message({message}) {
     }); 
 
     // console.log(header); 
-    console.log(body); 
+    // console.log(body); 
 
     fetch(FOLLOW_ENDPOINT, {
       headers: header,

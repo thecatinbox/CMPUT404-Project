@@ -19,6 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
+import Share from "../Share/Share";
 
 function Post({post}) { 
 
@@ -105,41 +106,6 @@ function Post({post}) {
         }
       
     }
-  }
-
-  // Handle add new like
-  async function handleShare() {
-
-    /* 
-    try {
-        const header = {
-          "Content-Type": 'application/json',
-          "Accept": 'application/json', 
-          "Origin": 'http://localhost:3000'
-        }
-
-        // Send like message to inbox 
-        const body = JSON.stringify(
-          { 
-            "type": "post"
-         }
-        ); 
-
-        console.log(body); 
-
-        await fetch(MESSAGE_ENDPOINT, {
-          headers: header,
-          body: body, 
-          method: "POST"
-        }); 
-
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      */ 
-
-      localStorage.setItem('post_uuid', post_uuid); 
-      localStorage.setItem('post_puid', puid); 
   }
 
   /* 
@@ -306,9 +272,7 @@ function Post({post}) {
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <IconButton onClick={handleShare}>
-            <FontAwesomeIcon icon={faShare} />
-          </IconButton>
+          <Share postId={ puid }/>
         </CardActions>
 
         {showComments && <CommentList post={post}/> }

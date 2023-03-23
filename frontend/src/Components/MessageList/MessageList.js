@@ -16,7 +16,7 @@ function MessageList({ messageList }) {
     }
   }, [messageList]);
 
-  console.log(messages); 
+  // console.log(messages); 
 
   return (
     <>
