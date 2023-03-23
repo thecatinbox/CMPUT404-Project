@@ -1,5 +1,6 @@
 import './Inbox.css';
 import Message from '../../Components/Message/Message'; 
+import MessageList from '../../Components/MessageList/MessageList'; 
 import TopBar from "../../Components/TopBar/TopBar";
 // import * as React from 'react';
 import React, {useState, useEffect} from 'react';
@@ -95,19 +96,7 @@ function Inbox() {
         {open.openPost ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openPost} timeout="auto" unmountOnExit>
-      {!messageList[0] || messageList[0].length === 0 ? (
-          <Message message={{"content":"No messages"}}/>
-        ) : (
-          <List component="div" disablePadding>
-            {messageList[1].map(function (message) {
-              return (
-                <ListItemButton>
-                  <Message message={message} key={message.id} />
-                </ListItemButton>
-              );
-            })}
-          </List>
-        )}
+        <MessageList messageList={messageList[0]}/>
       </Collapse>
 
       <ListItemButton onClick={() => handleClick("openFollow")}>
@@ -118,19 +107,7 @@ function Inbox() {
         {open.openFollow ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openFollow} timeout="auto" unmountOnExit>
-      {!messageList[1] || messageList[1].length === 0 ? (
-          <Message message={{"content":"No messages"}}/>
-        ) : (
-          <List component="div" disablePadding>
-            {messageList[1].map(function (message) {
-              return (
-                <ListItemButton>
-                  <Message message={message} key={message.id} />
-                </ListItemButton>
-              );
-            })}
-          </List>
-        )}
+        <MessageList messageList={messageList[1]}/>
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openLike")}>
@@ -141,19 +118,7 @@ function Inbox() {
         {open.openLike ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openLike} timeout="auto" unmountOnExit>
-      {!messageList[2] || messageList[2].length === 0 ? (
-          <Message message={{"content":"No messages"}}/>
-        ) : (
-          <List component="div" disablePadding>
-            {messageList[1].map(function (message) {
-              return (
-                <ListItemButton>
-                  <Message message={message} key={message.id} />
-                </ListItemButton>
-              );
-            })}
-          </List>
-        )}
+        <MessageList messageList={messageList[2]}/>
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openComment")}>
@@ -164,21 +129,8 @@ function Inbox() {
         {open.openComment ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openComment} timeout="auto" unmountOnExit>
-      {!messageList[3] || messageList[3].length === 0 ? (
-          <Message message={{"content":"No messages"}}/>
-        ) : (
-          <List component="div" disablePadding>
-            {messageList[1].map(function (message) {
-              return (
-                <ListItemButton>
-                  <Message message={message} key={message.id} />
-                </ListItemButton>
-              );
-            })}
-          </List>
-        )}
+        <MessageList messageList={messageList[3]}/>
       </Collapse>
-
     </List>
     </div>
     </>
