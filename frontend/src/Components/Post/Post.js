@@ -17,9 +17,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import Comment from '../Comment/Comment'; 
-
 import "./Post.css"; 
+import CommentList from "../CommentList/CommentList";
+import Share from "../Share/Share";
 
 function Post({post}) { 
 
@@ -33,48 +33,13 @@ function Post({post}) {
   const app_url = localStorage.getItem('url'); 
 
   var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
-  var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
   var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/" + puid; 
-  var LIKED_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/liked"; 
+  var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + post_uuid + '/inbox'; 
   // console.log(ENDPOINT); 
-
-  // Get comment list 
-  const [showComments, setShowComments] = useState(false);
-  const [commentList, setCommentList] = useState([]);
+  
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
-
-  async function checkLiked() {
-    try {
-      const response = await fetch(LIKED_ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      if (data.items.some(item => item.uuid === puid)) {
-        setLiked(true); 
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  async function fetchComments() {
-    try {
-      const response = await fetch(COMMENT_ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      setCommentList(data.items);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
+  const [showComments, setShowComments] = useState(false);
 
   async function fetchLikes() {
     try {
@@ -85,15 +50,19 @@ function Post({post}) {
   
       const data = await response.json();
       setLikeNum(data.total_likes); 
+
+      const isLikedByCurrentUser = data.items.some(item => item.author && item.author.uuid === uuid);
+      if (isLikedByCurrentUser) {
+        setLiked(true); 
+      }
+
     } catch (error) {
       console.error('Error:', error);
     }
   }
 
   useEffect(() => {
-    checkLiked(); 
     fetchLikes(); 
-    fetchComments(); 
   }); 
   
   // Handle input change 
@@ -104,41 +73,44 @@ function Post({post}) {
     console.log(inputs); 
   };
 
-  // Handle add new comment 
-  const handleNewComment = () => {
+  // Handle add new like
+  async function handleNewLike() {
+    if (liked == false) {
+      try {
+        const header = {
+          "Content-Type": 'application/json',
+          "Accept": 'application/json', 
+          "Origin": 'http://localhost:3000'
+        }
 
-    console.log(inputs.comment); 
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+        // Send like message to inbox 
+        const body = JSON.stringify(
+          { 
+            "type": "like", 
+            "p_or_c": "post", 
+            "userId": uuid, 
+            "postId": puid
+         }
+        ); 
+
+        console.log(body); 
+
+        await fetch(MESSAGE_ENDPOINT, {
+          headers: header,
+          body: body, 
+          method: "POST"
+        }); 
+
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      
     }
-
-    console.log(inputs.comment); 
-    console.log(inputs.content); 
-
-    const body = JSON.stringify({
-      "comment": inputs.comment,
-    }); 
-
-    // console.log(header); 
-    console.log(body); 
-
-    fetch(ADD_COMMENT_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "POST"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
   }
 
-  // Handle add new comment 
+  /* 
   const handleNewLike = () => {
     if (liked == false) {
-      setLikeNum(likeNum + 1); 
-      setLiked(true); 
-
       const header = {
         "Content-Type": 'application/json',
         "Accept": 'application/json', 
@@ -155,7 +127,7 @@ function Post({post}) {
         console.log('error: ' + error);
       }); 
     }
-  }
+  } */ 
 
   // Handle right top menu 
   const handleClick = (event) => {
@@ -170,6 +142,7 @@ function Post({post}) {
   const [editOpen, setEditOpen] = React.useState(false);
 
   const handleEditOpen = () => {
+    console.log(puid); 
     setEditOpen(true);
   };
 
@@ -299,24 +272,10 @@ function Post({post}) {
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <IconButton>
-            <FontAwesomeIcon icon={faShare} />
-          </IconButton>
+          <Share postId={ puid }/>
         </CardActions>
 
-        {showComments &&
-        <>
-          <CardContent>
-            {commentList.map(function(comment){
-              return (<Comment comment={comment} key={comment.id}/>)
-          })}
-          </CardContent>
-          <CardContent id="commentSession">
-            <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
-            <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
-          </CardContent>
-        </>
-        }
+        {showComments && <CommentList post={post}/> }
 
       </Card>
     </div>
