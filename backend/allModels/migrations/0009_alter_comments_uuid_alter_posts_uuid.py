@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('allModels', '0006_rename_items_inbox_posts_alter_comments_uuid_and_more'),
+        ('allModels', '0008_alter_comments_uuid_alter_posts_uuid'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='comments',
             name='uuid',
-            field=models.CharField(default='6793ed57-448c-4f44-9a12-34062436b446', max_length=255, unique=True),
+            field=models.CharField(default='64da3d91-2aa1-4b57-9788-a46db6aa7b19', max_length=255, unique=True),
         ),
         migrations.AlterField(
             model_name='posts',
             name='uuid',
-            field=models.CharField(default='2ffd4d68-647b-4c3a-9ea4-833a973b449b', max_length=255, unique=True),
+            field=models.CharField(default='d50bbd31-939c-4850-9203-a3e61a28f559', max_length=255, unique=True),
         ),
     ]
