@@ -33,29 +33,12 @@ function Post({post}) {
 
   var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
   var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/" + puid; 
-  var LIKED_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/liked"; 
+  var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + post_uuid + '/inbox'; 
   // console.log(ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
-
-  async function checkLiked() {
-    try {
-      const response = await fetch(LIKED_ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      if (data.items.some(item => item.uuid === puid)) {
-        setLiked(true); 
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
 
   async function fetchLikes() {
     try {
@@ -66,13 +49,18 @@ function Post({post}) {
   
       const data = await response.json();
       setLikeNum(data.total_likes); 
+
+      const isLikedByCurrentUser = data.items.some(item => item.author && item.author.uuid === uuid);
+      if (isLikedByCurrentUser) {
+        setLiked(true); 
+      }
+
     } catch (error) {
       console.error('Error:', error);
     }
   }
 
   useEffect(() => {
-    checkLiked(); 
     fetchLikes(); 
   }); 
   
@@ -84,12 +72,44 @@ function Post({post}) {
     console.log(inputs); 
   };
 
-  // Handle add new comment 
+  // Handle add new like
+  async function handleNewLike() {
+    if (liked == false) {
+      try {
+        const header = {
+          "Content-Type": 'application/json',
+          "Accept": 'application/json', 
+          "Origin": 'http://localhost:3000'
+        }
+
+        // Send like message to inbox 
+        const body = JSON.stringify(
+          { 
+            "type": "like", 
+            "p_or_c": "post", 
+            "userId": uuid, 
+            "postId": puid
+         }
+        ); 
+
+        console.log(body); 
+
+        await fetch(MESSAGE_ENDPOINT, {
+          headers: header,
+          body: body, 
+          method: "POST"
+        }); 
+
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      
+    }
+  }
+
+  /* 
   const handleNewLike = () => {
     if (liked == false) {
-      setLikeNum(likeNum + 1); 
-      setLiked(true); 
-
       const header = {
         "Content-Type": 'application/json',
         "Accept": 'application/json', 
@@ -106,7 +126,7 @@ function Post({post}) {
         console.log('error: ' + error);
       }); 
     }
-  }
+  } */ 
 
   // Handle right top menu 
   const handleClick = (event) => {
@@ -121,6 +141,7 @@ function Post({post}) {
   const [editOpen, setEditOpen] = React.useState(false);
 
   const handleEditOpen = () => {
+    console.log(puid); 
     setEditOpen(true);
   };
 
