@@ -23,7 +23,9 @@ function CommentList({post}) {
     const app_url = localStorage.getItem('url'); 
     
     var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-    var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"; 
+    // var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"; 
+    var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + post.author.uuid + '/inbox'; 
+    console.log(MESSAGE_ENDPOINT); 
     
     async function fetchComments() {
         try {
@@ -44,9 +46,39 @@ function CommentList({post}) {
         fetchComments(); 
     }); 
 
-    
+    async function handleNewComment() {
+      try {
+          const header = {
+            "Content-Type": 'application/json',
+            "Accept": 'application/json', 
+            "Origin": 'http://localhost:3000'
+          }
+  
+          // Send like message to inbox 
+          const body = JSON.stringify(
+            { 
+              "type": "comment", 
+              "comment": inputs.comment, 
+              "userId": uuid, 
+              "postId": puid
+           }
+          ); 
+  
+          console.log(body); 
+  
+          await fetch(MESSAGE_ENDPOINT, {
+            headers: header,
+            body: body, 
+            method: "POST"
+          }); 
+  
+          } catch (error) {
+            console.error('Error:', error);
+          }
+    }
+
   // Handle add new comment 
-  const handleNewComment = () => {
+  /* const handleNewComment = () => {
 
     console.log(inputs.comment); 
     const header = {
@@ -72,7 +104,7 @@ function CommentList({post}) {
     }).catch((error) => {
       console.log('error: ' + error);
     }); 
-  }
+  }*/ 
 
     return (
         <>
