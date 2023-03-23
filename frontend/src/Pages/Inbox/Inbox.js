@@ -18,23 +18,6 @@ import PeopleIcon from '@mui/icons-material/People';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
 
-/* 
-const messageData = [
-  {
-    id: 1, 
-    content: "Username1 liked your post"
-  },
-  {
-    id: 2, 
-    content: "Username2 wants to follow you"
-  },
-  {
-    id: 3, 
-    content: "Username3 commented on your post"
-  },
-];
-*/ 
-
 function Inbox() {
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
@@ -44,29 +27,18 @@ function Inbox() {
   const [messageList, setMessageList] = useState([]);
   const [open, setOpen] = React.useState({
     openPost: false,
-    openLike: false,
     openComment: false,
     openFollow: false,
+    openLike: false,
   });
 
-  async function fetchData() {
-    try {
-      const response = await fetch(ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      setMessageList(data.items);
-      // console.log(messageList);
-    } catch (error) {
-      console.error('Error:', error);
-      // Handle the error here
-    }
-  }
-
   useEffect(() => {
-    fetchData(); 
+    fetch(ENDPOINT, {
+      headers: { "Accept": "application/json" },
+      method: "GET"
+    }).then(response => response.json()).then(postData => {
+      setMessageList(postData.items);
+    });
   })
 
   const handleClick = (property) => {
@@ -88,6 +60,8 @@ function Inbox() {
       }
     >
 
+    {messageList && 
+    <>
       <ListItemButton onClick={() => handleClick("openPost")}>
         <ListItemIcon>
           <EmailIcon />
@@ -99,6 +73,17 @@ function Inbox() {
         <MessageList messageList={messageList[0]} type={"post"}/>
       </Collapse>
 
+      <ListItemButton onClick={() => handleClick("openComment")}>
+        <ListItemIcon>
+          <ChatIcon />
+        </ListItemIcon>
+      <ListItemText primary="Comment" />
+        {open.openComment ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={open.openComment} timeout="auto" unmountOnExit>
+        <MessageList messageList={messageList[1]} type={"comment"}/>
+      </Collapse>
+
       <ListItemButton onClick={() => handleClick("openFollow")}>
         <ListItemIcon>
           <PeopleIcon />
@@ -107,7 +92,7 @@ function Inbox() {
         {open.openFollow ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openFollow} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[1]} type={"follow"}/>
+        <MessageList messageList={messageList[2]} type={"follow"}/>
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openLike")}>
@@ -118,19 +103,11 @@ function Inbox() {
         {open.openLike ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openLike} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[2]} type={"like"}/>
+        <MessageList messageList={messageList[3]} type={"like"}/>
       </Collapse>
+      </>
+      }
       
-      <ListItemButton onClick={() => handleClick("openComment")}>
-        <ListItemIcon>
-          <ChatIcon />
-        </ListItemIcon>
-      <ListItemText primary="Comment" />
-        {open.openComment ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open.openComment} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[3]} type={"post"}/>
-      </Collapse>
     </List>
     </div>
     </>

@@ -69,7 +69,7 @@ function User({user, followed}) {
     }); 
   }
 
-  // Handle add new comment 
+  // Accept a follow request
   const acceptFollowRequest = () => {
     const header = {
       "Content-Type": 'application/json',
