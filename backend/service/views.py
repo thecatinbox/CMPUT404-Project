@@ -913,7 +913,7 @@ def inbox(request, pk):
                     commentId = request.data.get('commentId')
                     post = Comments.objects.get(uuid=commentId).id
                 
-                summary = author_name + " Likes your "+p_or_c
+                summary = author_name + " liked your "+p_or_c
             except:
                 return Response({"message": "Post not found"}, status=404)
 
