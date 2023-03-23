@@ -576,14 +576,14 @@ def followRequest(request, pk, foreignPk):
     
     if request.method == 'POST':
         if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
-            makeRequest = FollowRequest.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
+            makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
             makeRequest.save()
 
             send_author_inbox = Inbox.objects.get(author=object_user)
             send_author_inbox.followRequests.add(makeRequest)
 
             responseData = {
-                "type": "creat like" 
+                "type": "creat followRequest" 
             }
             return Response(responseData, status=201)
         else:
@@ -926,7 +926,7 @@ def inbox(request, pk):
                 liked = Liked.objects.get(object=post)
                 liked.items.add(like)
 
-                inbox.likes.add(liked)
+                inbox.likes.add(like)
                 inbox.save()
             else:
                 return Response({"message": "You have already liked this post"}, status=404)

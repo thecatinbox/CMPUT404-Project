@@ -142,7 +142,7 @@ class Inbox(models.Model):
     posts = models.ManyToManyField(Posts, blank=True, symmetrical=False)
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
-    likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)
+    likes = models.ManyToManyField(Likes, blank=True, symmetrical=False)
 
     # def __str__(self):
     #     return f"type:{self.type} author:{self.author} posts:{self.posts} comments:{self.comments} followRequests:{self.followRequests} likes:{self.likes}"
