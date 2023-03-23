@@ -26,10 +26,10 @@ SECRET_KEY = 'django-insecure-$%q1-_ii&csvh^so0i0m8x=1%-x-+l74*ks5q2km*tjexv8%gd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com/"]
+ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com",'localhost:8000','localhost:3000']
 
 CORS_ALLOWED_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'https://cmput404-project-app.herokuapp.com', 'https://cmput404-project-data.herokuapp.com']
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'https://cmput404-project-app.herokuapp.com', 'https://cmput404-project-data.herokuapp.com','http://localhost:8000']
 
 CORS_ALLOW_METHODS = (
     'DELETE',
