@@ -181,6 +181,7 @@ function SignUp() {
                             name="password" 
                             id="password" 
                             label="Password" 
+                            type="password"
                             onChange={handleChange} 
                             sx={{ mt: 2 }} />
 
@@ -190,6 +191,7 @@ function SignUp() {
                             name="password2" 
                             id="password2" 
                             label="Confirm Password" 
+                            type="password"
                             onChange={handleChange} 
                             sx={{ mt: 2 }} />
 

@@ -165,6 +165,7 @@ function SignIn() {
                                 label="Password" 
                                 autoComplete="current-password" 
                                 margin="normal" 
+                                type="password"
                                 onChange={handleChange} 
                                 />
 
