@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 function CommentList({post}) { 
     // Get comment list 
     const [commentList, setCommentList] = useState([]);
+    const [fetched, setFetched] = useState(false);
 
     // Handle input change 
     const [inputs, setInputs] = useState({});
@@ -33,6 +34,7 @@ function CommentList({post}) {
     
         const data = await response.json();
         setCommentList(data.items);
+        setFetched(true); 
         } catch (error) {
         console.error('Error:', error);
         }
@@ -74,15 +76,24 @@ function CommentList({post}) {
 
     return (
         <>
-          <CardContent>
+        {fetched ? (
+            <>
+            <CardContent>
             {commentList.map(function(comment){
-              return (<Comment comment={comment} key={comment.id}/>)
-          })}
-          </CardContent>
-          <CardContent id="commentSession">
-            <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
-            <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
-          </CardContent>
+                return (<Comment comment={comment} key={comment.id}/>)
+            })}
+            </CardContent>
+            <CardContent id="commentSession">
+                <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
+                <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
+            </CardContent>
+            </>
+        ) : (
+            <div id="loading" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <br/>
+                <p>Loading comments...</p>
+            </div>
+        )}
         </>
     );
 }
