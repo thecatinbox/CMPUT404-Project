@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@mui/icons-material": "^5.11.11",
+    "react-dropzone": "^14.2.3"
+  }
+}
