@@ -1,21 +1,23 @@
 import './Inbox.css';
 import Message from '../../Components/Message/Message'; 
 import TopBar from "../../Components/TopBar/TopBar";
-import * as React from 'react';
+// import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
+
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-
 import EmailIcon from '@mui/icons-material/Email';
 import PeopleIcon from '@mui/icons-material/People';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
 
+/* 
 const messageData = [
   {
     id: 1, 
@@ -30,16 +32,41 @@ const messageData = [
     content: "Username3 commented on your post"
   },
 ];
+*/ 
 
 function Inbox() {
+  const app_url = localStorage.getItem('url'); 
+  const uuid = localStorage.getItem('uuid'); 
+  // console.log(uuid); 
+  const ENDPOINT = 'http://' + app_url + '/server/authors/' + uuid + '/inbox'; 
+  
+  const [messageList, setMessageList] = useState([]);
   const [open, setOpen] = React.useState({
-    openPost: true,
-    openLike: true,
-    openComment: true,
-    openFollow: true,
+    openPost: false,
+    openLike: false,
+    openComment: false,
+    openFollow: false,
   });
 
-  console.log(open.openComment); 
+  async function fetchData() {
+    try {
+      const response = await fetch(ENDPOINT, {
+        headers: { "Accept": "application/json" },
+        method: "GET"
+      });
+  
+      const data = await response.json();
+      setMessageList(data.items);
+      // console.log(messageList);
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle the error here
+    }
+  }
+
+  useEffect(() => {
+    fetchData(); 
+  })
 
   const handleClick = (property) => {
     setOpen((prevState) => ({ ...prevState, [property]: !prevState[property] }));
@@ -59,7 +86,7 @@ function Inbox() {
         </ListSubheader>
       }
     >
-      
+
       <ListItemButton onClick={() => handleClick("openPost")}>
         <ListItemIcon>
           <EmailIcon />
@@ -68,13 +95,19 @@ function Inbox() {
         {open.openPost ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openPost} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-            {messageData.map(function(message){
-                return (<ListItemButton>
-                <Message message={message} key={message.id}/>
-                </ListItemButton>);
+      {!messageList[0] || messageList[0].length === 0 ? (
+          <Message message={{"content":"No messages"}}/>
+        ) : (
+          <List component="div" disablePadding>
+            {messageList[1].map(function (message) {
+              return (
+                <ListItemButton>
+                  <Message message={message} key={message.id} />
+                </ListItemButton>
+              );
             })}
-        </List>
+          </List>
+        )}
       </Collapse>
 
       <ListItemButton onClick={() => handleClick("openFollow")}>
@@ -85,13 +118,19 @@ function Inbox() {
         {open.openFollow ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openFollow} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-            {messageData.map(function(message){
-                return (<ListItemButton>
-                <Message message={message} key={message.id}/>
-                </ListItemButton>);
+      {!messageList[1] || messageList[1].length === 0 ? (
+          <Message message={{"content":"No messages"}}/>
+        ) : (
+          <List component="div" disablePadding>
+            {messageList[1].map(function (message) {
+              return (
+                <ListItemButton>
+                  <Message message={message} key={message.id} />
+                </ListItemButton>
+              );
             })}
-        </List>
+          </List>
+        )}
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openLike")}>
@@ -102,13 +141,19 @@ function Inbox() {
         {open.openLike ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openLike} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-            {messageData.map(function(message){
-                return (<ListItemButton>
-                <Message message={message} key={message.id}/>
-                </ListItemButton>);
+      {!messageList[2] || messageList[2].length === 0 ? (
+          <Message message={{"content":"No messages"}}/>
+        ) : (
+          <List component="div" disablePadding>
+            {messageList[1].map(function (message) {
+              return (
+                <ListItemButton>
+                  <Message message={message} key={message.id} />
+                </ListItemButton>
+              );
             })}
-        </List>
+          </List>
+        )}
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openComment")}>
@@ -119,13 +164,19 @@ function Inbox() {
         {open.openComment ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openComment} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-            {messageData.map(function(message){
-                return (<ListItemButton>
-                <Message message={message} key={message.id}/>
-                </ListItemButton>);
+      {!messageList[3] || messageList[3].length === 0 ? (
+          <Message message={{"content":"No messages"}}/>
+        ) : (
+          <List component="div" disablePadding>
+            {messageList[1].map(function (message) {
+              return (
+                <ListItemButton>
+                  <Message message={message} key={message.id} />
+                </ListItemButton>
+              );
             })}
-        </List>
+          </List>
+        )}
       </Collapse>
 
     </List>

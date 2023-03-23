@@ -12,12 +12,10 @@ function Home() {
   const navigate = useNavigate();
   const [postList, setPostList] = useState([]);
 
+  // If not signed in, go to home page 
   if (!localStorage.getItem('uuid')) {
     navigate("/signin");
   }
-
-  const uuid = localStorage.getItem('uuid'); 
-  // console.log(uuid); 
 
   const app_url = localStorage.getItem('url'); 
   const ENDPOINT = 'http://' + app_url + '/server/posts/'; 
