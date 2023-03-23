@@ -22,7 +22,7 @@ class Authors(models.Model):
     #accepted = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
+        return f"username:{self.username} password:{self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
 
 class Posts(models.Model):
     class Meta:
