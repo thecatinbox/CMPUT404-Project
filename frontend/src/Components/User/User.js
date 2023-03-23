@@ -11,16 +11,43 @@ import { faUserPlus, faUserMinus } from '@fortawesome/free-solid-svg-icons'
 
 function User({user, followed}) { 
 
-  const uid = localStorage.getItem('uuid'); 
-  const uuid = user.uuid; 
+  const uuid = localStorage.getItem('uuid'); 
+  const follow_uuid = user.uuid; 
   const app_url = localStorage.getItem('url'); 
 
-  var FOLLOW_REQUEST_ENDPOINT = "http://" + app_url + "/server/authors/" + uid + "/followRequests/" + uuid; 
-  var FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uid + "/followers/" + uuid; 
-  // console.log(FOLLOW_REQUEST_ENDPOINT); 
-  // console.log(FOLLOW_ENDPOINT); 
+  var FOLLOW_REQUEST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
+  var FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
+  var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + follow_uuid + '/inbox'; 
 
-  // Handle add new comment 
+  console.log(FOLLOW_REQUEST_ENDPOINT); 
+  console.log(MESSAGE_ENDPOINT); 
+
+  const sendFollowRequest = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000'
+    }
+
+    const body = JSON.stringify({
+      "type": "follow", 
+      "follower": uuid 
+    }); 
+
+    // console.log(header); 
+    console.log(body); 
+
+    fetch(MESSAGE_ENDPOINT, {
+      headers: header,
+      body: body, 
+      method: "POST"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  }
+
+  // Handle add new follower
+  /*
   const sendFollowRequest = () => {
     const header = {
       "Content-Type": 'application/json',
@@ -64,7 +91,7 @@ function User({user, followed}) {
     }).catch((error) => {
       console.log('error: ' + error);
     }); 
-  }
+  }*/ 
 
   // Handle add new comment 
   const removeFollower = () => {
@@ -86,7 +113,7 @@ function User({user, followed}) {
   const handleFollow = () => {
     if (!followed) {
       sendFollowRequest(); 
-      acceptFollowRequest(); 
+      // acceptFollowRequest(); 
     } else {
       removeFollower(); 
     }
@@ -100,9 +127,14 @@ function User({user, followed}) {
           {user.displayName}
         </Typography>
         <Typography sx={{ alignSelf: 'flex-end' }}>
-          <Button onClick={handleFollow}>
-            <FontAwesomeIcon icon={followed ? faUserMinus : faUserPlus} />
-          </Button>
+          {uuid != follow_uuid && 
+            <>
+              <Button onClick={handleFollow}>
+                <FontAwesomeIcon icon={followed ? faUserMinus : faUserPlus} />
+              </Button>
+            </>
+          }
+
         </Typography>
       </CardContent>
       </Card>
