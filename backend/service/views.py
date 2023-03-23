@@ -872,6 +872,7 @@ def inbox(request, pk):
             sendToAuthor = Authors.objects.get(uuid=pk)
             inbox = Inbox.objects.get(author=sendToAuthor)
             inbox.posts.add(selectedPost)
+            inbox.save()
 
         elif post_type == 'follow':
 
@@ -894,6 +895,7 @@ def inbox(request, pk):
                 makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
                 makeRequest.save()
                 inbox.followRequests.add(makeRequest)
+                inbox.save()
             else:
                 return Response({"message": "You are already following this user"}, status=404)
 
@@ -925,6 +927,7 @@ def inbox(request, pk):
                 liked.items.add(like)
 
                 inbox.likes.add(liked)
+                inbox.save()
             else:
                 return Response({"message": "You have already liked this post"}, status=404)
 
@@ -954,6 +957,7 @@ def inbox(request, pk):
             currentPost.save()
 
             inbox.comments.add(newComment)
+            inbox.save()
 
         else:
             return Response(status=400)
