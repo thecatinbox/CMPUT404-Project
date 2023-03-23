@@ -255,7 +255,7 @@ def Post(request, pk):
         currentAuthor = Authors.objects.filter(uuid=pk).first()
         new_post = request.data
         new_postId = uuid.uuid4()
-        id = f"{request.build_absolute_uri('/')[:-1]}/authors/{str(pk)}/posts/{str(new_postId)}"
+        id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(pk)}/posts/{str(new_postId)}"
         newPost = Posts.objects.create(
             title=new_post['title'],
             uuid=new_postId,
@@ -445,7 +445,7 @@ def getComments(request, pk, postsId):
         currentPost = Posts.objects.filter(uuid=postsId).first()
         new_comment = request.data
         new_COMM_UUId = uuid.uuid4()
-        commentId = f"{request.build_absolute_uri('/')}service/authors/{str(pk)}/posts/{str(postsId)}/comments/{str(new_COMM_UUId)}"
+        commentId = f"{request.build_absolute_uri('/')}server/authors/{str(pk)}/posts/{str(postsId)}/comments/{str(new_COMM_UUId)}"
         newComment = Comments.objects.create(uuid=new_COMM_UUId, id=commentId, post=currentPost, author=currentAuthor,
                                              comment=new_comment['comment'], contentType=new_comment['contentType']
                                              )
@@ -781,29 +781,33 @@ def inbox(request, pk):
         try:
             author = Authors.objects.get(uuid=pk)
             author_inbox = Inbox.objects.get(author=author)
-        except Authors.DoesNotExist:
+            print(author_inbox.comments.all())
+        
+        
+            posts_list = [PostsSerializer(post).data for post in author_inbox.posts.all()]
+            comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
+            follow_requests_list = [FollowRequestSerializer(request).data for request in author_inbox.followRequests.all()]
+            likes_list = [LikedSerializer(like).data for like in author_inbox.likes.all()]
+
+            data_list = []
+            data_list.append(posts_list)
+            data_list.append(comments_list)
+            data_list.append(follow_requests_list)
+            data_list.append(likes_list)
+            #posts_list + comments_list + follow_requests_list + likes_list
+
+            response_data = {
+                "type": "inbox",
+                "author": author.uuid,
+                "items": data_list,
+            }
+
+            return Response(response_data, status=200)
+        except :
             return Response(status=404)
-
-        posts_list = list(author_inbox.posts.all())
-        comments_list = list(author_inbox.comments.all())
-        follow_requests_list = list(author_inbox.followRequests.all())
-        likes_list = list(author_inbox.likes.all())
-
-        data_list = []
-        data_list.append(posts_list)
-        data_list.append(comments_list)
-        data_list.append(follow_requests_list)
-        data_list.append(likes_list)
-
-        response_data = {
-            "type": "inbox",
-            "author": author.id,
-            "items": data_list,
-        }
-
-        return Response(response_data, status=200)
-
     elif request.method == 'POST':
+
+
         try:
             author = Authors.objects.get(uuid=pk)
             inbox = Inbox.objects.get(author=author)
@@ -813,57 +817,61 @@ def inbox(request, pk):
         post_type = request.data.get('type')
 
         if post_type == 'post':
-            title = request.data.get('title')
-            #return Response(f"{title}", status=400)
-            if "description" in request.data:
-                description = request.data.get('description')
-            else:
-                description = ""
-            if "content" in request.data:
-                content = request.data.get('content')
-            else:
-                content = ""
-            if "visibility" in request.data:
-                visibility = request.data.get('visibility')
-            else:
-                visibility = "PUBLIC"
-            if "contentType" in request.data:
-                content_type = request.data.get('content_type')
-            else:
-                content_type = "text/plain"
-            if "categories" in request.data:
-                categories = request.data.get('categories')
-            else:
-                categories = ""
-            uid = str(uuid.uuid4())
+        #     title = request.data.get('title')
+        #     #return Response(f"{title}", status=400)
+        #     if "description" in request.data:
+        #         description = request.data.get('description')
+        #     else:
+        #         description = ""
+        #     if "content" in request.data:
+        #         content = request.data.get('content')
+        #     else:
+        #         content = ""
+        #     if "visibility" in request.data:
+        #         visibility = request.data.get('visibility')
+        #     else:
+        #         visibility = "PUBLIC"
+        #     if "contentType" in request.data:
+        #         content_type = request.data.get('content_type')
+        #     else:
+        #         content_type = "text/plain"
+        #     if "categories" in request.data:
+        #         categories = request.data.get('categories')
+        #     else:
+        #         categories = ""
+        #     uid = str(uuid.uuid4())
 
-            tempCheck = 0
-            if 'image' in request.FILES:
-                image = request.FILES['image']
-                image_path = default_storage.save(f'uploads/{pk}/{image.name}', image)
-                contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
-                content_type = 'image'  
-                tempCheck = 1
+        #     tempCheck = 0
+        #     if 'image' in request.FILES:
+        #         image = request.FILES['image']
+        #         image_path = default_storage.save(f'uploads/{pk}/{image.name}', image)
+        #         contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
+        #         content_type = 'image'  
+        #         tempCheck = 1
 
-            new_post = Posts()
-            new_post.title = title
-            new_post.description = description
-            if tempCheck == 1:
-                new_post.contentImage = contentImage
-            else:
-                new_post.content = content
-            new_post.visibility = visibility
-            new_post.contentType = content_type
-            new_post.uuid = uid
-            new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{pk}/posts/{uid}"
-            new_post.source = new_post.id
-            new_post.origin = new_post.id
-            current_author = Authors.objects.get(uuid=pk)
-            new_post.author = current_author
-            new_post.categories = categories
-            new_post.count = "0"
-            new_post.save()
-            inbox.posts.add(new_post)
+        #     new_post = Posts()
+        #     new_post.title = title
+        #     new_post.description = description
+        #     if tempCheck == 1:
+        #         new_post.contentImage = contentImage
+        #     else:
+        #         new_post.content = content
+        #     new_post.visibility = visibility
+        #     new_post.contentType = content_type
+        #     new_post.uuid = uid
+        #     new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{pk}/posts/{uid}"
+        #     new_post.source = new_post.id
+        #     new_post.origin = new_post.id
+        #     current_author = Authors.objects.get(uuid=pk)
+        #     new_post.author = current_author
+        #     new_post.categories = categories
+        #     new_post.count = "0"
+        #     new_post.save()
+            postId = request.data.get('postId')
+            selectedPost = Posts.objects.get(uuid=postId)
+            sendToAuthor = Authors.objects.get(uuid=pk)
+            inbox = Inbox.objects.get(author=sendToAuthor)
+            inbox.posts.add(selectedPost)
 
         elif post_type == 'follow':
 
@@ -883,15 +891,15 @@ def inbox(request, pk):
             summary = author_name + " wants to follow " + object_name
             
             if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
-                makeRequest = FollowRequest.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
+                makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
                 makeRequest.save()
                 inbox.followRequests.add(makeRequest)
             else:
                 return Response({"message": "You are already following this user"}, status=404)
 
-        elif post_type == 'like':
-            p_or_c = request.data.get('p_or_c')#get post or comment
+        elif post_type == 'like': 
             try:
+                p_or_c = request.data.get('p_or_c')#get post or comment
                 userId = request.data.get('userId')
                 currentAuthor = Authors.objects.get(uuid=userId)
                 author_name = currentAuthor.displayName
@@ -916,7 +924,7 @@ def inbox(request, pk):
                 liked = Liked.objects.get(object=post)
                 liked.items.add(like)
 
-                inbox.likes.add(like)
+                inbox.likes.add(liked)
             else:
                 return Response({"message": "You have already liked this post"}, status=404)
 
@@ -932,7 +940,7 @@ def inbox(request, pk):
             newComment.comment = comment
             newComment.contentType = content_type
             newComment.uuid = uid
-            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/post/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
             
             currentAuthor = Authors.objects.get(uuid=userId)
             newComment.author = currentAuthor
