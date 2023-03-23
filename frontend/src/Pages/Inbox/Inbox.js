@@ -96,7 +96,7 @@ function Inbox() {
         {open.openPost ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openPost} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[0]}/>
+        <MessageList messageList={messageList[0]} type={"post"}/>
       </Collapse>
 
       <ListItemButton onClick={() => handleClick("openFollow")}>
@@ -107,7 +107,7 @@ function Inbox() {
         {open.openFollow ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openFollow} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[1]}/>
+        <MessageList messageList={messageList[1]} type={"follow"}/>
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openLike")}>
@@ -118,7 +118,7 @@ function Inbox() {
         {open.openLike ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openLike} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[2]}/>
+        <MessageList messageList={messageList[2]} type={"like"}/>
       </Collapse>
       
       <ListItemButton onClick={() => handleClick("openComment")}>
@@ -129,7 +129,7 @@ function Inbox() {
         {open.openComment ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open.openComment} timeout="auto" unmountOnExit>
-        <MessageList messageList={messageList[3]}/>
+        <MessageList messageList={messageList[3]} type={"post"}/>
       </Collapse>
     </List>
     </div>

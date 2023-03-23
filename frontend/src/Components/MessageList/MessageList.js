@@ -3,7 +3,7 @@ import Message from '../Message/Message';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 
-function MessageList({messageList}) { 
+function MessageList({messageList, type}) { 
   return (
     <>
     {!messageList || messageList.length === 0 ? (
@@ -11,11 +11,23 @@ function MessageList({messageList}) {
       ) : (
         <List component="div" disablePadding>
           {messageList.map(function (message) {
-            return (
-              <ListItemButton>
-                <Message message={message} key={message.id} />
-              </ListItemButton>
-            );
+            let Component;
+            switch (type) {
+              case "follow":
+                return (
+                  <ListItemButton key={message.id}>
+                    <Message message={message} />
+                  </ListItemButton>
+                );
+
+              default:
+                return (
+                  <ListItemButton key={message.id}>
+                    <Message message={message} />
+                  </ListItemButton>
+                );
+            }
+            
           })}
         </List>
       )}
