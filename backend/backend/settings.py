@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-$%q1-_ii&csvh^so0i0m8x=1%-x-+l74*ks5q2km*tjexv8%gd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://cmput404-project-app.herokuapp.com","https://cmput404-project-data.herokuapp.com/"]
 
 CORS_ALLOWED_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
@@ -168,6 +168,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
