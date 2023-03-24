@@ -9,8 +9,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart, faChevronDown, faComment, faShare} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faChevronDown, faComment, faShare} from '@fortawesome/free-solid-svg-icons';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -40,6 +41,21 @@ function Post({post}) {
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
+
+  const theme = createTheme({
+    palette: {
+      text: {
+        primary: '#007DAA',
+        secondary: "#79B3C1",
+      },
+      primary: {
+        main: '#FF694B', 
+      },
+      secondary: {
+        main: '#007DAA',
+      }
+    },
+  });
 
   async function fetchLikes() {
     try {
@@ -199,6 +215,7 @@ function Post({post}) {
 
   return (
     <div className='post'>
+      <ThemeProvider theme={ theme }>
       <Card sx={{ minWidth: 275 }}>
         <CardActions disableSpacing
           sx={{
@@ -278,6 +295,7 @@ function Post({post}) {
         {showComments && <CommentList post={post}/> }
 
       </Card>
+      </ThemeProvider>
     </div>
   );
 }

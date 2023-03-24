@@ -2,6 +2,7 @@ import User from '../../Components/User/User';
 import TopBar from "../../Components/TopBar/TopBar";
 import './Friends.css';
 import React, { useState, useEffect } from "react";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Friends() {
 
@@ -13,6 +14,21 @@ function Friends() {
 
   const [followerData, setFollowerData] = useState([]);
   const [followingData, setFollowingData] = useState([]);
+
+  const theme = createTheme({
+    palette: {
+      text: {
+        primary: '#007DAA',
+        secondary: "#79B3C1",
+      },
+      primary: {
+        main: '#FF694B', 
+      },
+      secondary: {
+        main: '#007DAA',
+      }
+    },
+  });
 
   function fetchData() {
     try {
@@ -45,6 +61,7 @@ function Friends() {
   return (
     <>
       <TopBar id="friends"/>
+      <ThemeProvider theme={ theme }>
       <div className="friends">
 
         <div className="following">
@@ -62,6 +79,7 @@ function Friends() {
         </div>
 
       </div>
+      </ThemeProvider>
     </>
   );
 }

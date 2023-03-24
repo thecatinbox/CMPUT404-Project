@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './SignIn.css';
 import { useNavigate } from "react-router-dom";
 
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography';
 
 import Image from './UA_Logo_Green_RGB.png';
 import Avatar from '@mui/material/Avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 
 function SignIn() {
@@ -25,7 +25,16 @@ function SignIn() {
 
     const ENDPOINT = app_url + '/server/authors/'; 
     
-    const theme = createTheme();
+    const theme = createTheme({
+        palette: {
+          primary: {
+            main: '#FF694B', 
+          },
+          secondary: {
+            main: '#007DAA',
+          }
+        },
+      });
 
     const checkAuth = (userData) => {
         if (inputs.username === userData.username && inputs.password === userData.password) {
@@ -130,13 +139,14 @@ function SignIn() {
                                 my: 5}}>
 
                         <Avatar sx={{ m: 1, 
-                                    bgcolor: 'secondary.main' }}>
+                                    bgcolor: 'primary.main' }}>
                             <FontAwesomeIcon icon={faArrowRightToBracket} />
                         </Avatar>
 
                         <Typography 
                             component="h1"
-                            variant="h5">
+                            variant="h5"
+                            style={{ color: '#0091AA', fontWeight: 900 }}>
                                 Sign in
                         </Typography>
 
@@ -173,7 +183,8 @@ function SignIn() {
                                 type="submit" 
                                 fullWidth 
                                 variant="contained" 
-                                sx={{ mt: 3, mb: 2 }}>
+                                sx={{ mt: 3, mb: 2 }}
+                                style={{ color: "#FFFFFF" }}>
                                     Sign In
                             </Button>
 
@@ -185,7 +196,8 @@ function SignIn() {
                                     <Link 
                                         href="./signup" 
                                         variant="body1" 
-                                        margin="normal" >
+                                        margin="normal" 
+                                        color="secondary">
                                             Do not have an Account? Sign up
                                     </Link>
                                 </Grid>
