@@ -11,7 +11,7 @@ import SinglePost from "./Pages/SinglePost/SinglePost";
 import './index.css';
 
 export default function App() {
-  localStorage.setItem('url', "http://127.0.0.1:8000"); 
+  localStorage.setItem('url', "https://cmput404-project-data.herokuapp.com"); 
 
   return (
     <BrowserRouter>
