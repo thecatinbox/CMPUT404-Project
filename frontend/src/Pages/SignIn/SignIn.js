@@ -23,7 +23,7 @@ function SignIn() {
     const navigate = useNavigate();
     const app_url = localStorage.getItem('url'); 
 
-    const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+    const ENDPOINT = app_url + '/server/authors/'; 
     
     const theme = createTheme();
 

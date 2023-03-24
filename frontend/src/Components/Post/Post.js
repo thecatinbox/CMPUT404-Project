@@ -32,9 +32,9 @@ function Post({post}) {
   const puid = post.uuid; 
   const app_url = localStorage.getItem('url'); 
 
-  var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
-  var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + post_uuid + '/inbox'; 
+  var POST_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
+  var LIKE_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
+  var MESSAGE_ENDPOINT = app_url + '/server/authors/' + post_uuid + '/inbox'; 
   // console.log(ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();

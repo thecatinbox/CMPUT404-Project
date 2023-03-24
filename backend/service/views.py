@@ -6,9 +6,9 @@ from rest_framework import permissions, authentication
 from django.core.paginator import Paginator
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer
+from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 from allModels.models import Authors, Followers, FollowRequests
-from allModels.models import Posts, Comments, Likes, Liked
+from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Inbox
 from rest_framework.permissions import AllowAny
 import uuid
@@ -781,13 +781,30 @@ def inbox(request, pk):
         try:
             author = Authors.objects.get(uuid=pk)
             author_inbox = Inbox.objects.get(author=author)
-            print(author_inbox.comments.all())
+            #print(author_inbox.comments.all())
         
         
-            posts_list = [PostsSerializer(post).data for post in author_inbox.posts.all()]
+            posts_list = [ShareSerializer(post).data for post in author_inbox.posts.all()]
+            for i in posts_list:
+                user = Authors.objects.get(username=i['author'])
+                i['author'] = AuthorSerializer(user).data
+                temp_post = Posts.objects.get(id=i['post'])
+                i['post'] = PostsSerializer(temp_post).data
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
+            for i in comments_list:
+                user = Authors.objects.get(username=i['author'])
+                i['author'] = AuthorSerializer(user).data
             follow_requests_list = [FollowRequestSerializer(request).data for request in author_inbox.followRequests.all()]
+            for i in follow_requests_list:
+                user_a = Authors.objects.get(username=i['actor'])
+                user_b = Authors.objects.get(username=i['object'])
+                i['actor'] = AuthorSerializer(user_a).data
+                i['object'] = AuthorSerializer(user_b).data
+
             likes_list = [LikedSerializer(like).data for like in author_inbox.likes.all()]
+            for i in likes_list:
+                user = Authors.objects.get(username=i['author'])
+                i['author'] = AuthorSerializer(user).data
 
             data_list = []
             data_list.append(posts_list)
@@ -868,10 +885,16 @@ def inbox(request, pk):
         #     new_post.count = "0"
         #     new_post.save()
             postId = request.data.get('postId')
+            sender = request.data.get('sender')
+            sender_author = Authors.objects.get(uuid=sender)
             selectedPost = Posts.objects.get(uuid=postId)
             sendToAuthor = Authors.objects.get(uuid=pk)
+
+            newShare = Shares.objects.create(post=selectedPost, author=sender_author)
+            newShare.save()
+
             inbox = Inbox.objects.get(author=sendToAuthor)
-            inbox.posts.add(selectedPost)
+            inbox.posts.add(newShare)
             inbox.save()
 
         elif post_type == 'follow':
@@ -943,7 +966,7 @@ def inbox(request, pk):
             newComment.comment = comment
             newComment.contentType = content_type
             newComment.uuid = uid
-            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/post/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
             
             currentAuthor = Authors.objects.get(uuid=userId)
             newComment.author = currentAuthor

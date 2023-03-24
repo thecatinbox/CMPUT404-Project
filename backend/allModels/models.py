@@ -22,7 +22,7 @@ class Authors(models.Model):
     #accepted = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"username: {self.username} password: {self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
+        return f"username:{self.username} password:{self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
 
 class Posts(models.Model):
     class Meta:
@@ -133,13 +133,27 @@ class Liked(models.Model):
                 f"object:{self.object} "
                 )
 
+class Shares(models.Model):
+    class Meta:
+        verbose_name_plural = 'Shares'
+
+    type = models.CharField(max_length = 255,default='share', editable=False)
+    author = models.ForeignKey(Authors, on_delete = models.CASCADE)#author who shares
+    post = models.ForeignKey(Posts, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return (f"type:{self.type} "
+                f"author:{self.author} "
+                f"post:{self.post} "
+                )    
+
 class Inbox(models.Model):
     class Meta:
         verbose_name_plural = 'Inboxes'
     
     type = models.CharField(max_length = 255,default = "inbox", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    posts = models.ManyToManyField(Posts, blank=True, symmetrical=False)
+    posts = models.ManyToManyField(Shares, blank=True, symmetrical=False)
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
     likes = models.ManyToManyField(Likes, blank=True, symmetrical=False)

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from .post_form import post_form, Comment_form
-from allModels.models import Posts, Comments, Likes, Liked
+from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Authors, Followers, FollowRequests
 from rest_framework.response import Response
 from django.urls import reverse
@@ -121,9 +121,11 @@ def create_post(request, userId):
         new_post.visibility = visibility
         new_post.contentType = content_type
         new_post.uuid = uid
-        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/post/authors/{userId}/posts/{uid}"
-        new_post.source = new_post.id
-        new_post.origin = new_post.id
+        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(userId)}/posts/{uid}"
+        if "source" in request.data:
+            new_post.source = request.data.get('source')
+        if "origin" in request.data:
+            new_post.origin = request.data.get('origin')
         current_author = Authors.objects.get(uuid=userId)
         new_post.author = current_author
         new_post.categories = categories
@@ -165,7 +167,7 @@ def create_comment(request, userId, postId):
         newComment.comment = comment
         newComment.contentType = content_type
         newComment.uuid = uid
-        newComment.id = f"{request.build_absolute_uri('/')[:-1]}/post/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+        newComment.id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
         
         currentAuthor = Authors.objects.get(uuid=userId)
         newComment.author = currentAuthor
@@ -246,7 +248,7 @@ def create_like(request, userId, postId):
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def share_post(request, userId, postId):
-    currentAuthor = Authors.objects.filter(uuid=userId).first()
+    currentAuthor = Authors.objects.get(uuid=userId)
     selectedPost = Posts.objects.get(uuid=postId)
 
     if request.method == 'POST':
@@ -255,7 +257,10 @@ def share_post(request, userId, postId):
 
         inbox = Inbox.objects.get(author=sendToAuthor)
 
-        inbox.posts.add(selectedPost)
+        newShare = Shares.objects.create(post=selectedPost, author=currentAuthor)
+        newShare.save()
+
+        inbox.posts.add(newShare)
         inbox.save()
 
         responseData = {
