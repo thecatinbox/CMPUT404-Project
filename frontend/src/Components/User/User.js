@@ -15,9 +15,9 @@ function User({user, followed}) {
   const follow_uuid = user.uuid; 
   const app_url = localStorage.getItem('url'); 
 
-  var FOLLOW_REQUEST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
-  var FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
-  var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + follow_uuid + '/inbox'; 
+  var FOLLOW_REQUEST_ENDPOINT = app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
+  var FOLLOW_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
+  var MESSAGE_ENDPOINT = app_url + '/server/authors/' + follow_uuid + '/inbox'; 
 
   console.log(FOLLOW_REQUEST_ENDPOINT); 
   console.log(MESSAGE_ENDPOINT); 

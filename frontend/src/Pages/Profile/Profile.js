@@ -21,8 +21,8 @@ function Profile() {
   const uuid = localStorage.getItem('uuid'); 
 
   // console.log(uuid); 
-  const POSTS_ENDPOINT = 'http://' + app_url + '/server/authors/' + uuid + '/posts/'; 
-  const USER_ENDPOINT = 'http://' + app_url + '/server/authors/' + uuid + '/'; 
+  const POSTS_ENDPOINT = app_url + '/server/authors/' + uuid + '/posts/'; 
+  const USER_ENDPOINT = app_url + '/server/authors/' + uuid + '/'; 
 
   useEffect(() => { 
     fetch(POSTS_ENDPOINT, {

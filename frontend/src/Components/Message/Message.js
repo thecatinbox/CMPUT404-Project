@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faXmark, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
+import { useNavigate } from "react-router-dom";
+
 import Grid from '@mui/material/Grid';
 import "./Message.css"; 
 
@@ -12,12 +14,19 @@ function Message({message}) {
 
   // console.log(message); 
 
-  const acceptFollowRequest = () => {
+  const navigate = useNavigate();
+
+  const toSinglePost = (post_url) => {
+    localStorage.setItem('post_url', post_url); 
+    navigate("/singlepost"); 
+  }
+
+  const acceptFollowRequest = (follow_uuid) => {
     const uuid = localStorage.getItem('uuid'); 
     // const follow_uuid = user.uuid; 
     const app_url = localStorage.getItem('url'); 
   
-    const FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/" // + follow_uuid; 
+    const FOLLOW_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
 
     const header = {
       "Content-Type": 'application/json',
@@ -45,15 +54,15 @@ function Message({message}) {
     const type = message.type; 
 
     switch (type) {
-      case "post":
+      case "share":
         return (
           <div className='message'>
             <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography sx={{ alignSelf: 'flex-start' }}>
-                Your friend shared a post with you. 
+                {message.author.displayName} shared a post with you 
               </Typography>
               <Typography sx={{ alignSelf: 'flex-end' }}>
-                <Button> <FontAwesomeIcon icon={faArrowRight} /></Button>
+                <Button onClick={() => toSinglePost(message.post.id)}> <FontAwesomeIcon icon={faArrowRight} /></Button>
               </Typography>
             </Grid>
           </div>
@@ -64,10 +73,10 @@ function Message({message}) {
           <div className='message'>
             <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography sx={{ alignSelf: 'flex-start' }}>
-                {message.author} commented: "{message.comment}"
+                {message.author.displayName} commented: "{message.comment}"
               </Typography>
               <Typography sx={{ alignSelf: 'flex-end' }}>
-                <Button> <FontAwesomeIcon icon={faArrowRight} /></Button>
+                <Button onClick={() => toSinglePost(message.post)}> <FontAwesomeIcon icon={faArrowRight} /></Button>
               </Typography>
             </Grid>
           </div>
@@ -81,7 +90,7 @@ function Message({message}) {
                 {message.summary}
               </Typography>
               <Typography sx={{ alignSelf: 'flex-end' }}>
-                <Button> <FontAwesomeIcon icon={faCheck} /></Button>
+                <Button onClick={() => acceptFollowRequest(message.actor.uuid)}> <FontAwesomeIcon icon={faCheck} /></Button>
                 <Button> <FontAwesomeIcon icon={faXmark} /></Button>
               </Typography>
             </Grid>
@@ -96,7 +105,7 @@ function Message({message}) {
                 {message.summary}
               </Typography>
               <Typography sx={{ alignSelf: 'flex-end' }}>
-                <Button> <FontAwesomeIcon icon={faArrowRight} /></Button>
+                <Button onClick={() => toSinglePost(message.object)}> <FontAwesomeIcon icon={faArrowRight} /></Button>
               </Typography>
             </Grid>
           </div>

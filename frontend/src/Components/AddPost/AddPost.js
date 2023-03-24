@@ -9,7 +9,7 @@ const AddPost = () => {
   const uuid = localStorage.getItem('uuid'); 
   const app_url = localStorage.getItem('url'); 
   // console.log(app_url); 
-  const ENDPOINT = 'http://' + app_url + '/post/authors/' + uuid + '/posts/create'; 
+  const ENDPOINT = app_url + '/post/authors/' + uuid + '/posts/create'; 
   // console.log(ENDPOINT); 
 
   const addPost = (title, content) => {
