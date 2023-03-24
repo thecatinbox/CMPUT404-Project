@@ -3,6 +3,7 @@ import Post from '../../Components/Post/Post';
 import AddPost from '../../Components/AddPost/AddPost'; 
 import TopBar from "../../Components/TopBar/TopBar";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'; 
 import './Home.css';
 
 function Home() {
@@ -19,7 +20,7 @@ function Home() {
 
   const app_url = localStorage.getItem('url'); 
   const ENDPOINT = app_url + '/server/posts/'; 
-
+  
   async function fetchData() {
     try {
       const response = await fetch(ENDPOINT, {
@@ -28,16 +29,33 @@ function Home() {
       });
   
       const data = await response.json();
-      setPostList(data.items);
+      return data.items;
     } catch (error) {
       console.error('Error:', error);
       // Handle the error here
     }
   }
-
+  
+  async function fetchTeam16Data() {
+    return axios.get('https://sd16-api.herokuapp.com/service/authors/afe5dcfe-a763-41c0-8984-f72c1eddb084/posts/', {
+      headers: {
+        Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
+      }
+    })
+    .then(res => {
+      console.log(res.data); 
+      return res.data.posts;
+    })
+  }
+  
   useEffect(() => {
-    fetchData(); 
-  })
+    Promise.all([fetchData(), fetchTeam16Data()]).then(results => {
+      const postList12 = results[0];
+      const postList16 = results[1];
+      const mergedPostList = [...postList12, ...postList16];
+      setPostList(mergedPostList);
+    });
+  }, []);
 
   return (
     <>
