@@ -9,7 +9,7 @@ function Search() {
   // console.log(parameter);
   const app_url = localStorage.getItem('url'); 
 
-  const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+  const ENDPOINT = app_url + '/server/authors/'; 
   const [userList, setUserList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 

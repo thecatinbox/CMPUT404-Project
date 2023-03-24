@@ -22,9 +22,9 @@ function CommentList({post}) {
     const puid = post.uuid; 
     const app_url = localStorage.getItem('url'); 
     
-    var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-    // var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"; 
-    var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + post.author.uuid + '/inbox'; 
+    var COMMENT_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
+    // var ADD_COMMENT_ENDPOINT = app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"; 
+    var MESSAGE_ENDPOINT = app_url + '/server/authors/' + post.author.uuid + '/inbox'; 
     console.log(MESSAGE_ENDPOINT); 
     
     async function fetchComments() {

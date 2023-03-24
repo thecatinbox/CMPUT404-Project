@@ -18,7 +18,7 @@ function Home() {
   }
 
   const app_url = localStorage.getItem('url'); 
-  const ENDPOINT = 'http://' + app_url + '/server/posts/'; 
+  const ENDPOINT = app_url + '/server/posts/'; 
 
   async function fetchData() {
     try {

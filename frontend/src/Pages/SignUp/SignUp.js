@@ -26,8 +26,8 @@ function SignUp() {
     const theme = createTheme();
 
     const navigate = useNavigate();
-    const SIGNUP_ENDPOINT = 'http://' + app_url + '/signup/'; 
-    const AUTHORS_ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+    const SIGNUP_ENDPOINT = app_url + '/signup/'; 
+    const AUTHORS_ENDPOINT = app_url + '/server/authors/'; 
 
     // handle changes in the input box
     const handleChange = (event) => {

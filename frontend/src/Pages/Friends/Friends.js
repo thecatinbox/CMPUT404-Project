@@ -8,8 +8,8 @@ function Friends() {
   const uuid = localStorage.getItem('uuid'); 
   const app_url = localStorage.getItem('url'); 
 
-  const FOLLOWER_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/"; 
-  const FOLLOWING_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/following/"; 
+  const FOLLOWER_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/"; 
+  const FOLLOWING_ENDPOINT = app_url + "/server/authors/" + uuid + "/following/"; 
 
   const [followerData, setFollowerData] = useState([]);
   const [followingData, setFollowingData] = useState([]);

@@ -24,7 +24,7 @@ function SimpleDialog(props) {
   const [friends, setFriends] = React.useState(""); 
 
   const app_url = localStorage.getItem('url'); 
-  const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+  const ENDPOINT = app_url + '/server/authors/'; 
 
   // Get friend list (using user list as a temp)
   React.useEffect(() => {
@@ -83,7 +83,7 @@ function Share( {postId} ) {
     if (value == "") {return; }
 
     const app_url = localStorage.getItem('url'); 
-    var MESSAGE_ENDPOINT = 'http://' + app_url + '/server/authors/' + value + '/inbox'; 
+    var MESSAGE_ENDPOINT = app_url + '/server/authors/' + value + '/inbox'; 
 
     const header = {
       "Content-Type": 'application/json',
