@@ -76,6 +76,7 @@ SimpleDialog.propTypes = {
 
 function Share( {postId} ) {
   const [open, setOpen] = React.useState(false);
+  const uuid = localStorage.getItem('uuid'); 
 
   // Handle add new like
   const handleShare = (value) => {
@@ -94,6 +95,7 @@ function Share( {postId} ) {
     const body = JSON.stringify(
       { 
         "type": "post", 
+        "sender": uuid, 
         "postId": postId
      }
     ); 

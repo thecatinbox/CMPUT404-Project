@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 function SinglePost() {
   const navigate = useNavigate();
 
-  const post_uuid = localStorage.getItem('post_uuid'); 
-  const post_puid = localStorage.getItem('post_puid'); 
-  const app_url = localStorage.getItem('url'); 
-  const ENDPOINT = 'http://' + app_url + '/server/authors/' + post_uuid + '/posts/' + post_puid; 
+  // const post_uuid = localStorage.getItem('post_uuid'); 
+  // const post_puid = localStorage.getItem('post_puid'); 
+  // const app_url = localStorage.getItem('url'); 
+  const ENDPOINT = localStorage.getItem('post_url'); // 'http://' + app_url + '/server/authors/' + post_uuid + '/posts/' + post_puid; 
 
   const [post, setPost] = useState();
 
