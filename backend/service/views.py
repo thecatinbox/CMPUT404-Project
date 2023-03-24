@@ -529,27 +529,27 @@ def oneFollower(request, pk, foreignPk):
 
     if request.method == 'DELETE':
         try:
-            Followers.objects.get(follower=current_user, followedUser=foreign_user).delete()
+            Followers.objects.get(follower=foreign_user, followedUser=current_user).delete()
             return Response({"message": "Unfollowed successfully"}, status=200)
         except Followers.DoesNotExist:
             return Response({"message": "No such follower relationship"}, status=404)
 
     elif request.method == 'PUT':
-        if Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+        if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             return Response({"message": "Already followed"}, status=400)
         else:
             if current_user == foreign_user:
                 return Response({"message": "You cannot follow yourself"}, status=400)
-            new_follow = Followers(followedUser=foreign_user, follower=current_user)
+            new_follow = Followers(followedUser=current_user, follower=foreign_user)
             new_follow.save()
             return Response({"message": "Followed successfully"}, status=200)
 
     elif request.method == 'GET':
-        if Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+        if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             data = {
                 "isFollowed": True,
-                "author": AuthorSerializer(foreign_user).data,
-                "followed by": AuthorSerializer(current_user).data
+                "author": AuthorSerializer(current_user).data,
+                "followed by": AuthorSerializer(foreign_user).data
             }
             return Response(data, status=200)
         else:
@@ -569,14 +569,14 @@ def followRequest(request, pk, foreignPk):
     if current_user == foreign_user:
         return Response({"message": "You cannot follow yourself"}, status=404)
         
-    author_name = current_user.displayName
-    object_name = foreign_user.displayName
-    belongTo = foreign_user.uuid
+    author_name = foreign_user.displayName
+    object_name = current_user.displayName
+    belongTo = current_user.uuid
     summary = author_name + " wants to follow " + object_name
     
     if request.method == 'POST':
-        if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
-            makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
+        if not Followers.objects.filter(follower=foreign_user, followedUser=current_user):
+            makeRequest = FollowRequests.objects.create(actor=foreign_user, object=current_user, belongTo=belongTo, summary=summary)
             makeRequest.save()
 
             send_author_inbox = Inbox.objects.get(author=object_user)
