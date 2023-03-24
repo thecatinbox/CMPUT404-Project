@@ -21,12 +21,12 @@ function Message({message}) {
     navigate("/singlepost"); 
   }
 
-  const acceptFollowRequest = () => {
+  const acceptFollowRequest = (follow_uuid) => {
     const uuid = localStorage.getItem('uuid'); 
     // const follow_uuid = user.uuid; 
     const app_url = localStorage.getItem('url'); 
   
-    const FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/" // + follow_uuid; 
+    const FOLLOW_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
 
     const header = {
       "Content-Type": 'application/json',
@@ -90,7 +90,7 @@ function Message({message}) {
                 {message.summary}
               </Typography>
               <Typography sx={{ alignSelf: 'flex-end' }}>
-                <Button onClick={acceptFollowRequest}> <FontAwesomeIcon icon={faCheck} /></Button>
+                <Button onClick={() => acceptFollowRequest(message.actor.uuid)}> <FontAwesomeIcon icon={faCheck} /></Button>
                 <Button> <FontAwesomeIcon icon={faXmark} /></Button>
               </Typography>
             </Grid>
