@@ -3,6 +3,7 @@ import TopBar from "../../Components/TopBar/TopBar";
 import './Friends.css';
 import React, { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Box from '@mui/material/Box';
 
 function Friends() {
 
@@ -62,6 +63,7 @@ function Friends() {
     <>
       <TopBar id="friends"/>
       <ThemeProvider theme={ theme }>
+      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw' }}>
       <div className="friends">
 
         <div className="following">
@@ -79,6 +81,7 @@ function Friends() {
         </div>
 
       </div>
+      </Box>
       </ThemeProvider>
     </>
   );
