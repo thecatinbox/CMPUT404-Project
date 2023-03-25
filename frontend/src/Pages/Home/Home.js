@@ -4,6 +4,7 @@ import AddPost from '../../Components/AddPost/AddPost';
 import TopBar from "../../Components/TopBar/TopBar";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'; 
+import Box from '@mui/material/Box';
 import './Home.css';
 
 function Home() {
@@ -60,13 +61,17 @@ function Home() {
   return (
     <>
       <TopBar id="home"/>
+      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}>
       <div className="home">
+        
         <AddPost/>
         {postList.reverse().map(function(post){
             return <Post post={post} key={post.id}/>;
         })}
         
+        
       </div>
+      </Box>
     </>
 
   );
