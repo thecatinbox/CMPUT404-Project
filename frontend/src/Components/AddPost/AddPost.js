@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from 'react';
 import "./AddPost.css"; 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -54,36 +54,60 @@ const AddPost = () => {
     // .catch(error => console.log(error.message));
   }
 
-  return (
-    <div className="post--container">
-    <input id="post-title" className="title" type="text" placeholder="Title.." name="title" maxLength="60"></input>
-    <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
-
-    <div className="mainPost">
-      <div className="upload-btn-wrapper">
-        <input type="file" id="actual-btn"/>
-        <label for="actual-btn"><FontAwesomeIcon icon={faImage} /> Choose Image</label>
-      </div>
-      
-      <div className="dropdown">
-        <label htmlFor="post-category"></label>
-        <select name="post-category" id="post-category">
-          <option value="PUBLIC" selected>Public</option>
-          <option value="FRIENDS">Friends</option>
-          <option value="PRIVATE">Private</option>
-        </select>
-      </div>
-
-      <div>
-        <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
-      </div>
-
-      
-    </div>
-    
-  </div>
+  // const [images, setImages] = useState([]);
+  //Users can preview Images. Did not write funtion for sending images to backend yet. (may add in line 87)
+  const [images, setImages] = useState([]);
   
-  ); 
-}; 
+  function previewImages(event) {
+    const previewContainer = document.getElementById('image-preview-container');
+    const files = event.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const img = document.createElement('img');
+        img.src = event.target.result;
+        img.classList.add('preview-image');
+        previewContainer.appendChild(img);
+      };
+
+      reader.readAsDataURL(file);
+      setImages((prevState) => [...prevState, file]);
+    }
+  }
+
+  return (
+    <div className="post-container">
+     
+      <input id="post-title" className="title" type="text" placeholder="Title.." name="title" maxLength="60" ></input>
+      <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
+
+      <div className="buttons-container">
+        <input className="file-input"  type="file" id="image-upload" name="images[]" multiple onChange={(event) => previewImages(event)} />
+        <button className="upload-btn" onClick={() => document.getElementById('image-upload').click()}>Choose Images</button>
+        
+        {/* Dropdown */}
+        <div className="dropdown">
+          <label htmlFor="post-category"></label>
+          <select name="post-category" id="post-category">
+            <option value="PUBLIC" selected>Public</option>
+            <option value="FRIENDS">Friends</option>
+            <option value="PRIVATE">Private</option></select>
+        </div>
+
+        <div>
+        <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
+        </div>
+      </div>
+
+      <div className="image-preview-container"  id="image-preview-container"></div>
+    
+
+    </div>
+  );
+}
+
 
 export default AddPost;

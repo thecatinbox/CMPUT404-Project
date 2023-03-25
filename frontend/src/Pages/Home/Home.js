@@ -63,13 +63,14 @@ function Home() {
       <TopBar id="home"/>
       <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}>
       <div className="home">
+        <div className="posts">
         
         <AddPost/>
         {postList.reverse().map(function(post){
             return <Post post={post} key={post.id}/>;
         })}
         
-        
+        </div>
       </div>
       </Box>
     </>

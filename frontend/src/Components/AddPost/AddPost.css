@@ -1,92 +1,98 @@
-.post--container{
-  width: 96%;
-  height: 210px;
-  background-color: #ddf0ff;
+.post-container{
+  
+  background-color: #dbf2f8;
   /*set border*/
-  border-width: 4px;
-  border-color: #a8cdec;
+  border-width: 5px;
+  border-color: #6aa1ce;
   border-style: solid;
-  border-radius: 5px;
+  border-radius: 10px;
   margin: auto;
 }
-.mainPost{
-display: flex; 
-}
-
 .title{
   font-size: large;
-  width: 99%;
-  border-radius: 5px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  margin-left: 3px;
+  width: 98%;
+  border-radius: 10px;
+  margin: 10px 10px 10px 10px;
   border:none;
 }
 
 .input-field{
-width: 99%;
-height: 110px;
-margin-left: 3px;
-resize:none;
-border-radius: 5px;
+width: 98%;
+height: 130px;
+margin-left: 10px;
+margin-right: 10px;
+resize: none;
+border-radius: 10px;
 border-color: white;
-
+}
+.buttons-container{
+  margin-top: 3px;
+  display: flex;
 }
 
-/* Add a background color on hover */
-button:hover {
-background-color: #86cdff;
-color: #273144;
+.file-input {
+	display: none;
+}
+.upload-btn {
+  height: 36px;
+  width: 165px;
+  font-size: 18px;
+  margin-left: 10px;
+  background-color: white;
+  color: #0091AE;
+  padding: 5px 10px;
+  border: 1px solid #a8cdec;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
 position: relative;
 display: inline-block;
-margin-left: 58%;
-}
-.submit-button{
-  background-color: #ddf0ff;
-  color: #3d82ba;
-  border-color: #a8cdec;
-  font-size: 20px;
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin-left: 20px;
+margin-left: 610px;
 }
 
 select {
 font-size: 20px;
 outline: 0;
-background: #f7fcff;
-color: #273144;
-border: 1px solid #86cdff;
-padding: 5px;
-border-radius: 5px;
+background: white;
+color: #0091AE;
+border: 1px solid #a8cdec;
+padding: 6px;
+border-radius: 10px;
+font-weight: bold;
 }
-
-.upload-btn-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-}
-
-.image-button {
-  border: 2px solid #a8cdec;
-  color: #3d82ba;
-  background-color: #f7fcff;
-  border-radius: 5px;
+.submit-button{
+  background-color: white;
+  color: #0091AE;
+  border-color: #a8cdec;
   font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
   padding: 5px 10px;
   margin-left: 20px;
 }
+/* Add a background color on hover for all buttons*/
+button:hover {
+background-color: #FF9175;
+color: white;
+}
 
-.upload-btn-wrapper input[type=file] {
-  font-size: 10px;
-  position: absolute;
-  height: 30px;
-  width: 155px;
-  left: 21px;
-  top: 3px;
-  opacity: 0;
+.preview-image {
+	height: 90px;
+	width: 90px;
+	object-fit: cover;
+	margin-top: 5px;
+	margin-left: 6px;
+}
+.image-preview-container{
+  background-color: #f1faff;
+  border: 3px solid #8bbee8;
+  border-radius: 15px;
+  margin-left: 6px;
+  margin-right: 6px;
+  margin-top: 5px;
+  margin-bottom: 4px;
 }

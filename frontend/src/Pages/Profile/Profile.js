@@ -70,6 +70,7 @@ function Profile() {
       <ThemeProvider theme={ theme }>
       <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw' }}>
       <div className="profile">
+      <div className="profile-center">
         <div className='profile-data'>
           <img src="https://i.imgur.com/k7XVwpB.jpeg" alt="Profile Image"></img>
           <Typography variant="h2" sx={{ color: "#007DAA"}}>{userData.displayName}</Typography>
@@ -92,6 +93,7 @@ function Profile() {
           {postList.map(function(post){
               return <Post post={post} key={post.id}/>;
           })}
+        </div>
         </div>
       </div>
       </Box>
