@@ -18,7 +18,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 @api_view(['GET', 'POST'])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def signUp(request):
     

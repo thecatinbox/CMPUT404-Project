@@ -63,7 +63,7 @@ Authors
 """
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def authorsList(request):
     """
     This view is used to display all authors information
@@ -106,7 +106,7 @@ Single Author
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def singleAuthor(request, pk):
     """
     This view is used to display and update one author information
@@ -173,7 +173,7 @@ def getAllPublicPosts(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def Post(request, pk):
     """
     This view is used to display posts of a given author and create a new post
@@ -285,7 +285,7 @@ POST Manipulation
 
 ##############################################################
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
     Get, update, delete or create a specific post.
@@ -379,7 +379,7 @@ Image Posts
 """
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getImage(request, pk, postsId):
     """
     This is in order to display the image post or the image in the post
@@ -399,7 +399,7 @@ def getImage(request, pk, postsId):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getComments(request, pk, postsId):
     """
     Get comments for a post and paginated
@@ -458,7 +458,7 @@ def getComments(request, pk, postsId):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getOneComment(request, pk, postsId, commentId):
     if request.method == "GET":
         comment = Comments.objects.get(uuid=commentId)
@@ -479,7 +479,7 @@ def getOneComment(request, pk, postsId, commentId):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
     Display a list of followers that follow user<pk>
@@ -499,7 +499,7 @@ def getFollowers(request, pk):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getFollowing(request, pk):
     """
     Display a list of followers that followed by user<pk>
@@ -518,7 +518,7 @@ def getFollowing(request, pk):
         return Response(data, status=200)
 
 @api_view(['DELETE', 'PUT', 'GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
     DELETE: delete the author<foreignPk> from author<pk>'s follower list<br>
@@ -562,7 +562,7 @@ def oneFollower(request, pk, foreignPk):
 
 #don't use this GET method, use getFollowers instead
 @api_view(['GET','POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def followRequest(request, pk, foreignPk):
     try:
         current_user = Authors.objects.get(uuid=pk)
@@ -602,7 +602,7 @@ def followRequest(request, pk, foreignPk):
 
 ######################################################
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
     """
     Get a list of likes of a post
@@ -635,7 +635,7 @@ def get_post_likes(request, pk, postsId):
 
 #########################################################
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def get_liked(request, pk):
     """
     Get a list of posts liked by an author
@@ -665,7 +665,7 @@ def get_liked(request, pk):
 
 #########################################################
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def get_liked_comments(request, pk):
     """
     Get a list of comments liked by an author
@@ -695,7 +695,7 @@ def get_liked_comments(request, pk):
 
 ######################################################
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def get_comment_likes(request, pk, commentId):
     """
     Get a list of likes of a comment
@@ -779,7 +779,7 @@ def get_inbox(request, pk):
     '''
     
 @api_view(['GET', 'DELETE', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def inbox(request, pk):
     if request.method == 'GET':
         try:
