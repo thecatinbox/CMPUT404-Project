@@ -21,6 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
 import Share from "../Share/Share";
+import Username from "../Username/Username";
 
 function Post({post}) { 
 
@@ -31,11 +32,12 @@ function Post({post}) {
   const uuid = localStorage.getItem('uuid'); 
   const post_uuid = post.author.uuid; 
   const puid = post.uuid; 
-  const app_url = localStorage.getItem('url'); 
+  // const app_url = localStorage.getItem('url'); 
+  const user_url = post.author.url; 
 
-  var POST_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
-  var LIKE_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var MESSAGE_ENDPOINT = app_url + '/server/authors/' + post_uuid + '/inbox'; 
+  var POST_ENDPOINT = user_url + "/posts/" + puid + "/"; 
+  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
+  var MESSAGE_ENDPOINT = user_url + '/inbox'; 
   // console.log(ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();
@@ -225,7 +227,7 @@ function Post({post}) {
             alignItems: "flex-start",
             p: 0,
           }}>
-            {post_uuid===uuid ? ( // Display a loading message while isLoading is true
+          {post_uuid===uuid ? ( // Display a loading message while isLoading is true
 
           <div>
             <Button
@@ -268,7 +270,7 @@ function Post({post}) {
         
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {post.author.displayName}
+            <Username user={post.author}/>
           </Typography>
           <Typography variant="h5" component="div">
             {post.title}
@@ -289,7 +291,7 @@ function Post({post}) {
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <Share postId={ puid }/>
+          <Share post={post}/>
         </CardActions>
 
         {showComments && <CommentList post={post}/> }

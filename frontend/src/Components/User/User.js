@@ -13,15 +13,18 @@ function User({user, followed}) {
 
   const uuid = localStorage.getItem('uuid'); 
   const follow_uuid = user.uuid; 
+  const follow_url = user.url; 
   const app_url = localStorage.getItem('url'); 
 
-  var FOLLOW_REQUEST_ENDPOINT = app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
-  var FOLLOW_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
-  var MESSAGE_ENDPOINT = app_url + '/server/authors/' + follow_uuid + '/inbox'; 
+  // var FOLLOW_REQUEST_ENDPOINT = app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
+  var FOLLOWER_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
+  // console.log(FOLLOWER_ENDPOINT); 
 
-  console.log(FOLLOW_REQUEST_ENDPOINT); 
+  // Send to local/foreign user's inbox 
+  var MESSAGE_ENDPOINT = follow_url + '/inbox'; // app_url + '/server/authors/' + follow_uuid + '/inbox'; 
   console.log(MESSAGE_ENDPOINT); 
 
+  // Send follow request to user's inbox 
   const sendFollowRequest = () => {
     const header = {
       "Content-Type": 'application/json',
@@ -46,54 +49,7 @@ function User({user, followed}) {
     }); 
   }
 
-  // Handle add new follower
-  /*
-  const sendFollowRequest = () => {
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
-    }
-
-    const body = JSON.stringify({}); 
-
-    // console.log(header); 
-    console.log(body); 
-
-    fetch(FOLLOW_REQUEST_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "POST"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
-  }
-
-  // Accept a follow request
-  const acceptFollowRequest = () => {
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
-    }
-
-    const body = JSON.stringify({
-      "isFollowed": true
-    }); 
-
-    // console.log(header); 
-    console.log(body); 
-
-    fetch(FOLLOW_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "PUT"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
-  }*/ 
-
-  // Handle add new comment 
+  // Handle remove follower 
   const removeFollower = () => {
     // console.log('try remove user');
     const header = {
@@ -102,7 +58,7 @@ function User({user, followed}) {
       "Origin": 'http://localhost:3000'
     }
 
-    fetch(FOLLOW_ENDPOINT, {
+    fetch(FOLLOWER_ENDPOINT, {
       headers: header,
       method: "DELETE"
     }).catch((error) => {
