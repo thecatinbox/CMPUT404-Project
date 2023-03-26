@@ -54,13 +54,13 @@ const AddPost = () => {
     // .catch(error => console.log(error.message));
   }
 
-  // const [images, setImages] = useState([]);
+  
   //Users can preview Images. Did not write funtion for sending images to backend yet. (may add in line 87)
-  const [images, setImages] = useState([]);
+  const [imagePreview, setImagePreview] = useState([]);
   
   function previewImages(event) {
     const previewContainer = document.getElementById('image-preview-container');
-    const files = event.target.files;
+   /*  const files = event.target.files;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -74,8 +74,20 @@ const AddPost = () => {
       };
 
       reader.readAsDataURL(file);
-      setImages((prevState) => [...prevState, file]);
+      setImagePreview((prevState) => [...prevState, file]);
     }
+ */
+		const file = event.target.files[0];
+
+		// Create preview image
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = function(event) {
+      
+			setImagePreview(event.target.result);
+		};
+    
+
   }
 
   return (
@@ -85,9 +97,13 @@ const AddPost = () => {
       <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
 
       <div className="buttons-container">
-        <input className="file-input"  type="file" id="image-upload" name="images[]" multiple onChange={(event) => previewImages(event)} />
+        <input className="file-input"  type="file" id="image-upload" name="images[]" onChange={(event) => previewImages(event)} />
         <button className="upload-btn" onClick={() => document.getElementById('image-upload').click()}>Choose Images</button>
-        
+        <div>
+						<img className="preview-image" src={imagePreview} onError={({ currentTarget }) => {
+                  currentTarget.onerror = null; // prevents looping
+                  currentTarget.src="";}} /><br />
+					</div>
         {/* Dropdown */}
         <div className="dropdown">
           <label htmlFor="post-category"></label>
@@ -102,7 +118,11 @@ const AddPost = () => {
         </div>
       </div>
 
-      <div className="image-preview-container"  id="image-preview-container"></div>
+      
+      
+					
+			
+      
     
 
     </div>

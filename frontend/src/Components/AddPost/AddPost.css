@@ -25,7 +25,6 @@ border-radius: 10px;
 border-color: white;
 }
 .buttons-container{
-  margin-top: 3px;
   display: flex;
   position: relative;
 }
@@ -37,7 +36,6 @@ border-color: white;
   height: 36px;
   width: 165px;
   font-size: 18px;
-  margin-left: 10px;
   background-color: white;
   color: #0091AE;
   padding: 5px 10px;
@@ -45,6 +43,7 @@ border-color: white;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
+  margin: auto 15px ;
 }
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
@@ -52,6 +51,7 @@ border-color: white;
 position: absolute;
 display: inline-block;
 right:130px;
+top: 30px;
 }
 
 select {
@@ -74,6 +74,7 @@ font-weight: bold;
   padding: 5px 10px;
   position: absolute;
   right:20px;
+  top: 30px;
 }
 /* Add a background color on hover for all buttons*/
 button:hover {
@@ -85,10 +86,11 @@ color: white;
 	height: 90px;
 	width: 90px;
 	object-fit: cover;
-	margin-top: 5px;
-	margin-left: 6px;
+	margin-left: 15px;
+  border-radius: 5px;
+
 }
-.image-preview-container{
+/* .image-preview-container{
   background-color: #f1faff;
   border: 3px solid #8bbee8;
   border-radius: 15px;
@@ -96,4 +98,7 @@ color: white;
   margin-right: 6px;
   margin-top: 5px;
   margin-bottom: 4px;
+} */
+img[src=""],img:not([src]){
+  opacity:0;
 }
