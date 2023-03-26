@@ -33,6 +33,7 @@ function Home() {
       return data.items;
     } catch (error) {
       console.error('Error:', error);
+      return []; 
       // Handle the error here
     }
   }
@@ -46,7 +47,10 @@ function Home() {
     .then(res => {
       console.log(res.data); 
       return res.data.posts;
-    })
+    }).catch(err => {
+      console.error(err);
+      return [];
+    });
   }
 
   /* 
@@ -107,6 +111,9 @@ function Home() {
           
         // console.log(team1postList); 
         return team1postList;
+      }).catch(err => {
+        console.error(err);
+        return [];
       });
   }
   

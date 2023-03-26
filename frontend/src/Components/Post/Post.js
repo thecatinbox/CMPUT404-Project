@@ -31,11 +31,12 @@ function Post({post}) {
   const uuid = localStorage.getItem('uuid'); 
   const post_uuid = post.author.uuid; 
   const puid = post.uuid; 
-  const app_url = localStorage.getItem('url'); 
+  // const app_url = localStorage.getItem('url'); 
+  const user_url = post.author.url; 
 
-  var POST_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
-  var LIKE_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var MESSAGE_ENDPOINT = app_url + '/server/authors/' + post_uuid + '/inbox'; 
+  var POST_ENDPOINT = user_url + "/posts/" + puid + "/"; 
+  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
+  var MESSAGE_ENDPOINT = user_url + '/inbox'; 
   // console.log(ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();
@@ -289,7 +290,7 @@ function Post({post}) {
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <Share postId={ puid }/>
+          <Share post={post}/>
         </CardActions>
 
         {showComments && <CommentList post={post}/> }

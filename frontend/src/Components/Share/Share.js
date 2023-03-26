@@ -40,8 +40,8 @@ function SimpleDialog(props) {
     onClose("");
   };
 
-  const handleListItemClick = (value) => {
-    onClose(value);
+  const handleListItemClick = (user_url) => {
+    onClose(user_url);
   };
 
   if (friends) {
@@ -52,7 +52,7 @@ function SimpleDialog(props) {
           {friends.map(function(friend){
             return <>
             <ListItem disableGutters>
-              <ListItemButton onClick={() => handleListItemClick(friend.uuid)} key={friend.username}>
+              <ListItemButton onClick={() => handleListItemClick(friend.url)} key={friend.username}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
                     <PersonIcon />
@@ -74,16 +74,16 @@ SimpleDialog.propTypes = {
   open: PropTypes.bool.isRequired,
 };
 
-function Share( {postId} ) {
+function Share( {post} ) {
   const [open, setOpen] = React.useState(false);
   const uuid = localStorage.getItem('uuid'); 
 
   // Handle add new like
-  const handleShare = (value) => {
-    if (value == "") {return; }
+  const handleShare = (user_url) => {
+    if (user_url == "") {return; }
 
-    const app_url = localStorage.getItem('url'); 
-    var MESSAGE_ENDPOINT = app_url + '/server/authors/' + value + '/inbox'; 
+    // const app_url = localStorage.getItem('url'); 
+    var MESSAGE_ENDPOINT = user_url + '/inbox'; 
 
     const header = {
       "Content-Type": 'application/json',
@@ -96,7 +96,7 @@ function Share( {postId} ) {
       { 
         "type": "post", 
         "sender": uuid, 
-        "postId": postId
+        "postId": post.uuid
      }
     ); 
 
