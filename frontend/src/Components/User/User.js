@@ -71,7 +71,7 @@ function User({user, followed}) {
       sendFollowRequest(); 
       // acceptFollowRequest(); 
     } else {
-      // removeFollower(); 
+      removeFollower(); 
     }
   }
 
