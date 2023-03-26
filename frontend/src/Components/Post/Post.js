@@ -21,6 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
 import Share from "../Share/Share";
+import Username from "../Username/Username";
 
 function Post({post}) { 
 
@@ -226,7 +227,7 @@ function Post({post}) {
             alignItems: "flex-start",
             p: 0,
           }}>
-            {post_uuid===uuid ? ( // Display a loading message while isLoading is true
+          {post_uuid===uuid ? ( // Display a loading message while isLoading is true
 
           <div>
             <Button
@@ -269,7 +270,7 @@ function Post({post}) {
         
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {post.author.displayName}
+            <Username user={post.author}/>
           </Typography>
           <Typography variant="h5" component="div">
             {post.title}
