@@ -12,6 +12,10 @@ from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Inbox
 from rest_framework.permissions import AllowAny
 import uuid
+from django.http import JsonResponse
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 def getURLId(url):
@@ -137,7 +141,7 @@ Posts
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def getAllPublicPosts(request):
     """
     This view will get all public posts
@@ -540,7 +544,7 @@ def oneFollower(request, pk, foreignPk):
         else:
             if current_user == foreign_user:
                 return Response({"message": "You cannot follow yourself"}, status=400)
-            new_follow = Followers(followedUser=current_user, follower=foreign_user)
+            new_follow = Followers.objects.create(followedUser=current_user, follower=foreign_user)
             new_follow.save()
             return Response({"message": "Followed successfully"}, status=200)
 
