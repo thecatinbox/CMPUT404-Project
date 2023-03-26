@@ -1,5 +1,4 @@
 .post-container{
-  
   background-color: #dbf2f8;
   /*set border*/
   border-width: 5px;
@@ -28,6 +27,7 @@ border-color: white;
 .buttons-container{
   margin-top: 3px;
   display: flex;
+  position: relative;
 }
 
 .file-input {
@@ -49,9 +49,9 @@ border-color: white;
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
-position: relative;
+position: absolute;
 display: inline-block;
-margin-left: 610px;
+right:130px;
 }
 
 select {
@@ -72,7 +72,8 @@ font-weight: bold;
   font-weight: bold;
   border-radius: 10px;
   padding: 5px 10px;
-  margin-left: 20px;
+  position: absolute;
+  right:20px;
 }
 /* Add a background color on hover for all buttons*/
 button:hover {
