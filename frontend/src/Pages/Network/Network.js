@@ -53,7 +53,7 @@ function Network() {
   return (
     <>
       <TopBar id="network"/>
-      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}>
+      {/* <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}> */}
       <div className="network">
         <div className="posts">
         
@@ -64,7 +64,7 @@ function Network() {
         
         </div>
       </div>
-      </Box>
+      {/* </Box> */}
     </>
 
   );

@@ -140,7 +140,7 @@ function Home() {
   return (
     <>
       <TopBar id="home"/>
-      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}>
+      {/* <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}> */}
       <div className="home">
         <div className="posts">
         
@@ -151,7 +151,7 @@ function Home() {
         
         </div>
       </div>
-      </Box>
+      {/* </Box> */}
     </>
 
   );

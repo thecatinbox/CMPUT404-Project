@@ -68,7 +68,7 @@ function Profile() {
     <>
       <TopBar id="profile"/>
       <ThemeProvider theme={ theme }>
-      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw' }}>
+      {/* <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw' }}> */}
       <div className="profile">
       <div className="profile-center">
         <div className='profile-data'>
@@ -96,7 +96,7 @@ function Profile() {
         </div>
         </div>
       </div>
-      </Box>
+      {/* </Box> */}
       </ThemeProvider>
     </>
   );
