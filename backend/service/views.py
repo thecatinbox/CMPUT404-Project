@@ -604,7 +604,7 @@ def followRequest(request, pk, foreignPk):
             makeRequest = FollowRequests.objects.create(actor=foreign_user, object=current_user, belongTo=belongTo, summary=summary)
             makeRequest.save()
 
-            send_author_inbox = Inbox.objects.get(author=object_user)
+            send_author_inbox = Inbox.objects.get(author=current_user)
             send_author_inbox.followRequests.add(makeRequest)
 
             responseData = {
