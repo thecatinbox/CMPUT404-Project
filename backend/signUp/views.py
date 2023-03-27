@@ -12,9 +12,12 @@ from django.forms.models import model_to_dict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 import json
+from django.http import JsonResponse
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 @api_view(['GET', 'POST'])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def signUp(request):
     
@@ -55,9 +58,10 @@ def signUp(request):
                                             github=github, 
                                             profileImage=profileImage, 
                                             uuid=uid,
-                                            host=request.headers.get('host'), 
-                                            id ="http://"+request.headers.get('host')+"/author/"+str(uid),
-                                            url="http://"+request.headers.get('host')+"/author/"+str(uid)
+                                            host="http://"+request.headers.get('host'), 
+                                            id =f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(uid)}",
+                                            #"http://"+request.headers.get('host')+"/author/"+str(uid),
+                                            url=f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(uid)}"
                                             )
             author.save()
         except Exception as e:

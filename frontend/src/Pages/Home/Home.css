@@ -1,4 +1,11 @@
 .home {
+    /*all pages' background-color is light blue */
+    background-color: #fafeff;
+    margin: auto;
+}
+.posts{
+    background-color: #fff2ea;
     width: 60%;
     margin: auto;
+    
 }

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from .post_form import post_form, Comment_form
-from allModels.models import Posts, Comments, Likes, Liked
+from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Authors, Followers, FollowRequests
 from rest_framework.response import Response
 from django.urls import reverse
@@ -18,65 +18,31 @@ from rest_framework import permissions, authentication
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 import json
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
-'''
-# Create your views here.
-@login_required(login_url='/signin/')
-def home_page(request, userID):
-    boolean_check = False
-    all_posts = Posts.objects.filter(visibility="PUBLIC")
-    postcomments = {}
+create_post_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'title': openapi.Schema(type=openapi.TYPE_STRING, example='Sample Title', description='Title is required'),
+        'description': openapi.Schema(type=openapi.TYPE_STRING, example='Sample Description'),
+        'content': openapi.Schema(type=openapi.TYPE_STRING, example='Sample Content', description='Content is required'),
+        'visibility': openapi.Schema(type=openapi.TYPE_STRING, example='PUBLIC'),
+        'content_type': openapi.Schema(type=openapi.TYPE_STRING, example='text/plain'),
+        'categories': openapi.Schema(type=openapi.TYPE_STRING, example='Category1, Category2'),
+        'image': openapi.Schema(type=openapi.TYPE_FILE, example='image.png', description='Image is optional(image post or text post)'),
+    },
+    required=['title', 'content', 'image'],
+)
 
-    # get comments from Comments model
-    for post in all_posts:
-        comment = Comments.objects.filter(post__uuid=post.uuid)
-        postcomments[post] = comment
-
-    if request.method == 'POST' and 'searched' in request.POST:
-        searched = request.POST['searched']
-        myself = Authors.objects.get(uuid=userID)
-        followed = Authors.objects.filter(username=searched)
-        # check
-        if followed.count() != 0:
-            boolean_check = False
-            # check if author in follower list
-            exist_myself = Followers.objects.filter(Q(author__uuid=userID) & Q(follower__username=searched))
-            # if not
-            if exist_myself.count() == 0:
-                authorfollowers = Followers()
-                authorfollowers.author = Authors.objects.get(uuid=userID)
-                authorfollowers.follower = Authors.objects.get(username=searched)
-                authorfollowers.save()
-
-                # friend request if not author or followers
-                if not FollowRequests.objects.filter(actor=authorfollowers.author,
-                                                     object=authorfollowers.follower).exists():
-                    actorName = authorfollowers.author.display_name
-                    summary = actorName + " sent a friend request to you."
-                    re = FollowRequests.objects.create(summary=summary, actor=authorfollowers.author,
-                                                       object=authorfollowers.follower)
-                    # request added to inbox
-                    inbox = Inbox.objects.get(author=authorfollowers.follower)
-                    inbox.FollowRequests.add(re)
-
-            return HttpResponseRedirect(reverse("search-result", args=[userID, searched]))
-        else:
-            boolean_check = True
-
-    masterauthor = Authors.objects.filter(uuid=userID)
-    # return render(request, "post/index.html", {
-    #     "boolean_check": boolean_check,
-    #     "postcomments": postcomments,
-    #     "all_posts": all_posts,
-    #     "userId": userID,
-    # })
-
-'''
-@login_required(login_url='/signin/')
+@swagger_auto_schema(method='post', operation_description="Create a new post.", request_body=create_post_example)
+@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def create_post(request, userId):
-    #return Response(f"{request.data}", status=400)
+
     if request.method == 'POST':
         
         title = request.data.get('title')
@@ -121,9 +87,15 @@ def create_post(request, userId):
         new_post.visibility = visibility
         new_post.contentType = content_type
         new_post.uuid = uid
-        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{userId}/posts/{uid}"
-        new_post.source = new_post.id
-        new_post.origin = new_post.id
+        new_post.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{uid}"
+        if "source" in request.data:
+            new_post.source = request.data.get('source')
+        else:
+            new_post.source = new_post.id
+        if "origin" in request.data:
+            new_post.origin = request.data.get('origin')
+        else:
+            new_post.source = new_post.id
         current_author = Authors.objects.get(uuid=userId)
         new_post.author = current_author
         new_post.categories = categories
@@ -136,7 +108,8 @@ def create_post(request, userId):
             for item in current_author_followers:
                 follower = item.author
                 follower_inbox = Inbox.objects.get(author=follower)
-                follower_inbox.items.add(new_post)
+                follower_inbox.posts.add(new_post)
+                follower_inbox.save()
         
         responseData = {
             "type": "post",
@@ -151,10 +124,23 @@ def create_post(request, userId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+
+create_comment_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment text', example='This is a sample comment.'),
+        'content_type': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the comment', example='text/plain'),
+    },
+    required=['comment']
+)
+
+@swagger_auto_schema(method='post', operation_description="Create a new comment on the specified post.", request_body=create_comment_example)
+@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def create_comment(request, userId, postId):
+    
     if request.method == 'POST':
         comment = request.data.get('comment')
         content_type = request.data.get('content_type', 'text/plain')
@@ -164,7 +150,7 @@ def create_comment(request, userId, postId):
         newComment.comment = comment
         newComment.contentType = content_type
         newComment.uuid = uid
-        newComment.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+        newComment.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
         
         currentAuthor = Authors.objects.get(uuid=userId)
         newComment.author = currentAuthor
@@ -181,6 +167,7 @@ def create_comment(request, userId, postId):
         post_author = Posts.objects.get(uuid=postId).author
         post_author_inbox = Inbox.objects.get(author=post_author)
         post_author_inbox.comments.add(newComment)
+        post_author_inbox.save()
 
         responseData = {
             "type": "creat comment",
@@ -196,22 +183,23 @@ def create_comment(request, userId, postId):
         }
         return Response(responseData, status=200)
 
-
-@login_required(login_url='/signin/')
+@swagger_auto_schema(method='post', operation_description="Create a like to specified post, no data required.")
+@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def create_like(request, userId, postId):
     if request.method == 'POST':
         post = Posts.objects.get(uuid=postId).id
-        post_uuid = Posts.objects.get(uuid=postId).uuid
         currentAuthor = Authors.objects.get(uuid=userId)
         author_name = currentAuthor.displayName
         summary = author_name + " Likes your post"
 
-        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post).exists():
-            like = Likes.objects.create(author=currentAuthor, summary=summary, object=post)
+        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post):
+            context = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{str(postId)}/likes"
+            like = Likes.objects.create(context=context,author=currentAuthor, summary=summary, object=post)
             like.save()
-            if not Liked.objects.filter(object=post).exists():
+            if not Liked.objects.filter(object=post):
                 receiver_liked = Liked.objects.create(object=post)
             liked = Liked.objects.get(object=post)
             liked.items.add(like)
@@ -219,7 +207,8 @@ def create_like(request, userId, postId):
             # Liked added to inbox
             post_author = Posts.objects.get(uuid=postId).author
             post_author_inbox = Inbox.objects.get(author=post_author)
-            post_author_inbox.likes.add(liked)
+            post_author_inbox.likes.add(like)
+            post_author_inbox.save()
 
             responseData = {
                     "type": "creat like",
@@ -240,11 +229,21 @@ def create_like(request, userId, postId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+share_post_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'sendTo': openapi.Schema(type=openapi.TYPE_STRING, description='author uuid want receive this share', example='4e456d55-295b-4a9f-9eh1-3c71732e9f5e'),
+    },
+    required=['sendTo']
+)
+
+@swagger_auto_schema(method='post', operation_description="Share post from current author to another author.", request_body=share_post_example)
+@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def share_post(request, userId, postId):
-    currentAuthor = Authors.objects.filter(uuid=userId).first()
+    currentAuthor = Authors.objects.get(uuid=userId)
     selectedPost = Posts.objects.get(uuid=postId)
 
     if request.method == 'POST':
@@ -253,7 +252,11 @@ def share_post(request, userId, postId):
 
         inbox = Inbox.objects.get(author=sendToAuthor)
 
-        inbox.items.add(selectedPost)
+        newShare = Shares.objects.create(post=selectedPost, author=currentAuthor)
+        newShare.save()
+
+        inbox.posts.add(newShare)
+        inbox.save()
 
         responseData = {
                     "type": "successfully shared",
@@ -262,7 +265,6 @@ def share_post(request, userId, postId):
 
         return Response(responseData,status=201)
 
-
     else:
         responseData = {
             "type": "share post",
@@ -270,9 +272,11 @@ def share_post(request, userId, postId):
         }
         return Response(responseData, status=200)
 
-@login_required(login_url='/signin/')
+@swagger_auto_schema(method='post', operation_description="Create a like to specified comment under specified post, no data required.")
+@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
+# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
 def create_like_comment(request, userId, postId, commentId):
     if request.method == 'POST':
         comment = Comments.objects.get(uuid=commentId)
@@ -281,17 +285,20 @@ def create_like_comment(request, userId, postId, commentId):
         summary = currentAuthor.displayName + " Likes your comment"
         obj = comment.id
 
-        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=obj).exists():
-            like = Likes.objects.create(author=currentAuthor, summary=summary, object=obj)
+        if not Likes.objects.filter(author=currentAuthor, summary=summary, object=obj):
+            context = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/comments/{str(commentId)}/likes"
+            like = Likes.objects.create(context=context, author=currentAuthor, summary=summary, object=obj)
             like.save()
-            if not Liked.objects.filter(object=obj).exists():
+            if not Liked.objects.filter(object=obj):
                 receiver_liked = Liked.objects.create(object=obj)
             liked = Liked.objects.get(object=obj)
             liked.items.add(like)
 
             # Liked added to inbox
-            post_author_inbox = Inbox.objects.get(author=comment_author)
-            post_author_inbox.likes.add(receiver_liked)
+            comment_author = Comments.objects.get(uuid=commentId).author
+            comment_author_inbox = Inbox.objects.get(author=comment_author)
+            comment_author_inbox.likes.add(like)
+            comment_author_inbox.save()
 
             responseData = {
                     "type": "creat comment like",
