@@ -30,7 +30,7 @@ function CommentList({post}) {
     async function fetchComments() {
         try {
         const response = await fetch(COMMENT_ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         });
     
@@ -51,7 +51,8 @@ function CommentList({post}) {
           const header = {
             "Content-Type": 'application/json',
             "Accept": 'application/json', 
-            "Origin": 'http://localhost:3000'
+            "Origin": 'http://localhost:3000', 
+            "Authorization": 'Basic ' + btoa('username1:123')
           }
   
           // Send like message to inbox 

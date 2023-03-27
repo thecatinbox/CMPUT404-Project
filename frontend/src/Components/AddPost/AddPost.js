@@ -22,7 +22,8 @@ const AddPost = () => {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123')
     }
 
     var e = document.getElementById("post-category");

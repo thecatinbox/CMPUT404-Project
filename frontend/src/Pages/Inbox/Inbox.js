@@ -24,7 +24,7 @@ function Inbox() {
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
   // console.log(uuid); 
-  const ENDPOINT = app_url + '/server/authors/' + uuid + '/inbox'; 
+  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox'; 
   
   const [messageList, setMessageList] = useState([]);
   const [open, setOpen] = React.useState({
@@ -51,7 +51,7 @@ function Inbox() {
 
   useEffect(() => {
     fetch(ENDPOINT, {
-      headers: { "Accept": "application/json" },
+      headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
     }).then(response => response.json()).then(postData => {
       setMessageList(postData.items);

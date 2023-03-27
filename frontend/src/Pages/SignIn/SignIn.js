@@ -23,7 +23,7 @@ function SignIn() {
     const navigate = useNavigate();
     const app_url = localStorage.getItem('url'); 
 
-    const ENDPOINT = app_url + '/server/authors/'; 
+    const ENDPOINT = app_url + '/service/authors/'; 
     
     const theme = createTheme({
         palette: {
@@ -57,7 +57,7 @@ function SignIn() {
         // alert(JSON.stringify(inputs)); // check input
 
         fetch(ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
             console.log(data.items); 

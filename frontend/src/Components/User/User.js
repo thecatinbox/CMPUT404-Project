@@ -16,20 +16,21 @@ function User({user, followed}) {
   const follow_url = user.url; 
   const app_url = localStorage.getItem('url'); 
 
-  // var FOLLOW_REQUEST_ENDPOINT = app_url + "/server/authors/" + uuid + "/followRequests/" + follow_uuid; 
-  var FOLLOWER_ENDPOINT = app_url + "/server/authors/" + uuid + "/followers/" + follow_uuid; 
+  // var FOLLOW_REQUEST_ENDPOINT = app_url + "/service/authors/" + uuid + "/followRequests/" + follow_uuid; 
+  var FOLLOWER_ENDPOINT = app_url + "/service/authors/" + uuid + "/followers/" + follow_uuid; 
   // console.log(FOLLOWER_ENDPOINT); 
 
   // Send to local/foreign user's inbox 
-  var MESSAGE_ENDPOINT = follow_url + '/inbox'; // app_url + '/server/authors/' + follow_uuid + '/inbox'; 
-  console.log(MESSAGE_ENDPOINT); 
+  var MESSAGE_ENDPOINT = follow_url + '/inbox'; // app_url + '/service/authors/' + follow_uuid + '/inbox'; 
+  // console.log(MESSAGE_ENDPOINT); 
 
   // Send follow request to user's inbox 
   const sendFollowRequest = () => {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123'),
     }
 
     const body = JSON.stringify({
@@ -38,7 +39,7 @@ function User({user, followed}) {
     }); 
 
     // console.log(header); 
-    console.log(body); 
+    // console.log(body); 
 
     fetch(MESSAGE_ENDPOINT, {
       headers: header,

@@ -62,7 +62,7 @@ function Post({post}) {
   async function fetchLikes() {
     try {
       const response = await fetch(LIKE_ENDPOINT, {
-        headers: { "Accept": "application/json" },
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
   
@@ -98,7 +98,8 @@ function Post({post}) {
         const header = {
           "Content-Type": 'application/json',
           "Accept": 'application/json', 
-          "Origin": 'http://localhost:3000'
+          "Origin": 'http://localhost:3000', 
+          "Authorization": 'Basic ' + btoa('username1:123')
         }
 
         // Send like message to inbox 
@@ -172,7 +173,8 @@ function Post({post}) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123')
     }
 
     // console.log(inputs.title); 
@@ -204,7 +206,8 @@ function Post({post}) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123'),
     }
 
     fetch(POST_ENDPOINT, {

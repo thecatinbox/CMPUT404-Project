@@ -19,13 +19,13 @@ function Profile() {
   const [postList, setPostList] = useState([]);
   const [userData, setUserData] = useState([]);
 
-  // const ENDPOINT = 'http://127.0.0.1:8000/server/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
+  // const ENDPOINT = 'http://127.0.0.1:8000/service/authors/7dce957d-4ba2-4021-a76a-3ed8c4a06c97/posts/'
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
 
   // console.log(uuid); 
-  const POSTS_ENDPOINT = app_url + '/server/authors/' + uuid + '/posts/'; 
-  const USER_ENDPOINT = app_url + '/server/authors/' + uuid + '/'; 
+  const POSTS_ENDPOINT = app_url + '/service/authors/' + uuid + '/posts/'; 
+  const USER_ENDPOINT = app_url + '/service/authors/' + uuid + '/'; 
 
   const theme = createTheme({
     palette: {
@@ -40,7 +40,7 @@ function Profile() {
 
   useEffect(() => { 
     fetch(POSTS_ENDPOINT, {
-      headers: { "Accept": "application/json" },
+      headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
     }).then(response => response.json()).then(postData => {
       setPostList(postData.items);
@@ -48,7 +48,7 @@ function Profile() {
     }); 
 
     fetch(USER_ENDPOINT , {
-      headers: { "Accept": "application/json" },
+      headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
     }).then(response => response.json()).then(userData => {
       setUserData(userData.items);

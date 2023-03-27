@@ -20,12 +20,12 @@ function Home() {
   }
 
   const app_url = localStorage.getItem('url'); 
-  const ENDPOINT = app_url + '/server/posts/'; 
+  const ENDPOINT = app_url + '/service/posts/'; 
   
   async function fetchData() {
     try {
       const response = await fetch(ENDPOINT, {
-        headers: { "Accept": "application/json" },
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
   

@@ -24,12 +24,12 @@ function SimpleDialog(props) {
   const [friends, setFriends] = React.useState(""); 
 
   const app_url = localStorage.getItem('url'); 
-  const ENDPOINT = app_url + '/server/authors/'; 
+  const ENDPOINT = app_url + '/service/authors/'; 
 
   // Get friend list (using user list as a temp)
   React.useEffect(() => {
     fetch(ENDPOINT, {
-      headers: { "Accept": "application/json" },
+      headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
     }).then(response => response.json()).then(data => {
       setFriends(data.items);
@@ -88,7 +88,8 @@ function Share( {post} ) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123'),
     }
 
     // Send like message to inbox 

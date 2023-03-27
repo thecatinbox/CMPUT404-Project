@@ -36,7 +36,7 @@ function SignUp() {
 
     const navigate = useNavigate();
     const SIGNUP_ENDPOINT = app_url + '/signup/'; 
-    const AUTHORS_ENDPOINT = app_url + '/server/authors/'; 
+    const AUTHORS_ENDPOINT = app_url + '/service/authors/'; 
 
     // handle changes in the input box
     const handleChange = (event) => {
@@ -60,7 +60,7 @@ function SignUp() {
     // handle the submit of the form
     const userNotExist = () => {
         fetch(AUTHORS_ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
             console.log(data.items); 
@@ -90,6 +90,7 @@ function SignUp() {
                 "Content-Type": 'application/json',
                 "Accept": 'application/json', 
                 "Origin": 'http://localhost:3000', 
+                "Authorization": 'Basic ' + btoa('username1:123'),
             }
           
             console.log(inputs); 

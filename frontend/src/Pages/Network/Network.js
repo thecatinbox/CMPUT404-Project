@@ -18,12 +18,12 @@ function Network() {
 
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
-  const ENDPOINT = app_url + '/server/authors/' + uuid + '/inbox'; 
+  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox'; 
   
   async function fetchPostData() {
     try {
       const response = await fetch(ENDPOINT, {
-        headers: { "Accept": "application/json" },
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
   
