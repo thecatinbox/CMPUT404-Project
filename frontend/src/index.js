@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Pages/Home/Home";
+import Network from "./Pages/Network/Network";
 import Inbox from "./Pages/Inbox/Inbox";
 import Friends from "./Pages/Friends/Friends";
 import Profile from "./Pages/Profile/Profile";
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="signin" element={<SignIn />} />
         <Route path="signup" element={<SignUp />} />
         <Route path="home" element={<Home />} />
+        <Route path="network" element={<Network />} />
         <Route path="inbox" element={<Inbox />} />
         <Route path="friends" element={<Friends />} />
         <Route path="profile" element={<Profile />} />

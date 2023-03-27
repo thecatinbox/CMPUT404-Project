@@ -19,7 +19,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import PeopleIcon from '@mui/icons-material/People';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatIcon from '@mui/icons-material/Chat';
-import { minHeight } from '@mui/system';
 
 function Inbox() {
   const app_url = localStorage.getItem('url'); 

@@ -101,8 +101,13 @@ function Home() {
           const promise = axios.get(url).then(res => {
             // console.log(res.data.items); 
             return res.data.items; 
+          }).catch(err => {
+            console.error(err);
+            return []
           });
-          promises.push(promise); // add the post request promise to array
+          if (promise != []) { 
+            promises.push(promise); // add the post request promise to array
+          }
         }
 
         const team1postList = await Promise.all(promises).then(posts => {
