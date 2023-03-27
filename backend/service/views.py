@@ -465,7 +465,7 @@ def getComments(request, pk, postsId):
         currentPost = Posts.objects.filter(uuid=postsId).first()
         new_comment = request.data
         new_COMM_UUId = uuid.uuid4()
-        commentId = f"{request.build_absolute_uri('/')}server/authors/{str(pk)}/posts/{str(postsId)}/comments/{str(new_COMM_UUId)}"
+        commentId = f"{request.build_absolute_uri('/')}service/authors/{str(pk)}/posts/{str(postsId)}/comments/{str(new_COMM_UUId)}"
         newComment = Comments.objects.create(uuid=new_COMM_UUId, id=commentId, post=currentPost, author=currentAuthor,
                                              comment=new_comment['comment'], contentType=new_comment['contentType']
                                              )
@@ -533,7 +533,7 @@ def getFollowing(request, pk):
 
         return Response(data, status=200)
 
-#@swagger_auto_schema(method='put', operation_description="Add a new following relation, make sure the user send out follow request put after /followers/author_uuid.", request_body=oneFollower_example)
+@swagger_auto_schema(method='put', operation_description="Add a new following relation, make sure the user send out follow request put after /followers/author_uuid.")
 @swagger_auto_schema(method='delete', operation_description="Delete a following relation.")
 @swagger_auto_schema(method='get', operation_description="Get information of a specific follower.")
 @api_view(['DELETE', 'PUT', 'GET'])
@@ -579,7 +579,8 @@ def oneFollower(request, pk, foreignPk):
         else:
             return Response({"isFollowed": False}, status=404)
 
-
+@swagger_auto_schema(method='post', operation_description="Create a follow request current author.")
+@swagger_auto_schema(method='get', operation_description="Don't use this GET, use getFollowers instead.")
 #don't use this GET method, use getFollowers instead
 @api_view(['GET','POST'])
 #@permission_classes([AllowAny])
@@ -620,7 +621,7 @@ def followRequest(request, pk, foreignPk):
         return Response(responseData, status=200)
 
 
-######################################################
+@swagger_auto_schema(method='get', operation_description="Get all the likes for a specific post.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
@@ -653,7 +654,7 @@ def get_post_likes(request, pk, postsId):
 
         return Response(response_data, status=200)
 
-#########################################################
+@swagger_auto_schema(method='get', operation_description="Get all the posts liked by specific author.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def get_liked(request, pk):
@@ -683,7 +684,7 @@ def get_liked(request, pk):
 
         return Response(response_data, status=200)
 
-#########################################################
+@swagger_auto_schema(method='get', operation_description="Get all comments liked by specific author.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def get_liked_comments(request, pk):
@@ -713,7 +714,7 @@ def get_liked_comments(request, pk):
 
         return Response(response_data, status=200)
 
-######################################################
+@swagger_auto_schema(method='get', operation_description="Get all the likes for a specific comment.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def get_comment_likes(request, pk, commentId):
@@ -744,60 +745,27 @@ def get_comment_likes(request, pk, commentId):
         }
 
         return Response(response_data, status=200)
-'''
-@api_view(['GET', 'DELETE', 'POST'])
-@permission_classes([AllowAny])
-def get_inbox(request, pk):
-    if request.method != 'GET':
-        return Response(status=405)
 
-    try:
-        inbox = Inbox.objects.select_related('author').get(author__uuid=pk)
-        author = Authors.objects.get(uuid=pk)
-    except (Inbox.DoesNotExist, Authors.DoesNotExist):
-        return Response(status=404)
+inbox_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, post/follow/like/comment.'),
+        'postId': openapi.Schema(type=openapi.TYPE_STRING, description='Post id of a post, need for post and comment type, if creating like for post then also like type.'),
+        'sender': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of the sender, need for post type.'),
+        'follower': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of the follower, need for follow type.'),
+        'p_or_c': openapi.Schema(type=openapi.TYPE_STRING, description='post or comment, need for like type.'),
+        'userId': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of who is doing like, need for like and comment type.'),
+        'commentId': openapi.Schema(type=openapi.TYPE_STRING, description='Comment id of a comment, need for like type.'),
+        'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment content, need for comment type.'),
+        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the post, need for post type.'),
 
-    post_list = []
-    for post in 1.all():
-        post_dict = PostsSerializer(post).data
-        post_dict['author'] = AuthorSerializer(post.author).data
-        post_dict['categories'] = post.categories
-        post_dict['count'] = post.pop('count')
-        post_dict.pop('categories')
-        post_list.append(post_dict)
+    },
+    required=['type'],
+)
 
-    comment_list = []
-    for comment in inbox.comments.all():
-        comment_dict = CommentSerializer(comment).data
-        author = Authors.objects.get(username=comment_dict['author'])
-        comment_dict['author'] = AuthorSerializer(author).data
-        comment_list.append(comment_dict)
-
-    follow_request_list = []
-    for request in inbox.followRequests.all():
-        request_dict = {"type": "Follow"}
-        request_dict.update(FollowRequestSerializer(request).data)
-        request_dict['summary'] = request_dict.pop('summary')
-        request_dict['actor'] = AuthorSerializer(Authors.objects.get(username=request_dict['actor'])).data
-        request_dict['object'] = AuthorSerializer(Authors.objects.get(username=request_dict['object'])).data
-        follow_request_list.append(request_dict)
-
-    liked_list = []
-    for like in inbox.likes.all():
-        liked_dict = {"@context": "https://eclass.srv.ualberta.ca/portal/"}
-        liked_dict.update(LikedSerializer(like).data)
-        liked_dict['author'] = AuthorSerializer(author).data
-        liked_list.append(liked_dict)
-
-    response_data = {
-        "type": "inbox",
-        "author": author.id,
-        "items": post_list + comment_list + follow_request_list + liked_list,
-    }
-
-    return Response(response_data, status=200)
-    '''
-    
+@swagger_auto_schema(method='post', operation_description="Create posts or comments or follow requests or likes to specific author's inbox.", request_body=inbox_example)
+@swagger_auto_schema(method='delete', operation_description="Clear inbox for specific author.")
+@swagger_auto_schema(method='get', operation_description="Get all the posts, comments, follow requests and likes in specific author's inbox.")
 @api_view(['GET', 'DELETE', 'POST'])
 #@permission_classes([AllowAny])
 def inbox(request, pk):
@@ -858,56 +826,6 @@ def inbox(request, pk):
         post_type = request.data.get('type')
 
         if post_type == 'post':
-        #     title = request.data.get('title')
-        #     #return Response(f"{title}", status=400)
-        #     if "description" in request.data:
-        #         description = request.data.get('description')
-        #     else:
-        #         description = ""
-        #     if "content" in request.data:
-        #         content = request.data.get('content')
-        #     else:
-        #         content = ""
-        #     if "visibility" in request.data:
-        #         visibility = request.data.get('visibility')
-        #     else:
-        #         visibility = "PUBLIC"
-        #     if "contentType" in request.data:
-        #         content_type = request.data.get('content_type')
-        #     else:
-        #         content_type = "text/plain"
-        #     if "categories" in request.data:
-        #         categories = request.data.get('categories')
-        #     else:
-        #         categories = ""
-        #     uid = str(uuid.uuid4())
-
-        #     tempCheck = 0
-        #     if 'image' in request.FILES:
-        #         image = request.FILES['image']
-        #         image_path = default_storage.save(f'uploads/{pk}/{image.name}', image)
-        #         contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
-        #         content_type = 'image'  
-        #         tempCheck = 1
-
-        #     new_post = Posts()
-        #     new_post.title = title
-        #     new_post.description = description
-        #     if tempCheck == 1:
-        #         new_post.contentImage = contentImage
-        #     else:
-        #         new_post.content = content
-        #     new_post.visibility = visibility
-        #     new_post.contentType = content_type
-        #     new_post.uuid = uid
-        #     new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{pk}/posts/{uid}"
-        #     new_post.source = new_post.id
-        #     new_post.origin = new_post.id
-        #     current_author = Authors.objects.get(uuid=pk)
-        #     new_post.author = current_author
-        #     new_post.categories = categories
-        #     new_post.count = "0"
-        #     new_post.save()
             postId = request.data.get('postId')
             sender = request.data.get('sender')
             sender_author = Authors.objects.get(uuid=sender)
@@ -990,7 +908,7 @@ def inbox(request, pk):
             newComment.comment = comment
             newComment.contentType = content_type
             newComment.uuid = uid
-            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
+            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
             
             currentAuthor = Authors.objects.get(uuid=userId)
             newComment.author = currentAuthor

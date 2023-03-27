@@ -17,6 +17,21 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+signUp_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='username'),
+        'password': openapi.Schema(type=openapi.TYPE_STRING, description='password'),
+        'displayName': openapi.Schema(type=openapi.TYPE_STRING, description='displayName'),
+        'github': openapi.Schema(type=openapi.TYPE_STRING, description='github'),
+        'profileImage': openapi.Schema(type=openapi.TYPE_FILE, description='profileImage'),
+
+    },
+    required=['username', 'password', 'displayName'],
+)
+
+
+@swagger_auto_schema(method='post', description="Sign Up with username,password and displayName", request_body=signUp_example)
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def signUp(request):
@@ -35,11 +50,16 @@ def signUp(request):
                 profileImage = data.FILES['profileImage']
             else:
                 profileImage = ""
-            #return Response({'error': f'Missing required field: {"66666666666"}'}, status=400)
+                
+            tempCheck = 0
+            if 'image' in request.FILES:
+                image = request.FILES['image']
+                image_path = default_storage.save(f'uploads/{userId}/{image.name}', image)
+                contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
+                tempCheck = 1
         except KeyError as e:
             return Response({'error': f'Missing required field: {e}'}, status=400)
-        #return Response({'error': f'Username:{username,password,displayName,github,profileImage}'}, status=400)
-        #create user
+
         try:
             user = User.objects.get(username=username)
             return Response({'error': 'Username already exists'}, status=400)
@@ -51,6 +71,9 @@ def signUp(request):
         
         #create author
         try:
+            if tempCheck == 1:
+                profileImage = contentImage
+
             uid = str(uuid.uuid4())
             author = Authors.objects.create(username=username, 
                                             password=password,
@@ -59,9 +82,9 @@ def signUp(request):
                                             profileImage=profileImage, 
                                             uuid=uid,
                                             host="http://"+request.headers.get('host'), 
-                                            id =f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(uid)}",
+                                            id =f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}",
                                             #"http://"+request.headers.get('host')+"/author/"+str(uid),
-                                            url=f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(uid)}"
+                                            url=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}"
                                             )
             author.save()
         except Exception as e:
@@ -82,21 +105,4 @@ def signUp(request):
         }
         return Response(responseData, status=200)
 
-
-
-'''
-def user_info(request, author_id):
-    if request.method == 'POST':
-        #get author
-        author = Authors.objects.get(uuid=author_id)
-        #update author info
-        author.displayName = request.POST['displayName']
-        author.github = request.POST['github']
-        author.save()
-        #create single_author
-        single_author = Single_Author.objects.create(uuid=author_id, username=author.username, displayName=author.displayName, github=author.github)
-        single_author.save()
-        #create host
-        #host = Host.objects.create(host="http://
-'''
-            
+ 
