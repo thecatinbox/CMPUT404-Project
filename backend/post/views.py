@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from .post_form import post_form, Comment_form
 from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Authors, Followers, FollowRequests
 from rest_framework.response import Response

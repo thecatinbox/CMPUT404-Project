@@ -746,24 +746,42 @@ def get_comment_likes(request, pk, commentId):
 
         return Response(response_data, status=200)
 
-inbox_example = openapi.Schema(
+author_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, author.'),
+        'id': openapi.Schema(type=openapi.TYPE_STRING, description='author.id', minLength=1),
+        'url': openapi.Schema(type=openapi.TYPE_STRING, description='author.url', minLength=1),
+        'host': openapi.Schema(type=openapi.TYPE_STRING, description='author.host', minLength=1),
+        'displayName': openapi.Schema(type=openapi.TYPE_STRING, description='author.displayname', maxLength=100, minLength=1),
+        'github': openapi.Schema(type=openapi.TYPE_STRING, description='author.github'),
+        'profileImage': openapi.Schema(type=openapi.TYPE_STRING, description='author.profileimage', x_nullable=True),
+    },
+    required=['id', 'url', 'host', 'displayName', 'github', 'profileImage'],
+)
+
+followRequest_schema = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
         'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, post/follow/like/comment.'),
-        'postId': openapi.Schema(type=openapi.TYPE_STRING, description='Post id of a post, need for post and comment type, if creating like for post then also like type.'),
-        'sender': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of the sender, need for post type.'),
-        'follower': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of the follower, need for follow type.'),
-        'p_or_c': openapi.Schema(type=openapi.TYPE_STRING, description='post or comment, need for like type.'),
-        'userId': openapi.Schema(type=openapi.TYPE_STRING, description='Author id of who is doing like, need for like and comment type.'),
-        'commentId': openapi.Schema(type=openapi.TYPE_STRING, description='Comment id of a comment, need for like type.'),
-        'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment content, need for comment type.'),
-        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the post, need for post type.'),
+        'summary': openapi.Schema(type=openapi.TYPE_STRING, description='Summary of the follow.', x_nullable=True),
+        'author': author_schema,
+
+    },
+    required=['type', 'summary', 'author'],
+)
+
+inbox_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'followRequest': followRequest_schema,
+
 
     },
     required=['type'],
 )
 
-@swagger_auto_schema(method='post', operation_description="Create posts or comments or follow requests or likes to specific author's inbox.", request_body=inbox_example)
+@swagger_auto_schema(method='post', operation_description="###attention: only followRequest is valid now.### Create posts or comments or follow requests or likes to specific author's inbox.", request_body=inbox_example)
 @swagger_auto_schema(method='delete', operation_description="Clear inbox for specific author.")
 @swagger_auto_schema(method='get', operation_description="Get all the posts, comments, follow requests and likes in specific author's inbox.")
 @api_view(['GET', 'DELETE', 'POST'])
@@ -782,6 +800,8 @@ def inbox(request, pk):
                 i['author'] = AuthorSerializer(user).data
                 temp_post = Posts.objects.get(id=i['post'])
                 i['post'] = PostsSerializer(temp_post).data
+                temp_post_author = Authors.objects.get(username=i['post']['author'])
+                i['post']['author'] = AuthorSerializer(temp_post_author).data
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
                 user = Authors.objects.get(username=i['author'])
@@ -840,14 +860,26 @@ def inbox(request, pk):
             inbox.save()
 
         elif post_type == 'follow':
-
+            
             try:
-                follower_user = request.data.get('follower')
-                current_user = Authors.objects.get(uuid=follower_user)
+                #summary = request.data.get('summary')
+                actor = request.data.get('actor')
+                
+                if Authors.objects.filter(url=actor.get('url')):
+                    current_user = Authors.objects.get(url=actor.get('url'))
+                else:
+                    uid = str(uuid.uuid4())
+                    temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                    temp.save()
+                    current_user = Authors.objects.get(uuid=uid)
+                    print(current_user,'\n')
+                   
                 foreign_user = Authors.objects.get(uuid=pk)
+                
             except Authors.DoesNotExist:
                 return Response({"message": "User not found"}, status=404)
-
+            #print(current_user)
+            #print('\n',foreign_user)
             if current_user == foreign_user:
                 return Response({"message": "You cannot follow yourself"}, status=404)
                 
@@ -855,10 +887,20 @@ def inbox(request, pk):
             object_name = foreign_user.displayName
             belongTo = foreign_user.uuid
             summary = author_name + " wants to follow " + object_name
-            
+            print(summary)
             if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
-                makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
-                makeRequest.save()
+                try:
+                    makeRequest = FollowRequests.objects.create()
+                    
+                    makeRequest.summary = summary
+                    makeRequest.actor = current_user
+                    makeRequest.object = foreign_user
+                    makeRequest.save()
+                except Exception as e:
+                    print('this is error:',e)
+                    return Response({"message": "Follow request failed"}, status=404)
+
+                #return Response(status=200)
                 inbox.followRequests.add(makeRequest)
                 inbox.save()
             else:
