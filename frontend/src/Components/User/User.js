@@ -34,8 +34,9 @@ function User({user, followed}) {
     }
 
     const body = JSON.stringify({
-      "type": "follow", 
-      "follower": uuid 
+      "type": "follow",
+      "summary": user.displayName + " wants to follow you",  
+      "follower": JSON.stringify(user)
     }); 
 
     // console.log(header); 
