@@ -39,7 +39,7 @@ function Home() {
   }
   
   async function fetchTeam16Data() {
-    return axios.get('https://sd16-api.herokuapp.com/service/authors/afe5dcfe-a763-41c0-8984-f72c1eddb084/posts/', {
+    /* return axios.get('https://sd16-api.herokuapp.com/service/authors/afe5dcfe-a763-41c0-8984-f72c1eddb084/posts/', {
       headers: {
         Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
       }
@@ -50,63 +50,74 @@ function Home() {
     }).catch(err => {
       console.error(err);
       return [];
-    });
-  }
+    }); */ 
 
-  /* 
-  async function fetchTeam16Data() {
-    return axios.get('https://sd16-api.herokuapp.com/service/authors/', {
+    const TEAM16_ENDPOINT = 'https://sd16-api.herokuapp.com/service/authors/'; 
+    return axios.get(TEAM16_ENDPOINT, {
       headers: {
         Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
       }
     })
-      .then(async res => {
-        console.log(res.data.items); 
-        const team1authorsList = res.data.items; 
-        let promises = []; // to store all post requests
-  
-        for (let author of team1authorsList) {
-          const url = author.url + '/posts/'; 
-          console.log(url); 
-          const promise = axios.get(url, {
-            headers: {
-              Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
-            }
-          }).then(res => {
-            console.log(res.data.posts); 
-            return res.data.posts; 
-          });
-          promises.push(promise); // add the post request promise to array
-        }
-
-        const team16postList = await Promise.all(promises).then(posts => {
-          return [].concat(...posts);
-        });
-          
-        console.log(team16postList); 
-        return team16postList;
-      });
-  }*/
-
-  async function fetchTeam1Data() {
-    return axios.get('https://p2psd.herokuapp.com/authors/')
       .then(async res => {
         // console.log(res.data.items); 
         const team1authorsList = res.data.items; 
         let promises = []; // to store all post requests
   
         for (let author of team1authorsList) {
-          const url = author.id + '/posts/'; 
-          // console.log(url); 
-          const promise = axios.get(url).then(res => {
-            // console.log(res.data.items); 
-            return res.data.items; 
-          }).catch(err => {
-            console.error(err);
-            return []
-          });
-          if (promise != []) { 
-            promises.push(promise); // add the post request promise to array
+          if (author.id.includes(TEAM16_ENDPOINT), {
+            headers: {
+              Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
+            }
+          }) {
+            const url = author.id + '/posts/'; 
+            // console.log(url); 
+            const promise = axios.get(url).then(res => {
+              // console.log(res.data.items); 
+              return res.data.items; 
+            }).catch(err => {
+              console.error(err);
+              return []; 
+            });
+            if (promise != []) { 
+              promises.push(promise); // add the post request promise to array
+            }
+          }
+        }
+
+        const team1postList = await Promise.all(promises).then(posts => {
+          return [].concat(...posts);
+        });
+          
+        // console.log(team1postList); 
+        return team1postList;
+      }).catch(err => {
+        console.error(err);
+        return [];
+      });
+  }
+
+  async function fetchTeam1Data() {
+    const TEAM1_ENDPOINT = 'https://p2psd.herokuapp.com/authors/'; 
+    return axios.get(TEAM1_ENDPOINT)
+      .then(async res => {
+        // console.log(res.data.items); 
+        const team1authorsList = res.data.items; 
+        let promises = []; // to store all post requests
+  
+        for (let author of team1authorsList) {
+          if (author.id.includes(TEAM1_ENDPOINT)) {
+            const url = author.id + '/posts/'; 
+            // console.log(url); 
+            const promise = axios.get(url).then(res => {
+              // console.log(res.data.items); 
+              return res.data.items; 
+            }).catch(err => {
+              console.error(err);
+              return []; 
+            });
+            if (promise != []) { 
+              promises.push(promise); // add the post request promise to array
+            }
           }
         }
 
