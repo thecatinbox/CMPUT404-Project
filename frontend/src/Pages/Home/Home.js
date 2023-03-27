@@ -55,23 +55,23 @@ function Home() {
     const TEAM16_ENDPOINT = 'https://sd16-api.herokuapp.com/service/authors/'; 
     return axios.get(TEAM16_ENDPOINT, {
       headers: {
-        Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
+        "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
       }
     })
       .then(async res => {
-        // console.log(res.data.items); 
+        console.log(res.data.items); 
         const team1authorsList = res.data.items; 
         let promises = []; // to store all post requests
   
         for (let author of team1authorsList) {
-          if (author.id.includes(TEAM16_ENDPOINT), {
-            headers: {
-              Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
-            }
-          }) {
+          if (author.id.includes(TEAM16_ENDPOINT)) {
             const url = author.id + '/posts/'; 
             // console.log(url); 
-            const promise = axios.get(url).then(res => {
+            const promise = axios.get(url, {
+              headers: {
+                "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
+              }
+            }).then(res => {
               // console.log(res.data.items); 
               return res.data.items; 
             }).catch(err => {

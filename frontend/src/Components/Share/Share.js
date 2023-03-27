@@ -97,7 +97,7 @@ function Share( {post} ) {
       { 
         "type": "post", 
         "sender": uuid, 
-        "postId": post.uuid
+        "postId": post.uuid 
      }
     ); 
 

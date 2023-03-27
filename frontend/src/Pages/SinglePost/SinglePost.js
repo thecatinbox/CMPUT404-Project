@@ -2,10 +2,10 @@ import './SinglePost.css';
 import TopBar from "../../Components/TopBar/TopBar";
 import React, {useState, useEffect} from 'react';
 import Post from '../../Components/Post/Post';
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 function SinglePost() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // const post_uuid = localStorage.getItem('post_uuid'); 
   // const post_puid = localStorage.getItem('post_puid'); 
