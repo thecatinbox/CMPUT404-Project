@@ -61,7 +61,7 @@ def pagination(request,object):
 """
 Authors 
 """
-
+@swagger_auto_schema(method='get', operation_description="Get all authors' informations.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def authorsList(request):
@@ -103,8 +103,19 @@ def authorsList(request):
 """
 Single Author
 """
+singleAuthor_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'github': openapi.Schema(type=openapi.TYPE_STRING, description='Github URL'),
+        'profileImage': openapi.Schema(type=openapi.TYPE_STRING, description='Profile Image URL'),
+        'host': openapi.Schema(type=openapi.TYPE_STRING, description='Host URL'),
+        'url': openapi.Schema(type=openapi.TYPE_STRING, description='Author URL'),
+    },
+    required=['github', 'profileImage', 'host', 'url'],
+)
 
-
+@swagger_auto_schema(method='post', operation_description="Modify author's information.", request_body=singleAuthor_example)
+@swagger_auto_schema(method='get', operation_description="Get informations for specific author.")
 @api_view(['GET', 'POST'])
 #@permission_classes([AllowAny])
 def singleAuthor(request, pk):
@@ -139,7 +150,7 @@ def singleAuthor(request, pk):
 Posts
 """
 
-
+@swagger_auto_schema(method='get', operation_description="Get all public posts.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getAllPublicPosts(request):
@@ -171,7 +182,23 @@ def getAllPublicPosts(request):
 
     return Response(response_data, status=200)
 
+Post_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'title': openapi.Schema(type=openapi.TYPE_STRING, description='Title of the post'),
+        'source': openapi.Schema(type=openapi.TYPE_STRING, description='Source of the post'),
+        'origin': openapi.Schema(type=openapi.TYPE_STRING, description='Origin of the post'),
+        'description': openapi.Schema(type=openapi.TYPE_STRING, description='Description of the post'),
+        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the post'),
+        'content': openapi.Schema(type=openapi.TYPE_STRING, description='Content of the post'),
+        'categories': openapi.Schema(type=openapi.TYPE_STRING, description='Categories of the post'),
+        'visibility': openapi.Schema(type=openapi.TYPE_STRING, description='Visibility of the post'),
+    },
+    required=['title', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'visibility'],
+)
 
+@swagger_auto_schema(method='post', operation_description="Create a new post, don't use this one, was used for test.", request_body=Post_example)
+@swagger_auto_schema(method='get', operation_description="Get posts create by specific author.")
 @api_view(['GET', 'POST'])
 #@permission_classes([AllowAny])
 def Post(request, pk):
@@ -259,7 +286,7 @@ def Post(request, pk):
         currentAuthor = Authors.objects.filter(uuid=pk).first()
         new_post = request.data
         new_postId = uuid.uuid4()
-        id = f"{request.build_absolute_uri('/')[:-1]}/server/authors/{str(pk)}/posts/{str(new_postId)}"
+        id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/posts/{str(new_postId)}"
         newPost = Posts.objects.create(
             title=new_post['title'],
             uuid=new_postId,
@@ -282,8 +309,22 @@ def Post(request, pk):
 """
 POST Manipulation
 """
+get_post_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'title': openapi.Schema(type=openapi.TYPE_STRING, description='Title of the post'),
+        'source': openapi.Schema(type=openapi.TYPE_STRING, description='Source of the post'),
+        'description': openapi.Schema(type=openapi.TYPE_STRING, description='Description of the post'),
+        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the post'),
+        'content': openapi.Schema(type=openapi.TYPE_STRING, description='Content of the post'),
+        'visibility': openapi.Schema(type=openapi.TYPE_STRING, description='Visibility of the post'),
+        'categories': openapi.Schema(type=openapi.TYPE_STRING, description='Categories of the post'),
+    },
+)
 
-##############################################################
+@swagger_auto_schema(method='put', operation_description="Update a specific post, non required.")
+@swagger_auto_schema(method='delete', operation_description="Delete a specific post.")
+@swagger_auto_schema(method='get', operation_description="Get a specific post.")
 @api_view(['GET', 'PUT', 'DELETE'])
 #@permission_classes([AllowAny])
 def get_post(request, pk, postsId):
@@ -334,7 +375,6 @@ def get_post(request, pk, postsId):
         post.visibility = request.data.get('visibility', post.visibility)
         post.categories = request.data.get('categories', post.categories)
         post.save()
-
         return Response(status=200)
 
     # Delete a post
@@ -346,38 +386,11 @@ def get_post(request, pk, postsId):
         post.delete()
         return Response(status=204)
 
-    # Create a new post
-    # elif request.method == 'POST':
-    #     if not request.user.is_authenticated:
-    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-    #     current_author = Authors.objects.filter(uuid=pk).first()
-    #     if not current_author:
-    #         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    #     new_post_id = uuid.uuid4()
-    #     new_post = Posts.objects.create(
-    #         title=request.data.get('title'),
-    #         uuid=new_post_id,
-    #         id=f"{request.build_absolute_uri('/')}/service/authors/{pk}/posts/{new_post_id}",
-    #         source=request.data.get('source'),
-    #         origin=request.data.get('origin'),
-    #         description=request.data.get('description'),
-    #         contentType=request.data.get('contentType'),
-    #         content=request.data.get('content'),
-    #         author=current_author,
-    #         categories=request.data.get('categories'),
-    #         visibility=request.data.get('visibility', 'PUBLIC'),
-    #     )
-    #     new_post.save()
-
-    #     return Response(status=201)
-
-
 """
 Image Posts
 """
 
+@swagger_auto_schema(method='get', operation_description="Get the image of a post.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getImage(request, pk, postsId):
@@ -398,6 +411,9 @@ def getImage(request, pk, postsId):
     return FileResponse(img)
 
 
+
+@swagger_auto_schema(method='post', operation_description="Post new comments. Don't use this one, just for test.")
+@swagger_auto_schema(method='get', operation_description="Get all the comments of specific post.")
 @api_view(['GET', 'POST'])
 #@permission_classes([AllowAny])
 def getComments(request, pk, postsId):
@@ -456,7 +472,7 @@ def getComments(request, pk, postsId):
         newComment.save()
         return Response(status=200)
 
-
+@swagger_auto_schema(method='get', operation_description="Get a specific comment.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getOneComment(request, pk, postsId, commentId):
@@ -477,7 +493,7 @@ def getOneComment(request, pk, postsId, commentId):
 
         return Response(responseData, status=200)
 
-
+@swagger_auto_schema(method='get', operation_description="Get all the followers taht follow current user.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getFollowers(request, pk):
@@ -497,7 +513,7 @@ def getFollowers(request, pk):
 
         return Response(data, status=200)
 
-
+@swagger_auto_schema(method='get', operation_description="Get all the users followed by current user.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getFollowing(request, pk):
@@ -517,6 +533,9 @@ def getFollowing(request, pk):
 
         return Response(data, status=200)
 
+#@swagger_auto_schema(method='put', operation_description="Add a new following relation, make sure the user send out follow request put after /followers/author_uuid.", request_body=oneFollower_example)
+@swagger_auto_schema(method='delete', operation_description="Delete a following relation.")
+@swagger_auto_schema(method='get', operation_description="Get information of a specific follower.")
 @api_view(['DELETE', 'PUT', 'GET'])
 #@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
@@ -539,12 +558,13 @@ def oneFollower(request, pk, foreignPk):
             return Response({"message": "No such follower relationship"}, status=404)
 
     elif request.method == 'PUT':
+        
         if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             return Response({"message": "Already followed"}, status=400)
         else:
             if current_user == foreign_user:
                 return Response({"message": "You cannot follow yourself"}, status=400)
-            new_follow = Followers.objects.create(followedUser=current_user, follower=foreign_user)
+            new_follow = Followers.objects.create(followedId=pk ,follower=foreign_user, followedUser=current_user)
             new_follow.save()
             return Response({"message": "Followed successfully"}, status=200)
 
