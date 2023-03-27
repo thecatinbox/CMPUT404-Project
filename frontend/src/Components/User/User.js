@@ -11,6 +11,7 @@ import { faUserPlus, faUserMinus } from '@fortawesome/free-solid-svg-icons'
 
 function User({user, followed}) { 
 
+  const current_user = JSON.parse(localStorage.getItem('user')); 
   const uuid = localStorage.getItem('uuid'); 
   const follow_uuid = user.uuid; 
   const follow_url = user.url; 
@@ -35,12 +36,12 @@ function User({user, followed}) {
 
     const body = JSON.stringify({
       "type": "follow",
-      "summary": user.displayName + " wants to follow you",  
-      "follower": JSON.stringify(user)
+      "summary": current_user.displayName + " wants to follow you",  
+      "actor": current_user
     }); 
 
     // console.log(header); 
-    // console.log(body); 
+    console.log(body); 
 
     fetch(MESSAGE_ENDPOINT, {
       headers: header,
