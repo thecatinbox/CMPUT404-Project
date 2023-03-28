@@ -39,43 +39,30 @@ function Home() {
   }
   
   async function fetchTeam16Data() {
-    /* return axios.get('https://sd16-api.herokuapp.com/service/authors/afe5dcfe-a763-41c0-8984-f72c1eddb084/posts/', {
-      headers: {
-        Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
-      }
-    })
-    .then(res => {
-      console.log(res.data); 
-      return res.data.posts;
-    }).catch(err => {
-      console.error(err);
-      return [];
-    }); */ 
-
     const TEAM16_ENDPOINT = 'https://sd16-api.herokuapp.com/service/authors/'; 
     return axios.get(TEAM16_ENDPOINT, {
       headers: {
-        Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
+        "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
       }
     })
       .then(async res => {
-        // console.log(res.data.items); 
+        console.log(res.data.items); 
         const team1authorsList = res.data.items; 
         let promises = []; // to store all post requests
   
         for (let author of team1authorsList) {
-          if (author.id.includes(TEAM16_ENDPOINT), {
-            headers: {
-              Authorization: 'Basic ' + btoa('Team12:P*ssw0rd!')
-            }
-          }) {
+          if (author.id.includes(TEAM16_ENDPOINT)) {
             const url = author.id + '/posts/'; 
             // console.log(url); 
-            const promise = axios.get(url).then(res => {
+            const promise = axios.get(url, {
+              headers: {
+                "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
+              }
+            }).then(res => {
               // console.log(res.data.items); 
               return res.data.items; 
             }).catch(err => {
-              console.error(err);
+              // console.error(err);
               return []; 
             });
             if (promise != []) { 
@@ -87,18 +74,21 @@ function Home() {
         const team1postList = await Promise.all(promises).then(posts => {
           return [].concat(...posts);
         });
-          
-        // console.log(team1postList); 
+
         return team1postList;
       }).catch(err => {
-        console.error(err);
+        // console.error(err);
         return [];
       });
   }
 
   async function fetchTeam1Data() {
     const TEAM1_ENDPOINT = 'https://p2psd.herokuapp.com/authors/'; 
-    return axios.get(TEAM1_ENDPOINT)
+    return axios.get(TEAM1_ENDPOINT, {
+      headers: {
+        "Authorization": 'Basic cDJwYWRtaW46cDJwYWRtaW4='
+      }
+    })
       .then(async res => {
         // console.log(res.data.items); 
         const team1authorsList = res.data.items; 
@@ -108,11 +98,15 @@ function Home() {
           if (author.id.includes(TEAM1_ENDPOINT)) {
             const url = author.id + '/posts/'; 
             // console.log(url); 
-            const promise = axios.get(url).then(res => {
+            const promise = axios.get(url, {
+              headers: {
+                "Authorization": 'Basic cDJwYWRtaW46cDJwYWRtaW4='
+              }
+            }).then(res => {
               // console.log(res.data.items); 
               return res.data.items; 
             }).catch(err => {
-              console.error(err);
+              // console.error(err);
               return []; 
             });
             if (promise != []) { 
@@ -128,7 +122,7 @@ function Home() {
         // console.log(team1postList); 
         return team1postList;
       }).catch(err => {
-        console.error(err);
+        // console.error(err);
         return [];
       });
   }
@@ -146,7 +140,7 @@ function Home() {
   return (
     <>
       <TopBar id="home"/>
-      <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}>
+      {/* <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}> */}
       <div className="home">
         <div className="posts">
         
@@ -157,7 +151,7 @@ function Home() {
         
         </div>
       </div>
-      </Box>
+      {/* </Box> */}
     </>
 
   );

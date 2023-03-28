@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.core.files.base import ContentFile
 
 signUp_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -47,16 +48,15 @@ def signUp(request):
             else:
                 github = ""
             if 'profileImage' in data:
-                profileImage = data.FILES['profileImage']
+                profileImage_data = data['profileImage']
+                if profileImage_data:
+                    format, imgstr = profileImage_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                    profileImage = decoded_image
             else:
                 profileImage = ""
                 
-            tempCheck = 0
-            if 'image' in request.FILES:
-                image = request.FILES['image']
-                image_path = default_storage.save(f'uploads/{userId}/{image.name}', image)
-                contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
-                tempCheck = 1
         except KeyError as e:
             return Response({'error': f'Missing required field: {e}'}, status=400)
 
@@ -71,8 +71,6 @@ def signUp(request):
         
         #create author
         try:
-            if tempCheck == 1:
-                profileImage = contentImage
 
             uid = str(uuid.uuid4())
             author = Authors.objects.create(username=username, 

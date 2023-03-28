@@ -66,9 +66,9 @@ function Inbox() {
     <>
     <TopBar id="inbox"/>
       <ThemeProvider theme={ theme }>
-        <Box sx={{  bgcolor: "#E6EAF3", 
+        {/* <Box sx={{  bgcolor: "#E6EAF3", 
                     height: '100%', 
-                    minHeight: '100vw' }}>
+                    minHeight: '100vw' }}> */}
           <div className="inbox">
             <List sx={{ width: '100%', 
                         minWidth: 360, 
@@ -224,7 +224,7 @@ function Inbox() {
       
     </List>
     </div>
-    </Box>
+    {/* </Box> */}
     </ThemeProvider>
     </>
   );

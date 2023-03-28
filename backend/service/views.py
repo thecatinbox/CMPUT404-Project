@@ -166,6 +166,17 @@ def getAllPublicPosts(request):
         author_data['displayName'] = author_data.pop('displayName')
         categories = data.pop('categories')
         comments_count = data.pop('count')
+
+        if data['contentImage']:
+            data['contentImage'] = data['contentImage'].url
+        else:
+            data['contentImage'] = None
+
+        if post.author.profileImage:
+            author_data['profileImage'] = post.author.profileImage.url
+        else:
+            author_data['profileImage'] = None
+
        
         item = {
             **data,
@@ -226,23 +237,30 @@ def Post(request, pk):
                 return Response(responseData, status=200)
 
             for item in posts:
-                dict = {}
-                serializer = PostsSerializer(item)
-                data = serializer.data
-                author_dict = {}
-                for k, v in data.items():
-                    dict[k] = v
-                for k, v in serializeAuthor.data.items():
-                    author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['displayName']
-                author_dict.pop('username')
-                categories = data['categories']
-                postsId = data['uuid']
-                dict.pop('categories')
-                dict['categories'] = categories
-                dict['author'] = author_dict
-                dict['count'] = item.count
-                item_list.append(dict)
+                data = PostsSerializer(item).data
+                author_data = AuthorSerializer(item.author).data
+                author_data['displayName'] = author_data.pop('displayName')
+                categories = data.pop('categories')
+                comments_count = data.pop('count')
+
+                if data['contentImage']:
+                    data['contentImage'] = data['contentImage'].url
+                else:
+                    data['contentImage'] = None
+
+                if item.author.profileImage:
+                    author_data['profileImage'] = item.author.profileImage.url
+                else:
+                    author_data['profileImage'] = None
+
+            
+                item = {
+                    **data,
+                    'author': author_data,
+                    'categories': categories,
+                    'count': comments_count,
+                }
+                item_list.append(item)
 
             responseData = {
                 "type": "posts",
@@ -252,34 +270,8 @@ def Post(request, pk):
             return Response(responseData, status=200)
 
         except Exception as e:
-
-            for item in posts:
-                dict = {}
-                serializer = PostsSerializer(item)
-                data = serializer.data
-                author_dict = {}
-                for k, v in data.items():
-                    dict[k] = v
-                for k, v in serializeAuthor.data.items():
-                    author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['displayName']
-                author_dict.pop('username')
-                categories = data['categories']
-                postsId = data['uuid']
-                dict.pop('categories')
-                dict['categories'] = categories
-                dict['author'] = author_dict
-                dict['count'] = item.count
-                item_list.append(dict)
-
-
-            # Return empty item_list if there was an exception
-            responseData = {
-                "type": "posts",
-                "items": item_list
-            }
-            print(responseData)
-            return Response(responseData, status=200)
+            return Response("cannot read post", status=500)
+            
 
     # Create new post
     elif request.method == 'POST':
@@ -345,6 +337,7 @@ def get_post(request, pk, postsId):
             'description': post.description,
             'contentType': post.contentType,
             'content': post.content,
+            'contentImage': post.contentImage.url if post.contentImage else "",
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
@@ -374,6 +367,18 @@ def get_post(request, pk, postsId):
         post.content = request.data.get('content', post.content)
         post.visibility = request.data.get('visibility', post.visibility)
         post.categories = request.data.get('categories', post.categories)
+
+        if 'contentImage' in request.data:
+            profileImage_data = request.data.get('contentImage')
+            if profileImage_data:
+                format, imgstr = profileImage_data.split(';base64,')
+                ext = format.split('/')[-1]
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                contentImage = decoded_image
+        else:
+            contentImage = post.contentImage
+        post.contentImage = contentImage
+
         post.save()
         return Response(status=200)
 
@@ -385,32 +390,6 @@ def get_post(request, pk, postsId):
 
         post.delete()
         return Response(status=204)
-
-"""
-Image Posts
-"""
-
-@swagger_auto_schema(method='get', operation_description="Get the image of a post.")
-@api_view(['GET'])
-#@permission_classes([AllowAny])
-def getImage(request, pk, postsId):
-    """
-    This is in order to display the image post or the image in the post
-    """
-    try:
-        post = Posts.objects.get(uuid=postsId)
-    except Posts.DoesNotExist:
-        raise Http404()
-
-    if not post.post_image:
-        return HttpResponseBadRequest("This post does not have an image.")
-
-    img_path = post.post_image.path
-    img = open(img_path, 'rb')
-
-    return FileResponse(img)
-
-
 
 @swagger_auto_schema(method='post', operation_description="Post new comments. Don't use this one, just for test.")
 @swagger_auto_schema(method='get', operation_description="Get all the comments of specific post.")
@@ -604,7 +583,7 @@ def followRequest(request, pk, foreignPk):
             makeRequest = FollowRequests.objects.create(actor=foreign_user, object=current_user, belongTo=belongTo, summary=summary)
             makeRequest.save()
 
-            send_author_inbox = Inbox.objects.get(author=object_user)
+            send_author_inbox = Inbox.objects.get(author=current_user)
             send_author_inbox.followRequests.add(makeRequest)
 
             responseData = {
@@ -798,10 +777,13 @@ def inbox(request, pk):
             for i in posts_list:
                 user = Authors.objects.get(username=i['author'])
                 i['author'] = AuthorSerializer(user).data
+                i['author']['profileImage'] = i['author']['profileImage'].url if i['author']['profileImage'] else ""
                 temp_post = Posts.objects.get(id=i['post'])
                 i['post'] = PostsSerializer(temp_post).data
                 temp_post_author = Authors.objects.get(username=i['post']['author'])
                 i['post']['author'] = AuthorSerializer(temp_post_author).data
+                i['post']['author']['profileImage'] = i['post']['author']['profileImage'].url if i['post']['author']['profileImage'] else ""
+                i['post']['contentImage'] = i['post']['contentImage'].url if i['post']['contentImage'] else ""
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
                 user = Authors.objects.get(username=i['author'])

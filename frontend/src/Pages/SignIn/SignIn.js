@@ -38,6 +38,7 @@ function SignIn() {
 
     const checkAuth = (userData) => {
         if (inputs.username === userData.username && inputs.password === userData.password) {
+            localStorage.setItem('user', JSON.stringify(userData)); 
             localStorage.setItem('uuid', userData.uuid); 
             navigate("/home");
         } else {
