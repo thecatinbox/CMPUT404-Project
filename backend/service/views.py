@@ -842,51 +842,94 @@ def inbox(request, pk):
             inbox.save()
 
         elif post_type == 'follow':
-            
-            try:
-                #summary = request.data.get('summary')
-                actor = request.data.get('actor')
-                
-                if Authors.objects.filter(url=actor.get('url')):
-                    current_user = Authors.objects.get(url=actor.get('url'))
-                else:
-                    uid = str(uuid.uuid4())
-                    temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
-                    temp.save()
-                    current_user = Authors.objects.get(uuid=uid)
-                    print(current_user,'\n')
-                   
-                foreign_user = Authors.objects.get(uuid=pk)
-                
-            except Authors.DoesNotExist:
-                return Response({"message": "User not found"}, status=404)
-            #print(current_user)
-            #print('\n',foreign_user)
-            if current_user == foreign_user:
-                return Response({"message": "You cannot follow yourself"}, status=404)
-                
-            author_name = current_user.displayName
-            object_name = foreign_user.displayName
-            belongTo = foreign_user.uuid
-            summary = author_name + " wants to follow " + object_name
-            print(summary)
-            if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+            if request.data.get('approved') and request.data.get('approved') == True:
                 try:
-                    makeRequest = FollowRequests.objects.create()
-                    
-                    makeRequest.summary = summary
-                    makeRequest.actor = current_user
-                    makeRequest.object = foreign_user
-                    makeRequest.save()
-                except Exception as e:
-                    print('this is error:',e)
-                    return Response({"message": "Follow request failed"}, status=404)
+                    actor = request.data.get('actor')
+                    if Authors.objects.filter(url=actor.get('url')):
+                        foreign_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        foreign_user = Authors.objects.get(uuid=uid)
 
-                #return Response(status=200)
-                inbox.followRequests.add(makeRequest)
-                inbox.save()
-            else:
-                return Response({"message": "You are already following this user"}, status=404)
+                    
+                    current_user = Authors.objects.get(uuid=pk)
+                    
+                except Authors.DoesNotExist:
+                    return Response({"message": "User not found"}, status=404)
+                #print(current_user)
+                #print('\n',foreign_user)
+                if current_user == foreign_user:
+                    return Response({"message": "You cannot follow yourself"}, status=404)
+                    
+                author_name = current_user.displayName
+                object_name = foreign_user.displayName
+                belongTo = foreign_user.uuid
+                summary = author_name + " wants to follow " + object_name
+                print(summary)
+                if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                    try:
+                        makeRequest = FollowRequests.objects.create()
+                        
+                        makeRequest.summary = summary
+                        makeRequest.actor = current_user
+                        makeRequest.object = foreign_user
+                        makeRequest.save()
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Follow request failed"}, status=404)
+
+                    follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(forign_user.uuid)}"
+                    response = requests.put(follow_url, data={"approved": True})
+
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
+
+            else:    
+                try:
+                    actor = request.data.get('actor')
+                    
+                    if Authors.objects.filter(url=actor.get('url')):
+                        current_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        current_user = Authors.objects.get(uuid=uid)
+
+                    
+                    foreign_user = Authors.objects.get(uuid=pk)
+                    
+                except Authors.DoesNotExist:
+                    return Response({"message": "User not found"}, status=404)
+                #print(current_user)
+                #print('\n',foreign_user)
+                if current_user == foreign_user:
+                    return Response({"message": "You cannot follow yourself"}, status=404)
+                    
+                author_name = current_user.displayName
+                object_name = foreign_user.displayName
+                belongTo = foreign_user.uuid
+                summary = author_name + " wants to follow " + object_name
+                print(summary)
+                if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                    try:
+                        makeRequest = FollowRequests.objects.create()
+                        
+                        makeRequest.summary = summary
+                        makeRequest.actor = current_user
+                        makeRequest.object = foreign_user
+                        makeRequest.save()
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Follow request failed"}, status=404)
+
+                    #return Response(status=200)
+                    inbox.followRequests.add(makeRequest)
+                    inbox.save()
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
 
         elif post_type == 'like': 
             try:
