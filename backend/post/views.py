@@ -20,6 +20,7 @@ import json
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.core.files.base import ContentFile
 
 create_post_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -69,12 +70,17 @@ def create_post(request, userId):
         uid = str(uuid.uuid4())
 
         tempCheck = 0
-        if 'image' in request.FILES:
-            image = request.FILES['image']
-            image_path = default_storage.save(f'uploads/{userId}/{image.name}', image)
-            contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
-            content_type = 'image'  
+        if content_type == "image":  
             tempCheck = 1
+            image_data = request.data.get('contentImage')
+            if image_data:
+                format, imgstr = profileImage_data.split(';base64,')
+                ext = format.split('/')[-1]
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                contentImage = decoded_image
+            else:
+                contentImage = ""
+                
 
         new_post = Posts()
         new_post.title = title
