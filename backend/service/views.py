@@ -16,7 +16,8 @@ from django.http import JsonResponse
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+import requests
+import json
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -145,6 +146,41 @@ def singleAuthor(request, pk):
         author.save()
         return Response(status=200)
 
+@api_view(['GET'])
+def showGithubActivity(request, pk):
+    """
+    This view is used to return one author's Github activity
+    """
+    try:
+        author = Authors.objects.get(uuid=pk)
+    except Authors.DoesNotExist:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        serializer = AuthorSerializer(author)
+        data = serializer.data
+
+        # Extract GitHub username from profile URL
+        github_url = data['github']
+        username = github_url.split("/")[-1]
+
+        # Make API request to retrieve GitHub activity data
+        token = "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"
+        endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        headers = {"Authorization": f"Token {token}"}
+        response = requests.get(endpoint_url, headers=headers)
+        activity_data = json.loads(response.content)
+
+        # Add activity data to response
+        data['github_activity'] = activity_data
+
+        # Format the response as a JSON file
+        responseData = {
+            "type": "author",
+            "data": data
+        }
+
+        return Response(responseData, status=200)
 
 """
 Posts
@@ -1013,3 +1049,5 @@ def inbox(request, pk):
 
     else:
         return Response(status=405)
+    
+

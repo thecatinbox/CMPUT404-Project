@@ -27,10 +27,3 @@ def search(request, userId):
         username_profile_list = list(username_profile)
         print(username_profile_list)
     return HttpResponseRedirect(reverse("home-page", args=[userId]))
-
-
-@login_required(login_url='/signin/')
-@permission_classes([AllowAny])
-def logout(request):
-    auth.logout(request)
-    return redirect('/signin/')
