@@ -171,13 +171,10 @@ def showGithubActivity(request, pk):
         response = requests.get(endpoint_url, headers=headers)
         activity_data = json.loads(response.content)
 
-        # Add activity data to response
-        data['github_activity'] = activity_data
-
         # Format the response as a JSON file
         responseData = {
             "type": "author",
-            "data": data
+            "github_activity": activity_data
         }
 
         return Response(responseData, status=200)
