@@ -12,9 +12,28 @@ from django.forms.models import model_to_dict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 import json
+from django.http import JsonResponse
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from django.core.files.base import ContentFile
 
+signUp_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='username'),
+        'password': openapi.Schema(type=openapi.TYPE_STRING, description='password'),
+        'displayName': openapi.Schema(type=openapi.TYPE_STRING, description='displayName'),
+        'github': openapi.Schema(type=openapi.TYPE_STRING, description='github'),
+        'profileImage': openapi.Schema(type=openapi.TYPE_FILE, description='profileImage'),
+
+    },
+    required=['username', 'password', 'displayName'],
+)
+
+
+@swagger_auto_schema(method='post', description="Sign Up with username,password and displayName", request_body=signUp_example)
 @api_view(['GET', 'POST'])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def signUp(request):
     
@@ -29,14 +48,18 @@ def signUp(request):
             else:
                 github = ""
             if 'profileImage' in data:
-                profileImage = data.FILES['profileImage']
+                profileImage_data = data['profileImage']
+                if profileImage_data:
+                    format, imgstr = profileImage_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                    profileImage = decoded_image
             else:
                 profileImage = ""
-            #return Response({'error': f'Missing required field: {"66666666666"}'}, status=400)
+                
         except KeyError as e:
             return Response({'error': f'Missing required field: {e}'}, status=400)
-        #return Response({'error': f'Username:{username,password,displayName,github,profileImage}'}, status=400)
-        #create user
+
         try:
             user = User.objects.get(username=username)
             return Response({'error': 'Username already exists'}, status=400)
@@ -48,6 +71,7 @@ def signUp(request):
         
         #create author
         try:
+
             uid = str(uuid.uuid4())
             author = Authors.objects.create(username=username, 
                                             password=password,
@@ -55,9 +79,10 @@ def signUp(request):
                                             github=github, 
                                             profileImage=profileImage, 
                                             uuid=uid,
-                                            host=request.headers.get('host'), 
-                                            id ="http://"+request.headers.get('host')+"/author/"+str(uid),
-                                            url="http://"+request.headers.get('host')+"/author/"+str(uid)
+                                            host="http://"+request.headers.get('host'), 
+                                            id =f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}",
+                                            #"http://"+request.headers.get('host')+"/author/"+str(uid),
+                                            url=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}"
                                             )
             author.save()
         except Exception as e:
@@ -78,21 +103,4 @@ def signUp(request):
         }
         return Response(responseData, status=200)
 
-
-
-'''
-def user_info(request, author_id):
-    if request.method == 'POST':
-        #get author
-        author = Authors.objects.get(uuid=author_id)
-        #update author info
-        author.displayName = request.POST['displayName']
-        author.github = request.POST['github']
-        author.save()
-        #create single_author
-        single_author = Single_Author.objects.create(uuid=author_id, username=author.username, displayName=author.displayName, github=author.github)
-        single_author.save()
-        #create host
-        #host = Host.objects.create(host="http://
-'''
-            
+ 

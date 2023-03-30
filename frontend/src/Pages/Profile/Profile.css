@@ -1,14 +1,22 @@
 .profile {
+    
+    margin: auto;
+    /*all pages' background-color is light blue */
+    background-color: #fafeff;
+}
+.profile-center {
     width: 60%;
     margin: auto;
+    background-color: #fff2ea;
+    border-radius: 20px;
 }
-
 .profile .profile-data {
     text-align: center;
     padding-top: 5%;
 }
 
 .profile img {
-    width: 20%;
+    width: 230px;
     height: auto;
+    border-radius: 50%;
 }

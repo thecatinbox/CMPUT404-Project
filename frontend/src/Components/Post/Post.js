@@ -9,17 +9,21 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHeart, faChevronDown, faComment, faShare} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faChevronDown, faComment, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import Comment from '../Comment/Comment'; 
-
 import "./Post.css"; 
+import CommentList from "../CommentList/CommentList";
+import Share from "../Share/Share";
+import Username from "../Username/Username";
 
 function Post({post}) { 
 
@@ -28,71 +32,57 @@ function Post({post}) {
   const open = Boolean(anchorEl);
 
   const uuid = localStorage.getItem('uuid'); 
+  const post_uuid = post.author.uuid; 
   const puid = post.uuid; 
-  const app_url = localStorage.getItem('url'); 
+  // const app_url = localStorage.getItem('url'); 
+  const user_url = post.author.url; 
 
-  var POST_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" +  puid + "/"; 
-  var COMMENT_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-  var ADD_COMMENT_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"
-  var LIKE_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/posts/" + puid + "/likes"; 
-  var ADD_LIKE_ENDPOINT = "http://" + app_url + "/post/authors/" + uuid + "/like/" + puid; 
-  var LIKED_ENDPOINT = "http://" + app_url + "/server/authors/" + uuid + "/liked"; 
-  // console.log(ENDPOINT); 
-
-  // Get comment list 
-  const [showComments, setShowComments] = useState(false);
-  const [commentList, setCommentList] = useState([]);
+  var POST_ENDPOINT = user_url + "/posts/" + puid + "/"; 
+  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
+  var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+  // console.log(MESSAGE_ENDPOINT); 
+  
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
-  async function checkLiked() {
-    try {
-      const response = await fetch(LIKED_ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      if (data.items.some(item => item.uuid === puid)) {
-        setLiked(true); 
+  const theme = createTheme({
+    palette: {
+      text: {
+        primary: '#007DAA',
+        secondary: "#79B3C1",
+      },
+      primary: {
+        main: '#FF694B', 
+      },
+      secondary: {
+        main: '#007DAA',
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  async function fetchComments() {
-    try {
-      const response = await fetch(COMMENT_ENDPOINT, {
-        headers: { "Accept": "application/json" },
-        method: "GET"
-      });
-  
-      const data = await response.json();
-      setCommentList(data.items);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
+    },
+  });
 
   async function fetchLikes() {
     try {
       const response = await fetch(LIKE_ENDPOINT, {
-        headers: { "Accept": "application/json" },
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
   
       const data = await response.json();
       setLikeNum(data.total_likes); 
+
+      const isLikedByCurrentUser = data.items.some(item => item.author && item.author.uuid === uuid);
+      if (isLikedByCurrentUser) {
+        setLiked(true); 
+      }
+
     } catch (error) {
       console.error('Error:', error);
     }
   }
 
   useEffect(() => {
-    checkLiked(); 
     fetchLikes(); 
-    fetchComments(); 
   }); 
   
   // Handle input change 
@@ -103,41 +93,45 @@ function Post({post}) {
     console.log(inputs); 
   };
 
-  // Handle add new comment 
-  const handleNewComment = () => {
+  // Handle add new like
+  async function handleNewLike() {
+    if (liked == false) {
+      try {
+        const header = {
+          "Content-Type": 'application/json',
+          "Accept": 'application/json', 
+          "Origin": 'http://localhost:3000', 
+          "Authorization": 'Basic ' + btoa('username1:123')
+        }
 
-    console.log(inputs.comment); 
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+        // Send like message to inbox 
+        const body = JSON.stringify(
+          { 
+            "type": "like", 
+            "p_or_c": "post", 
+            "userId": uuid, 
+            "postId": puid
+         }
+        ); 
+
+        console.log(body); 
+
+        await fetch(MESSAGE_ENDPOINT, {
+          headers: header,
+          body: body, 
+          method: "POST"
+        }); 
+
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      
     }
-
-    console.log(inputs.comment); 
-    console.log(inputs.content); 
-
-    const body = JSON.stringify({
-      "comment": inputs.comment,
-    }); 
-
-    // console.log(header); 
-    console.log(body); 
-
-    fetch(ADD_COMMENT_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "POST"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
   }
 
-  // Handle add new comment 
+  /* 
   const handleNewLike = () => {
     if (liked == false) {
-      setLikeNum(likeNum + 1); 
-      setLiked(true); 
-
       const header = {
         "Content-Type": 'application/json',
         "Accept": 'application/json', 
@@ -154,7 +148,7 @@ function Post({post}) {
         console.log('error: ' + error);
       }); 
     }
-  }
+  } */ 
 
   // Handle right top menu 
   const handleClick = (event) => {
@@ -169,6 +163,7 @@ function Post({post}) {
   const [editOpen, setEditOpen] = React.useState(false);
 
   const handleEditOpen = () => {
+    console.log(puid); 
     setEditOpen(true);
   };
 
@@ -180,16 +175,16 @@ function Post({post}) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123')
     }
 
-    console.log(inputs.title); 
-    console.log(inputs.content); 
+    // console.log(inputs.title); 
+    // console.log(inputs.content); 
 
     const body = JSON.stringify({
       "title": inputs.title,
-      "content": inputs.content,
-      "visibility": "PUBLIC"
+      "content": inputs.content 
     }); 
 
     // console.log(header); 
@@ -209,8 +204,130 @@ function Post({post}) {
     setEditOpen(false);
   };
 
+  const handleDelete = () => {
+    const header = {
+      "Content-Type": 'application/json',
+      "Accept": 'application/json', 
+      "Origin": 'http://localhost:3000', 
+      "Authorization": 'Basic ' + btoa('username1:123'),
+    }
+
+    fetch(POST_ENDPOINT, {
+      headers: header,
+      method: "DELETE"
+    }).catch((error) => {
+      console.log('error: ' + error);
+    }); 
+  };
+
+  // Github Activity
+  const [openGithub, setOpenGithub] = useState(false);
+  const [githubActivityList, setGithubActivityList] = useState([]);
+
+  // githubActivityList = 
+
+  var parser = document.createElement('a');
+  parser.href = post.author.github;
+  var githubUsername = parser.pathname.replace('/', '');
+
+  var GITHUB_ENDPOINT = user_url + "/github/";
+
+  async function fetchGithubData() {
+    try {
+      const response = await fetch(GITHUB_ENDPOINT, {
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+        method: "GET"
+      });
+      // test url
+      // "http://127.0.0.1:8000/service/authors/4e886755-295b-4a9f-9251-3c71732e9f5e/github/"
+      // "http://127.0.0.1:8000/service/authors/5fefed37-47b8-4d0f-a427-bbe218a9c979/github/"
+  
+      const githubData = await response.json();
+      setGithubActivityList(githubData["github_activity"]);
+      console.log(githubData["github_activity"]);
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle the error here
+    }
+  }
+
+  const handleClickOpenGithub = () => {
+    setOpenGithub(true);
+    fetchGithubData(); 
+  };
+  const handleCloseGithub = () => {
+    setOpenGithub(false);
+  };
+
+  function timeSince(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) {
+      return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+      return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 604800);
+    if (interval >= 1) {
+      return interval + " week" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+      return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+      return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+      return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+    }
+    return "just now";
+  }
+
+  function GithubActivity({activity}) {
+    return (
+      <Box gutterBottom style={{ display: 'flex',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  alignSelf: 'center',
+                                  borderBottom:'1px dashed #007DAA', 
+                                  }}>
+        <Typography id="githubName" 
+                    sx={{ color: "#22A2BB",
+                          size: 0.5,
+                          marginRight: 2,
+                          fontSize: "90%" }}> 
+          {activity["actor"]["login"]} 
+        </Typography>
+
+        <Typography id="githubEvent"> {activity["type"].replace("Event", "")} </Typography>
+        <Typography id="githubRepo" sx={{ fontSize: "90%", margin: 2 }}> 
+          <a href={"https://github.com/" + activity["repo"]["name"]}>
+            {activity["repo"]["name"]}
+          </a> 
+        </Typography>
+
+        <Typography id="githubTime"
+                    sx={{ color: "#22A2BB",
+                    fontSize: "90%"}}> 
+            {timeSince(activity["created_at"])} 
+        </Typography>
+      </Box>
+    );
+  }
+
+  
+  
+
+
   return (
     <div className='post'>
+      <ThemeProvider theme={ theme }>
       <Card sx={{ minWidth: 275 }}>
         <CardActions disableSpacing
           sx={{
@@ -220,6 +337,8 @@ function Post({post}) {
             alignItems: "flex-start",
             p: 0,
           }}>
+          {post_uuid===uuid ? ( // Display a loading message while isLoading is true
+
           <div>
             <Button
               id="basic-button"
@@ -240,27 +359,79 @@ function Post({post}) {
               }}
             >
               <MenuItem onClick={handleEditOpen}>Edit Post</MenuItem>
-              <MenuItem onClick={handleClose}>Delete Post</MenuItem>
+              <MenuItem onClick={handleDelete}>Delete Post</MenuItem>
             </Menu>
 
-            <Dialog open={editOpen} onClose={handleEditClose}>
+            <Dialog open={editOpen} onClose={handleEditClose} fullScreen >
               <DialogTitle>Edit Post</DialogTitle>
               <DialogContent>
-                <TextField margin="dense" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
-                <TextField margin="dense" id="content" label="Post Content" defaultValue={post.content} onChange={handleChange} variant="standard" fullWidth/>
+                <TextField margin="dense" name="title" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
+                <TextField margin="dense" name="content" id="content" label="Post Content" defaultValue={post.content} onChange={handleChange} variant="standard" fullWidth/>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleEditClose}>Cancel</Button>
                 <Button onClick={handleEditSave}>Save</Button>
               </DialogActions>
             </Dialog>
-          </div>
+          </div>) : (
+          <div></div> 
+          )}
         </CardActions>
         
         <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {post.author.displayName}
-          </Typography>
+          <div style={{ display: 'flex',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}>
+            <Typography sx={{ fontSize: 14, mr: 1.5 }} color="text.secondary" gutterBottom>
+              <Username user={post.author}/>     
+            </Typography>
+            
+            <FontAwesomeIcon id="fa-github" icon={ faGithub } onClick={ handleClickOpenGithub } />
+            <Dialog onClose={ handleCloseGithub }
+                             open={ openGithub }>
+              <DialogTitle onClose={ handleCloseGithub } >
+                <div style={{ display: 'flex',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                        }}>
+                  <a href={ post.author.github } style={{ marginRight: 3 }}>
+                    <FontAwesomeIcon id="fa-github" 
+                                    icon={ faGithub } 
+                                    href={ post.author.github } />
+                  </a>
+                  {post.author.github ? 
+                    <Typography gutterBottom style={{ marginLeft: 3 }}>
+                      {post.author.displayName}'s Github Activities
+                      <br/>
+                      GitHub username: {githubUsername}
+                    </Typography> :
+                    <Typography gutterBottom >
+                      Github Activities
+                    </Typography>
+                  }
+                          
+                  {/* <Typography >Github Activities</Typography> */}
+                  <DialogActions style={{ alignSelf: 'flex-end' }}>
+                    <FontAwesomeIcon id="fa-xmark" 
+                                     icon={ faXmark } 
+                                     onClick={ handleCloseGithub } />
+                  </DialogActions>
+                </div>
+              </DialogTitle>
+              <DialogContent dividers>
+                {post.author.github ? 
+                  githubActivityList.map(function(activity){
+                    return <GithubActivity activity={activity} key={activity.id}/>;
+                  }) :
+                    <Typography gutterBottom >
+                    Sorry,<br/>
+                      {post.author.displayName} doesn't have GitHub...
+                  </Typography>
+                }
+              </DialogContent>
+          </Dialog>
+          </div>
           <Typography variant="h5" component="div">
             {post.title}
           </Typography>
@@ -280,26 +451,13 @@ function Post({post}) {
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>
-          <IconButton>
-            <FontAwesomeIcon icon={faShare} />
-          </IconButton>
+          <Share post={post}/>
         </CardActions>
 
-        {showComments &&
-        <>
-          <CardContent>
-            {commentList.map(function(comment){
-              return (<Comment comment={comment} key={comment.id}/>)
-          })}
-          </CardContent>
-          <CardContent id="commentSession">
-            <TextField style={{width: "90%"}} hiddenLabel name="comment" id="comment" size="small" label="Comment" variant="outlined" onChange={handleChange}/>
-            <Button style={{width: "10%"}} size="small" onClick={handleNewComment}>Send</Button>
-          </CardContent>
-        </>
-        }
+        {showComments && <CommentList post={post}/> }
 
       </Card>
+      </ThemeProvider>
     </div>
   );
 }

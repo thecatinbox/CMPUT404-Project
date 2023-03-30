@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { useNavigate } from "react-router-dom";
 import './SignUp.css';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -14,8 +14,8 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import Avatar from '@mui/material/Avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 function SignUp() {
     const [inputs, setInputs] = useState({});
@@ -23,11 +23,20 @@ function SignUp() {
     const [passwordMatch, setPassWordMatch] = useState(true);
     const app_url = localStorage.getItem('url'); 
 
-    const theme = createTheme();
+    const theme = createTheme({
+        palette: {
+          primary: {
+            main: '#FF694B', 
+          },
+          secondary: {
+            main: '#007DAA',
+          }
+        },
+      });
 
     const navigate = useNavigate();
-    const SIGNUP_ENDPOINT = 'http://' + app_url + '/signup/'; 
-    const AUTHORS_ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+    const SIGNUP_ENDPOINT = app_url + '/signup/'; 
+    const AUTHORS_ENDPOINT = app_url + '/service/authors/'; 
 
     // handle changes in the input box
     const handleChange = (event) => {
@@ -51,7 +60,7 @@ function SignUp() {
     // handle the submit of the form
     const userNotExist = () => {
         fetch(AUTHORS_ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
             console.log(data.items); 
@@ -81,6 +90,7 @@ function SignUp() {
                 "Content-Type": 'application/json',
                 "Accept": 'application/json', 
                 "Origin": 'http://localhost:3000', 
+                "Authorization": 'Basic ' + btoa('username1:123'),
             }
           
             console.log(inputs); 
@@ -115,7 +125,7 @@ function SignUp() {
 
     return (
         <ThemeProvider theme={ theme }>
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs" >
                 <CssBaseline />
 
                 <Box sx={{
@@ -133,7 +143,8 @@ function SignUp() {
                     <Typography 
                         component="h1" 
                         variant="h5" 
-                        align="center">
+                        align="center"
+                        style={{ color: '#0091AA', fontWeight: 900 }}>
                             Sign up
                     </Typography>
 
@@ -151,6 +162,17 @@ function SignUp() {
                             id="user" 
                             label="Username" 
                             autoComplete="username" 
+                            onChange={handleChange} 
+                            sx={{ mt: 2 }}/>
+                        
+                        <TextField 
+                            required
+                            fullWidth 
+                            name="displayname" 
+                            id="display" 
+                            label="Display Name" 
+                            autoComplete="displayname" 
+                            onChange={handleChange} 
                             sx={{ mt: 2 }}/>
 
                         <TextField 
@@ -160,6 +182,7 @@ function SignUp() {
                             label="Email Address" 
                             name="email" 
                             autoComplete="email" 
+                            onChange={handleChange} 
                             sx={{ mt: 2 }} />
 
                         <TextField 
@@ -168,14 +191,18 @@ function SignUp() {
                             name="password" 
                             id="password" 
                             label="Password" 
+                            type="password"
+                            onChange={handleChange} 
                             sx={{ mt: 2 }} />
 
                         <TextField 
                             required 
                             fullWidth 
-                            name="password" 
+                            name="password2" 
                             id="password2" 
                             label="Confirm Password" 
+                            type="password"
+                            onChange={handleChange} 
                             sx={{ mt: 2 }} />
 
                         <TextField 
@@ -184,13 +211,15 @@ function SignUp() {
                             name="githuburl" 
                             id="github" 
                             label="GitHub URL" 
+                            onChange={handleChange} 
                             sx={{ mt: 2 }} />
 
                         <Box sx={{ mt: 2 }}>
 
                             <Typography 
                                 variant="h7" 
-                                margin="normal">
+                                margin="normal"
+                                style={{ color: "#007DAA" }}>
                                     Upload Profile Image:
                             </Typography>
 
@@ -199,8 +228,11 @@ function SignUp() {
                                     {...getRootProps()} 
                                     style={{ width: '100%', 
                                             height: '180px', 
-                                            border: 'dashed 2px #999', 
+                                            border: 'dashed 2px ',
+                                            borderRadius: '20px', 
+                                            borderColor: "#0091AA",
                                             display: 'flex', 
+                                            backgroundColor: '#CCEAF3',
                                             justifyContent: 'center', 
                                             alignItems: 'center' }}>
 
@@ -229,17 +261,20 @@ function SignUp() {
 
                                             ) : (
                                             <>
-                                                <div style={{ display: image ? 
+                                                <div style={{ color: "#007DAA",
+                                                                display: image ? 
                                                                     'none' :
                                                                     'block' }}>
                                                                         Drag &amp; drop an image here
                                                 </div>
-                                                <div style={{ display: image ? 
+                                                <div style={{ color: "#007DAA",
+                                                                display: image ? 
                                                                     'none' :
                                                                     'block' }}>
                                                                         OR
                                                 </div>
-                                                <div style={{ display: image ? 
+                                                <div style={{ color: "#007DAA",
+                                                                display: image ? 
                                                                     'none' :
                                                                     'block' }}>
                                                                         Click to select an image
@@ -257,6 +292,7 @@ function SignUp() {
                             type="submit" 
                             fullWidth 
                             variant="contained" 
+                            style={{ color: '#FFFFFF' }}
                             sx={{ mt: 3, mb: 2 }}>
                                 Sign Up
                         </Button>
@@ -268,7 +304,8 @@ function SignUp() {
                             <Grid item>
                                 <Link 
                                     href="./signin" 
-                                    variant="body1">
+                                    variant="body1"
+                                    color="secondary">
                                         Already have an account? Sign in
                                 </Link>
                             </Grid>

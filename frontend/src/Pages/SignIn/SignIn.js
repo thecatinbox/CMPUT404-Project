@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './SignIn.css';
 import { useNavigate } from "react-router-dom";
 
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography';
 
 import Image from './UA_Logo_Green_RGB.png';
 import Avatar from '@mui/material/Avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 
 function SignIn() {
@@ -23,12 +23,22 @@ function SignIn() {
     const navigate = useNavigate();
     const app_url = localStorage.getItem('url'); 
 
-    const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+    const ENDPOINT = app_url + '/service/authors/'; 
     
-    const theme = createTheme();
+    const theme = createTheme({
+        palette: {
+          primary: {
+            main: '#FF694B', 
+          },
+          secondary: {
+            main: '#007DAA',
+          }
+        },
+      });
 
     const checkAuth = (userData) => {
         if (inputs.username === userData.username && inputs.password === userData.password) {
+            localStorage.setItem('user', JSON.stringify(userData)); 
             localStorage.setItem('uuid', userData.uuid); 
             navigate("/home");
         } else {
@@ -48,7 +58,7 @@ function SignIn() {
         // alert(JSON.stringify(inputs)); // check input
 
         fetch(ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
             console.log(data.items); 
@@ -130,13 +140,14 @@ function SignIn() {
                                 my: 5}}>
 
                         <Avatar sx={{ m: 1, 
-                                    bgcolor: 'secondary.main' }}>
+                                    bgcolor: 'primary.main' }}>
                             <FontAwesomeIcon icon={faArrowRightToBracket} />
                         </Avatar>
 
                         <Typography 
                             component="h1"
-                            variant="h5">
+                            variant="h5"
+                            style={{ color: '#0091AA', fontWeight: 900 }}>
                                 Sign in
                         </Typography>
 
@@ -153,7 +164,9 @@ function SignIn() {
                                 id="user" 
                                 label="Username" 
                                 autoComplete="username" 
-                                margin="normal" />
+                                margin="normal" 
+                                onChange={handleChange} 
+                                />
 
                             <TextField 
                                 required 
@@ -162,13 +175,17 @@ function SignIn() {
                                 id="password" 
                                 label="Password" 
                                 autoComplete="current-password" 
-                                margin="normal" />
+                                margin="normal" 
+                                type="password"
+                                onChange={handleChange} 
+                                />
 
                             <Button 
                                 type="submit" 
                                 fullWidth 
                                 variant="contained" 
-                                sx={{ mt: 3, mb: 2 }}>
+                                sx={{ mt: 3, mb: 2 }}
+                                style={{ color: "#FFFFFF" }}>
                                     Sign In
                             </Button>
 
@@ -180,7 +197,8 @@ function SignIn() {
                                     <Link 
                                         href="./signup" 
                                         variant="body1" 
-                                        margin="normal" >
+                                        margin="normal" 
+                                        color="secondary">
                                             Do not have an Account? Sign up
                                     </Link>
                                 </Grid>

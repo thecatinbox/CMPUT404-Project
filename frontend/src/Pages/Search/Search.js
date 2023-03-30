@@ -9,14 +9,14 @@ function Search() {
   // console.log(parameter);
   const app_url = localStorage.getItem('url'); 
 
-  const ENDPOINT = 'http://' + app_url + '/server/authors/'; 
+  const ENDPOINT = app_url + '/service/authors/'; 
   const [userList, setUserList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   async function fetchData() {
     try {
       const response = await fetch(ENDPOINT, {
-        headers: { "Accept": "application/json" },
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') }, 
         method: "GET"
       });
   
