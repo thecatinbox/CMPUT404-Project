@@ -14,6 +14,7 @@ import { faHeart, faChevronDown, faComment, faShare, faXmark } from '@fortawesom
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -221,7 +222,7 @@ function Post({post}) {
 
   // Github Activity
   const [openGithub, setOpenGithub] = useState(false);
-  const [githubActivityList, setgithubActivityList] = useState([]);
+  const [githubActivityList, setGithubActivityList] = useState([]);
 
   // githubActivityList = 
 
@@ -233,13 +234,17 @@ function Post({post}) {
 
   async function fetchGithubData() {
     try {
-      const response = await fetch("http://127.0.0.1:8000/service/authors/4e886755-295b-4a9f-9251-3c71732e9f5e/github/", {
+      const response = await fetch(GITHUB_ENDPOINT, {
         headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
+      // test url
+      // "http://127.0.0.1:8000/service/authors/4e886755-295b-4a9f-9251-3c71732e9f5e/github/"
+      // "http://127.0.0.1:8000/service/authors/5fefed37-47b8-4d0f-a427-bbe218a9c979/github/"
   
       const githubData = await response.json();
-      console.log(githubData);
+      setGithubActivityList(githubData["github_activity"]);
+      console.log(githubData["github_activity"]);
     } catch (error) {
       console.error('Error:', error);
       // Handle the error here
@@ -248,15 +253,76 @@ function Post({post}) {
 
   const handleClickOpenGithub = () => {
     setOpenGithub(true);
-    
+    fetchGithubData(); 
   };
   const handleCloseGithub = () => {
     setOpenGithub(false);
   };
 
-  useEffect(() => {
-    fetchGithubData(); 
-  }); 
+  function timeSince(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) {
+      return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) {
+      return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 604800);
+    if (interval >= 1) {
+      return interval + " week" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+      return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) {
+      return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) {
+      return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+    }
+    return "just now";
+  }
+
+  function GithubActivity({activity}) {
+    return (
+      <Box gutterBottom style={{ display: 'flex',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  alignSelf: 'center',
+                                  borderBottom:'1px dashed #007DAA', 
+                                  }}>
+        <Typography id="githubName" 
+                    sx={{ color: "#22A2BB",
+                          size: 0.5,
+                          marginRight: 2,
+                          fontSize: "90%" }}> 
+          {activity["actor"]["login"]} 
+        </Typography>
+
+        <Typography id="githubEvent"> {activity["type"].replace("Event", "")} </Typography>
+        <Typography id="githubRepo" sx={{ fontSize: "90%", margin: 2 }}> 
+          <a href={"https://github.com/" + activity["repo"]["name"]}>
+            {activity["repo"]["name"]}
+          </a> 
+        </Typography>
+
+        <Typography id="githubTime"
+                    sx={{ color: "#22A2BB",
+                    fontSize: "90%"}}> 
+            {timeSince(activity["created_at"])} 
+        </Typography>
+      </Box>
+    );
+  }
+
+  
+  
 
 
   return (
@@ -296,7 +362,7 @@ function Post({post}) {
               <MenuItem onClick={handleDelete}>Delete Post</MenuItem>
             </Menu>
 
-            <Dialog open={editOpen} onClose={handleEditClose}>
+            <Dialog open={editOpen} onClose={handleEditClose} fullScreen >
               <DialogTitle>Edit Post</DialogTitle>
               <DialogContent>
                 <TextField margin="dense" name="title" id="title" label="Title" defaultValue={post.title} variant="standard" onChange={handleChange} fullWidth/>
@@ -329,8 +395,13 @@ function Post({post}) {
                           alignItems: 'center',
                           flexWrap: 'wrap',
                         }}>
+                  <a href={ post.author.github } style={{ marginRight: 3 }}>
+                    <FontAwesomeIcon id="fa-github" 
+                                    icon={ faGithub } 
+                                    href={ post.author.github } />
+                  </a>
                   {post.author.github ? 
-                    <Typography gutterBottom >
+                    <Typography gutterBottom style={{ marginLeft: 3 }}>
                       {post.author.displayName}'s Github Activities
                       <br/>
                       GitHub username: {githubUsername}
@@ -341,27 +412,23 @@ function Post({post}) {
                   }
                           
                   {/* <Typography >Github Activities</Typography> */}
-                  <DialogActions>
-                    <FontAwesomeIcon id="fa-xmark" icon={ faXmark } onClick={ handleCloseGithub } />
+                  <DialogActions style={{ alignSelf: 'flex-end' }}>
+                    <FontAwesomeIcon id="fa-xmark" 
+                                     icon={ faXmark } 
+                                     onClick={ handleCloseGithub } />
                   </DialogActions>
                 </div>
               </DialogTitle>
               <DialogContent dividers>
-                {/* {post.author.github ? 
-                    {githubActivityList.map(function(item){
-                      <Typography gutterBottom >
-                      </Typography> 
-                    })
-                }:
+                {post.author.github ? 
+                  githubActivityList.map(function(activity){
+                    return <GithubActivity activity={activity} key={activity.id}/>;
+                  }) :
                     <Typography gutterBottom >
                     Sorry,<br/>
                       {post.author.displayName} doesn't have GitHub...
                   </Typography>
-                } */}
-                {/* {data.map(function(activiteis){
-                  <Typography gutterBottom >
-                  </Typography>
-                })} */}
+                }
               </DialogContent>
           </Dialog>
           </div>
