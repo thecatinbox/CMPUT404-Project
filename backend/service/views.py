@@ -18,7 +18,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import requests
 import json
-from requests_oauthlib import OAuth2Session
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -159,7 +158,6 @@ def showGithubActivity(request, pk):
     except Authors.DoesNotExist:
         return Response(status=404)
     
-
     if request.method == 'GET':
         serializer = AuthorSerializer(author)
         data = serializer.data
@@ -168,9 +166,33 @@ def showGithubActivity(request, pk):
         github_url = data['github']
         username = github_url.split("/")[-1]
 
-        endpoint_url = f"https://api.github.com/users/{username}/events/public"
-        response = requests.get(endpoint_url)
-        activity_data = json.loads(response.content)
+        # Set up OAuth session
+        token = "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"
+        oauth = requests.Session()
+        oauth.auth = (token, '')
+
+        # Make a request to the GitHub API rate limit endpoint to get the current rate limit information
+        rate_limit_response = oauth.get('https://api.github.com/rate_limit')
+        if rate_limit_response.status_code in [401,403]:
+            # Token is expired or invalid, need to update the token
+            # 60 time limit per hour
+            # Extract the remaining requests count from the rate limit information
+            rate_limit_data = json.loads(rate_limit_response.content)
+            remaining_requests = rate_limit_data['resources']['core']['remaining']
+
+            # we use direct request without authorization
+            endpoint_url = f"https://api.github.com/users/{username}/events/public"
+            response = requests.get(endpoint_url)
+            activity_data = json.loads(response.content)
+        else:
+            # Extract the remaining requests count from the rate limit information
+            rate_limit_data = json.loads(rate_limit_response.content)
+            remaining_requests = rate_limit_data['resources']['core']['remaining']
+
+            # Use access token to make API request to retrieve GitHub activity data
+            endpoint_url = f"https://api.github.com/users/{username}/events/public"
+            response = oauth.get(endpoint_url)
+            activity_data = json.loads(response.content)
 
         if response.status_code == 200:
             activity_data = json.loads(response.content)
@@ -178,51 +200,14 @@ def showGithubActivity(request, pk):
             # Format the response as a JSON file
             responseData = {
                 "type": "author",
+                "remaining_requests": remaining_requests,
                 "github_activity": activity_data
             }
 
             return Response(responseData, status=200)
         else:
             return Response(status=response.status_code)
-    # if request.method == 'GET':
-    #     serializer = AuthorSerializer(author)
-    #     data = serializer.data
 
-    #     # Extract GitHub username from profile URL
-    #     github_url = data['github']
-    #     username = github_url.split("/")[-1]
-
-
-    #     token = "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"
-    #     endpoint_url = f"https://api.github.com/users/{username}/events/public"
-    #     headers = {"Authorization": f"Token {token}"}
-    #     response = requests.get(endpoint_url, headers=headers)
-    #     activity_data = json.loads(response.content)
-
-    #     # Format the response as a JSON file
-    #     responseData = {
-    #         "type": "author",
-    #         "github_activity": activity_data
-    #     }
-
-    #     return Response(responseData, status=200)
-        # # Set up OAuth session
-        # token = "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"
-        # oauth = OAuth2Session(token=token)
-
-        # # Make API request to retrieve GitHub activity data
-        # endpoint_url = f"https://api.github.com/users/{username}/events/public"
-        # response = oauth.get(endpoint_url)
-        # activity_data = json.loads(response.content)
-
-        # # Format the response as a JSON file
-        # responseData = {
-        #     "type": "author",
-        #     "github_activity": activity_data
-        # }
-
-        # return Response(responseData, status=200)
-        # Make API request to retrieve GitHub activity data
 """
 Posts
 """
