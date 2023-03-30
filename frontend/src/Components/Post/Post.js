@@ -39,7 +39,7 @@ function Post({post}) {
   var POST_ENDPOINT = user_url + "/posts/" + puid + "/"; 
   var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
   var MESSAGE_ENDPOINT = user_url + '/inbox'; 
-  // console.log(ENDPOINT); 
+  // console.log(MESSAGE_ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
@@ -248,13 +248,15 @@ function Post({post}) {
 
   const handleClickOpenGithub = () => {
     setOpenGithub(true);
-    useEffect(() => {
-      fetchGithubData(); 
-    }); 
+    
   };
   const handleCloseGithub = () => {
     setOpenGithub(false);
   };
+
+  useEffect(() => {
+    fetchGithubData(); 
+  }); 
 
 
   return (
