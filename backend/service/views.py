@@ -68,7 +68,8 @@ def authorsList(request):
     """
     This view is used to display all authors information
     """
-    authors = Authors.objects.all()
+    #authors = Authors.objects.all()
+    authors = Authors.objects.filter(url__icontains="https://cmput404-project-data.herokuapp.com")
 
     # # Get page and size from query parameters
     # page = int(request.query_params.get('page', 1))
@@ -157,7 +158,7 @@ def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    posts = Posts.objects.filter(visibility='PUBLIC').prefetch_related('author')
+    posts = Posts.objects.filter(visibility='PUBLIC', id__icontains="https://cmput404-project-data.herokuapp.com").prefetch_related('author')
     items_list = []
 
     for post in posts:
@@ -537,6 +538,8 @@ def oneFollower(request, pk, foreignPk):
             return Response({"message": "No such follower relationship"}, status=404)
 
     elif request.method == 'PUT':
+        connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
+        connect_group2 = "None" #change when ever need
         
         if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             return Response({"message": "Already followed"}, status=400)
@@ -545,6 +548,29 @@ def oneFollower(request, pk, foreignPk):
                 return Response({"message": "You cannot follow yourself"}, status=400)
             new_follow = Followers.objects.create(followedId=pk ,follower=foreign_user, followedUser=current_user)
             new_follow.save()
+
+            if foreign_user.uuid == foreign_user.username:
+                uid = foreign_user.url.split('/')[-1]
+                host = foreign_user.host
+                if host == connect_group1:
+                    try:
+                        inbox_url = f"{str(connect_group1)}/authors/{str(uid)}/inbox/"
+                        send_actor = AuthorSerializer(foreign_user).data
+                        send_object = AuthorSerializer(current_user).data
+                        object = {
+                            "approved": True,
+                            "type": "follow",
+                            "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
+                            "actor": send_actor,
+                            "object": send_object
+                        }
+                        username = "testvivian" #change when ever need
+                        password = "vivian" #change when ever need
+                        response = requests.post(inbox_url, data=object, auth=(username, password))
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "send approved follow request back fail"}, status=404)
+
             return Response({"message": "Followed successfully"}, status=200)
 
     elif request.method == 'GET':
@@ -734,17 +760,48 @@ author_schema = openapi.Schema(
         'host': openapi.Schema(type=openapi.TYPE_STRING, description='author.host', minLength=1),
         'displayName': openapi.Schema(type=openapi.TYPE_STRING, description='author.displayname', maxLength=100, minLength=1),
         'github': openapi.Schema(type=openapi.TYPE_STRING, description='author.github'),
-        'profileImage': openapi.Schema(type=openapi.TYPE_STRING, description='author.profileimage', x_nullable=True),
+        'profileImage': openapi.Schema(type=openapi.TYPE_STRING, description='author.profileimage', x_nullable=True)
     },
     required=['id', 'url', 'host', 'displayName', 'github', 'profileImage'],
+)
+
+post_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'title': openapi.Schema(type=openapi.TYPE_STRING, description='Title of the post.', maxLength=100, minLength=1),
+        'description': openapi.Schema(type=openapi.TYPE_STRING, description='Description of the post.', maxLength=1000, minLength=1),
+        'contentImage': openapi.Schema(type=openapi.TYPE_STRING, description='Content image of the post.', x_nullable=True),
+        'visibility': openapi.Schema(type=openapi.TYPE_STRING, description='Visibility of the post, public/private/unlisted.', maxLength=100, minLength=1),
+        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the post, text/markdown.', maxLength=100, minLength=1),
+        'id': openapi.Schema(type=openapi.TYPE_STRING, description='Post id.', minLength=1),
+        'origin': openapi.Schema(type=openapi.TYPE_STRING, description='Origin link of the post.', minLength=1),
+        'author': author_schema,
+        'categories': openapi.Schema(type=openapi.TYPE_STRING, description='Categories of the post.'),
+        'count': openapi.Schema(type=openapi.TYPE_STRING, description='Number comments of the post.')
+
+    },
+    required=['title', 'description', 'contentImage', 'visibility', 'contentType', 'id', 'origin', 'author', 'categories', 'count'],
 )
 
 followRequest_schema = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
-        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, post/follow/like/comment.'),
+        'approved': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Whether the follow request is approved or not, optional,used for create follow request we send and accept by your user.'),
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, follow.'),
         'summary': openapi.Schema(type=openapi.TYPE_STRING, description='Summary of the follow.', x_nullable=True),
-        'author': author_schema,
+        'actor': author_schema,
+        'object': author_schema
+
+    },
+    required=['type', 'summary', 'author'],
+)
+
+sharePost_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, post.'),
+        'sender': author_schema,
+        'post': post_schema
 
     },
     required=['type', 'summary', 'author'],
@@ -753,7 +810,8 @@ followRequest_schema = openapi.Schema(
 inbox_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
-        'followRequest': followRequest_schema,
+        'sharePost': sharePost_schema,
+        'followRequest': followRequest_schema
 
 
     },
@@ -823,32 +881,67 @@ def inbox(request, pk):
             author = Authors.objects.get(uuid=pk)
             inbox = Inbox.objects.get(author=author)
         except (Authors.DoesNotExist, Inbox.DoesNotExist):
-            return Response(status=404)
+            return Response({"message": "No such user"}, status=404)
 
         post_type = request.data.get('type')
 
         if post_type == 'post':
-            postId = request.data.get('postId')
+            post_entity = request.data.get('post')
             sender = request.data.get('sender')
-            sender_author = Authors.objects.get(uuid=sender)
-            selectedPost = Posts.objects.get(uuid=postId)
-            sendToAuthor = Authors.objects.get(uuid=pk)
+
+            if Authors.objects.filter(url=sender.get('url')):
+                sender_author = Authors.objects.get(url=sender.get('url'))############
+            else:
+                uid = str(sender.get('url')).split('/')[-1]
+                temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=sender.get("displayName"), host=sender.get('host'), url=sender.get('url'), github=sender.get('github'), profileImage=sender.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                temp.save()
+                sender_author = Authors.objects.get(uuid=uid)
+
+            if Posts.objects.filter(id=post_entity.get('id')):
+                selectedPost = Posts.objects.get(id=post_entity.get('id'))##############
+            else:
+                uid = str(post_entity.get('id')).split('/')[-1]
+                temp_author = post_entity.get('author')
+                if Authors.objects.filter(url=temp_author.get('url')):
+                    post_author = Authors.objects.get(url=temp_author.get('url'))############
+                else:
+                    uid = str(temp_author.get('url')).split('/')[-1]
+                    temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=temp_author.get("displayName"), host=temp_author.get('host'), url=temp_author.get('url'), github=temp_author.get('github'), profileImage=temp_author.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                    temp.save()
+                    post_author = Authors.objects.get(uuid=uid)
+
+                temp1 = Posts.objects.create(
+                    title=post_entity.get('title'),
+                    description=post_entity.get('description'),
+                    contentImage=post_entity.get('contentImage'),
+                    contentType=post_entity.get('contentType'),
+                    content=post_entity.get('content'),
+                    visibility=post_entity.get('visibility'),
+                    uuid = uid,
+                    id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(post_author.uuid)}/posts/{uid}",
+                    source=post_entity.get('id'),
+                    origin=post_entity.get('origin'),
+                    author=post_author,
+                    categories=post_entity.get('categories'),
+                    count=post_entity.get('count'),
+                )
+                temp1.save()
+                selectedPost = Posts.objects.get(uuid = uid)
 
             newShare = Shares.objects.create(post=selectedPost, author=sender_author)
             newShare.save()
 
-            inbox = Inbox.objects.get(author=sendToAuthor)
             inbox.posts.add(newShare)
             inbox.save()
 
         elif post_type == 'follow':
             if request.data.get('approved') and request.data.get('approved') == True:
                 try:
-                    actor = request.data.get('actor')
+                    actor = request.data.get('object')
                     if Authors.objects.filter(url=actor.get('url')):
                         foreign_user = Authors.objects.get(url=actor.get('url'))
                     else:
-                        uid = str(uuid.uuid4())
+                        uid = str(actor.get('url')).split('/')[-1]
                         temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
                         temp.save()
                         foreign_user = Authors.objects.get(uuid=uid)
@@ -880,8 +973,18 @@ def inbox(request, pk):
                         print('this is error:',e)
                         return Response({"message": "Follow request failed"}, status=404)
 
-                    follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(forign_user.uuid)}"
-                    response = requests.put(follow_url, data={"approved": True})
+                    try:
+                        follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}"
+                        response = requests.put(follow_url, data={"approved": True}, auth=(str(current_user.username), str(current_user.password)))
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)
+                    
+                    if response.status_code == 200:
+                        return Response({"message": "Successfully create the relation on our side too"}, status=200)
+                    else:
+                        message = response.data.get('message')
+                        return Response({"message":message}, status=404)
 
                 else:
                     return Response({"message": "You are already following this user"}, status=404)
@@ -893,7 +996,7 @@ def inbox(request, pk):
                     if Authors.objects.filter(url=actor.get('url')):
                         current_user = Authors.objects.get(url=actor.get('url'))
                     else:
-                        uid = str(uuid.uuid4())
+                        uid = str(actor.get('url')).split('/')[-1]
                         temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
                         temp.save()
                         current_user = Authors.objects.get(uuid=uid)
