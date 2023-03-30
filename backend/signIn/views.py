@@ -9,9 +9,24 @@ from rest_framework import permissions, authentication
 from django.forms.models import model_to_dict
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from django.http import JsonResponse
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
+signIn_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='username'),
+        'password': openapi.Schema(type=openapi.TYPE_STRING, description='password'),
+    },
+    required=['username', 'password'],
+)
+
+
+@swagger_auto_schema(method='post', description="Sign In with username and password", request_body=signIn_example)
+@swagger_auto_schema(method='get', description="Don't use this one, it's for testing only")
 @api_view(['GET', 'POST'])
-@authentication_classes([authentication.BasicAuthentication])
 @permission_classes([AllowAny])
 def signIn(request):
     

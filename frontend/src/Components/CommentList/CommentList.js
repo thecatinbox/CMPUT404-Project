@@ -20,17 +20,17 @@ function CommentList({post}) {
 
     const uuid = localStorage.getItem('uuid'); 
     const puid = post.uuid; 
-    const app_url = localStorage.getItem('url'); 
-    
-    var COMMENT_ENDPOINT = app_url + "/server/authors/" + uuid + "/posts/" + puid + "/comments"; 
-    // var ADD_COMMENT_ENDPOINT = app_url + "/post/authors/" + uuid + "/posts/" + puid + "/comment"; 
-    var MESSAGE_ENDPOINT = app_url + '/server/authors/' + post.author.uuid + '/inbox'; 
-    console.log(MESSAGE_ENDPOINT); 
+    const user_url = post.author.url; 
+
+    var COMMENT_ENDPOINT = user_url + "/posts/" + puid + "/comments"; 
+    var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+    // console.log(COMMENT_ENDPOINT); 
+    // console.log(MESSAGE_ENDPOINT); 
     
     async function fetchComments() {
         try {
         const response = await fetch(COMMENT_ENDPOINT, {
-            headers: { "Accept": "application/json" },
+            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         });
     
@@ -51,7 +51,8 @@ function CommentList({post}) {
           const header = {
             "Content-Type": 'application/json',
             "Accept": 'application/json', 
-            "Origin": 'http://localhost:3000'
+            "Origin": 'http://localhost:3000', 
+            "Authorization": 'Basic ' + btoa('username1:123')
           }
   
           // Send like message to inbox 
@@ -76,35 +77,6 @@ function CommentList({post}) {
             console.error('Error:', error);
           }
     }
-
-  // Handle add new comment 
-  /* const handleNewComment = () => {
-
-    console.log(inputs.comment); 
-    const header = {
-      "Content-Type": 'application/json',
-      "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000'
-    }
-
-    console.log(inputs.comment); 
-    console.log(inputs.content); 
-
-    const body = JSON.stringify({
-      "comment": inputs.comment,
-    }); 
-
-    // console.log(header); 
-    console.log(body); 
-
-    fetch(ADD_COMMENT_ENDPOINT, {
-      headers: header,
-      body: body, 
-      method: "POST"
-    }).catch((error) => {
-      console.log('error: ' + error);
-    }); 
-  }*/ 
 
     return (
         <>

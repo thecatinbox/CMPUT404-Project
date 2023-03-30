@@ -14,8 +14,8 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -27,10 +27,10 @@ SECRET_KEY = 'django-insecure-$%q1-_ii&csvh^so0i0m8x=1%-x-+l74*ks5q2km*tjexv8%gd
 DEBUG = True
 
 
-ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com",'localhost','127.0.0.1']
+ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com",'localhost','127.0.0.1','sd16-api.herokuapp.com','p2psd.herokuapp.com']
 
 CORS_ALLOWED_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'https://cmput404-project-app.herokuapp.com', 'https://cmput404-project-data.herokuapp.com','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'https://cmput404-project-app.herokuapp.com', 'https://cmput404-project-data.herokuapp.com','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000','http://sd16-api.herokuapp.com','https://p2psd.herokuapp.com','https://sd16-api.herokuapp.com']
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -108,6 +108,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

@@ -26,6 +26,7 @@ const TopBar = (params) => {
     <>
       <div className="topnav">
         <a id="home" href="/home">Home</a>
+        <a id="network" href="/network">Network</a>
         <a id="inbox" href="/inbox">Inbox</a>
         <a id="friends" href="/friends">Friends</a>
         <a id="profile" href="/profile">Profile</a>
