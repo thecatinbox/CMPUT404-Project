@@ -10,7 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faChevronDown, faComment, faShare} from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faChevronDown, faComment, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Dialog from '@mui/material/Dialog';
@@ -218,6 +219,34 @@ function Post({post}) {
     }); 
   };
 
+  // Github Activity
+  const [openGithub, setOpenGithub] = useState(false);
+
+  const handleClickOpenGithub = () => {
+    setOpenGithub(true);
+  };
+  const handleCloseGithub = () => {
+    setOpenGithub(false);
+  };
+
+  // var GITHUB_ENDPOINT = user_url + "/posts/" + puid + "/"; 
+
+  // async function fetchGithubData() {
+  //   try {
+  //     const response = await fetch(GITHUB_ENDPOINT, {
+  //       headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+  //       method: "GET"
+  //     });
+  
+  //     const data = await response.json();
+  //     return data.items;
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     return []; 
+  //     // Handle the error here
+  //   }
+  // }
+
   return (
     <div className='post'>
       <ThemeProvider theme={ theme }>
@@ -272,9 +301,37 @@ function Post({post}) {
         </CardActions>
         
         <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            <Username user={post.author}/>
-          </Typography>
+          <div style={{ display: 'flex',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}>
+            <Typography sx={{ fontSize: 14, mr: 1.5 }} color="text.secondary" gutterBottom>
+              <Username user={post.author}/>     
+            </Typography>
+            
+            <FontAwesomeIcon id="fa-github" icon={ faGithub } onClick={ handleClickOpenGithub } />
+            <Dialog onClose={ handleCloseGithub }
+                             open={ openGithub }>
+              <DialogTitle onClose={ handleCloseGithub } >
+                <div style={{ display: 'flex',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                        }}>
+                          Github Activities
+                  {/* <Typography >Github Activities</Typography> */}
+                  <DialogActions>
+                    <FontAwesomeIcon id="fa-xmark" icon={ faXmark } onClick={ handleCloseGithub } />
+                  </DialogActions>
+                </div>
+              </DialogTitle>
+              <DialogContent dividers>
+                {/* {data.map(function(activiteis){
+                  <Typography gutterBottom >
+                  </Typography>
+                })} */}
+              </DialogContent>
+          </Dialog>
+          </div>
           <Typography variant="h5" component="div">
             {post.title}
           </Typography>

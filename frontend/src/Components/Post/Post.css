@@ -1,3 +1,13 @@
 .post {
     padding: 20px;
 }
+
+#fa-github:hover{
+    color:white !important;
+    background-color: #FF694B !important;
+ }
+
+#fa-xmark:hover{
+    color:white !important;
+    background-color: #FF694B !important;
+ }
