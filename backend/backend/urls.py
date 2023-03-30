@@ -41,7 +41,7 @@ urlpatterns = [
     path('', include('signUp.urls')),
     path('user/', include('authors.urls')),
     path('post/', include('post.urls')),
-    path('service/', include('service.urls')),
+    path('server/', include('service.urls')),
     
     re_path(
         r"swagger(?P<format>\.json|\.yaml)",

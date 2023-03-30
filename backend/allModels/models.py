@@ -22,7 +22,7 @@ class Authors(models.Model):
     #accepted = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"username:{self.username} password:{self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
+        return f"username: {self.username} password: {self.password} type: {self.type} uuid: {self.uuid} id: {self.id} url: {self.url} host: {self.host} displayName: {self.displayName} github: {self.github} profileImage: {self.profileImage}"
 
 class Posts(models.Model):
     class Meta:
@@ -55,7 +55,7 @@ class Posts(models.Model):
     visibility = models.CharField(max_length = 15, choices = visibility_choices, default = ('PUBLIC', 'PUBLIC'),editable=True)
 
     def __str__(self):
-        return f"uuid: {self.uuid} type: {self.type} title: {self.title} id: {self.id} source: {self.source} origin: {self.origin} description: {self.description} contentType: {self.contentType} content: {self.content} contentImage: {self.contentImage} author: {self.author} categories: {self.categories} count: {self.count} published: {self.published} visibility: {self.visibility}"
+        return f"uuid: {self.uuid} type: {type} title: {title} id: {id} source: {source} origin: {origin} description: {description} contentType: {contentType} content: {content} contentImage: {contentImage} author: {author} categories: {categories} count: {count} published: {published} visibility: {visibility}"
 
     
 
@@ -63,8 +63,7 @@ class Followers(models.Model):
     class Meta:
         verbose_name_plural = 'Followers'
         
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    followedId = models.CharField(max_length = 255, blank=True)#store uuid of author being followed
+    followedId = models.CharField(max_length = 255, primary_key = True)#store uuid of author being followed
     type = models.CharField(max_length = 255,default="followers",editable=False)
     followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followedUser")
     follower = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "follower")
@@ -76,16 +75,15 @@ class Followers(models.Model):
 class FollowRequests(models.Model):
     class Meta:
         verbose_name_plural = 'FollowRequests'
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    belongTo = models.CharField(max_length = 255, blank=True,default="")#store uuid of the author who received the request
+        
+    belongTo = models.CharField(max_length = 255, primary_key = True)#store uuid of the author who received the request
     type = models.CharField(max_length = 255,default="Follow",editable=False)
-    summary = models.TextField(max_length=255, blank=True,default='')
+    summary = models.TextField(max_length=25, blank=True,default='')
     actor = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name='request_sender')
     object = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name='request_receiver')
 
     def __str__(self):
-        return f"belongTo: {self.belongTo} type: {self.type} summary: {self.summary} actor: {self.actor} object: {self.object}"
+        return f"belongTo{self.belongTo} type{type} summary{summary} actor{actor} object{object}"
 
 
 class Comments(models.Model):
@@ -106,7 +104,7 @@ class Comments(models.Model):
     id = models.CharField(max_length=255, primary_key = True)#store url http://localhost:../authors/author_uuid/post/post_uuid/comments/comment_uuid
     
     def __str__(self):
-        return f"uuid: {self.uuid} type: {self.type} author: {self.author} post: {self.post} comment: {self.comment} contentType: {self.contentType} published: {self.published} id: {self.id}"
+        return f"uuid: {self.uuid} type: {type} author: {author} post: {post} comment: {comment} contentType: {contentType} published: {published} id: {id}"
 
 class Likes(models.Model):
     class Meta:
@@ -119,7 +117,7 @@ class Likes(models.Model):
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
     def __str__(self):
-        return f"context:{self.context} summary:{self.summary} type:{self.type} author:{self.author} object:{self.object}"
+        return f"MyClass(context={self.context} summary={self.summary} type={self.type} author={self.author} object={self.object})"
 
 class Liked(models.Model): 
     class Meta:
@@ -130,24 +128,7 @@ class Liked(models.Model):
     object = models.CharField(max_length=200,null = True, blank=True)#post id or comment id, url one
 
     def __str__(self):
-        return (f"type:{self.type} "
-                f"items:{', '.join(str(item) for item in self.items.all())}"
-                f"object:{self.object} "
-                )
-
-class Shares(models.Model):
-    class Meta:
-        verbose_name_plural = 'Shares'
-
-    type = models.CharField(max_length = 255,default='share', editable=False)
-    author = models.ForeignKey(Authors, on_delete = models.CASCADE)#author who shares
-    post = models.ForeignKey(Posts, on_delete = models.CASCADE)
-
-    def __str__(self):
-        return (f"type:{self.type} "
-                f"author:{self.author} "
-                f"post:{self.post} "
-                )    
+        return f"type{self.type} items{self.items} object{self.object}"
 
 class Inbox(models.Model):
     class Meta:
@@ -155,19 +136,10 @@ class Inbox(models.Model):
     
     type = models.CharField(max_length = 255,default = "inbox", editable = False)
     author = models.ForeignKey(Authors, on_delete = models.CASCADE)
-    posts = models.ManyToManyField(Shares, blank=True, symmetrical=False)
+    items = models.ManyToManyField(Posts, blank=True)
     comments = models.ManyToManyField(Comments, blank=True, symmetrical=False)
     followRequests = models.ManyToManyField(FollowRequests, blank=True, symmetrical=False)
-    likes = models.ManyToManyField(Likes, blank=True, symmetrical=False)
+    likes = models.ManyToManyField(Liked, blank=True, symmetrical=False)
 
-    # def __str__(self):
-    #     return f"type:{self.type} author:{self.author} posts:{self.posts} comments:{self.comments} followRequests:{self.followRequests} likes:{self.likes}"
     def __str__(self):
-        return (
-            f"type:{self.type} "
-            f"author:{self.author} "
-            f"posts:{', '.join(str(post) for post in self.posts.all())} "
-            f"comments:{', '.join(str(comment) for comment in self.comments.all())} "
-            f"followRequests:{', '.join(str(request) for request in self.followRequests.all())} "
-            f"likes:{', '.join(str(like) for like in self.likes.all())}"
-        )
+        return f"type{type} author{author} items{items} comments{comments} followRequests{followRequests} likes{likes}"

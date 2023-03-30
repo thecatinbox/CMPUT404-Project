@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from allModels.models import Authors, FollowRequests, Posts, Comments, Likes, Shares, Inbox
+from allModels.models import Authors, FollowRequests, Posts, Comments, Likes
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -7,7 +7,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Authors
-        fields = ('username','password','type', 'uuid', 'id', 'url', 'host', 'github', 'profileImage', 'displayName')
+        fields = ('type', 'uuid', 'id', 'url', 'host', 'github', 'profileImage', 'username', 'password', 'displayName')
 
 
 class PostsSerializer(serializers.ModelSerializer):
@@ -44,8 +44,3 @@ class FollowRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FollowRequests
         fields = ('belongTo','type','summary','actor','object')
-
-class ShareSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shares
-        fields = ('type','author','post')
