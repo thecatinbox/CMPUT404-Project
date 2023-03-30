@@ -157,6 +157,7 @@ def showGithubActivity(request, pk):
         author = Authors.objects.get(uuid=pk)
     except Authors.DoesNotExist:
         return Response(status=404)
+    
 
     if request.method == 'GET':
         serializer = AuthorSerializer(author)
@@ -166,6 +167,44 @@ def showGithubActivity(request, pk):
         github_url = data['github']
         username = github_url.split("/")[-1]
 
+        endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        response = requests.get(endpoint_url)
+        activity_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            activity_data = json.loads(response.content)
+
+            # Format the response as a JSON file
+            responseData = {
+                "type": "author",
+                "github_activity": activity_data
+            }
+
+            return Response(responseData, status=200)
+        else:
+            return Response(status=response.status_code)
+    # if request.method == 'GET':
+    #     serializer = AuthorSerializer(author)
+    #     data = serializer.data
+
+    #     # Extract GitHub username from profile URL
+    #     github_url = data['github']
+    #     username = github_url.split("/")[-1]
+
+
+    #     token = "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"
+    #     endpoint_url = f"https://api.github.com/users/{username}/events/public"
+    #     headers = {"Authorization": f"Token {token}"}
+    #     response = requests.get(endpoint_url, headers=headers)
+    #     activity_data = json.loads(response.content)
+
+    #     # Format the response as a JSON file
+    #     responseData = {
+    #         "type": "author",
+    #         "github_activity": activity_data
+    #     }
+
+    #     return Response(responseData, status=200)
         # # Set up OAuth session
         # token = "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"
         # oauth = OAuth2Session(token=token)
@@ -183,20 +222,6 @@ def showGithubActivity(request, pk):
 
         # return Response(responseData, status=200)
         # Make API request to retrieve GitHub activity data
-        token = "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"
-        endpoint_url = f"https://api.github.com/users/{username}/events/public"
-        headers = {"Authorization": f"Token {token}"}
-        response = requests.get(endpoint_url, headers=headers)
-        activity_data = json.loads(response.content)
-
-        # Format the response as a JSON file
-        responseData = {
-            "type": "author",
-            "github_activity": activity_data
-        }
-
-        return Response(responseData, status=200)
-
 """
 Posts
 """
