@@ -221,31 +221,41 @@ function Post({post}) {
 
   // Github Activity
   const [openGithub, setOpenGithub] = useState(false);
+  const [githubActivityList, setgithubActivityList] = useState([]);
+
+  // githubActivityList = 
+
+  var parser = document.createElement('a');
+  parser.href = post.author.github;
+  var githubUsername = parser.pathname.replace('/', '');
+
+  var GITHUB_ENDPOINT = user_url + "/github/";
+
+  async function fetchGithubData() {
+    try {
+      const response = await fetch(GITHUB_ENDPOINT, {
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+        method: "GET"
+      });
+  
+      const githubData = await response.json();
+      console.log(githubData);
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle the error here
+    }
+  }
 
   const handleClickOpenGithub = () => {
     setOpenGithub(true);
+    useEffect(() => {
+      fetchGithubData(); 
+    }); 
   };
   const handleCloseGithub = () => {
     setOpenGithub(false);
   };
 
-  // var GITHUB_ENDPOINT = user_url + "/posts/" + puid + "/"; 
-
-  // async function fetchGithubData() {
-  //   try {
-  //     const response = await fetch(GITHUB_ENDPOINT, {
-  //       headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
-  //       method: "GET"
-  //     });
-  
-  //     const data = await response.json();
-  //     return data.items;
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     return []; 
-  //     // Handle the error here
-  //   }
-  // }
 
   return (
     <div className='post'>
@@ -317,7 +327,17 @@ function Post({post}) {
                           alignItems: 'center',
                           flexWrap: 'wrap',
                         }}>
-                          Github Activities
+                  {post.author.github ? 
+                    <Typography gutterBottom >
+                      {post.author.displayName}'s Github Activities
+                      <br/>
+                      GitHub username: {githubUsername}
+                    </Typography> :
+                    <Typography gutterBottom >
+                      Github Activities
+                    </Typography>
+                  }
+                          
                   {/* <Typography >Github Activities</Typography> */}
                   <DialogActions>
                     <FontAwesomeIcon id="fa-xmark" icon={ faXmark } onClick={ handleCloseGithub } />
@@ -325,6 +345,17 @@ function Post({post}) {
                 </div>
               </DialogTitle>
               <DialogContent dividers>
+                {/* {post.author.github ? 
+                    {githubActivityList.map(function(item){
+                      <Typography gutterBottom >
+                      </Typography> 
+                    })
+                }:
+                    <Typography gutterBottom >
+                    Sorry,<br/>
+                      {post.author.displayName} doesn't have GitHub...
+                  </Typography>
+                } */}
                 {/* {data.map(function(activiteis){
                   <Typography gutterBottom >
                   </Typography>
