@@ -18,6 +18,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import requests
 import json
+from requests_oauthlib import OAuth2Session
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -165,8 +166,24 @@ def showGithubActivity(request, pk):
         github_url = data['github']
         username = github_url.split("/")[-1]
 
+        # # Set up OAuth session
+        # token = "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"
+        # oauth = OAuth2Session(token=token)
+
+        # # Make API request to retrieve GitHub activity data
+        # endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        # response = oauth.get(endpoint_url)
+        # activity_data = json.loads(response.content)
+
+        # # Format the response as a JSON file
+        # responseData = {
+        #     "type": "author",
+        #     "github_activity": activity_data
+        # }
+
+        # return Response(responseData, status=200)
         # Make API request to retrieve GitHub activity data
-        token = "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"
+        token = "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"
         endpoint_url = f"https://api.github.com/users/{username}/events/public"
         headers = {"Authorization": f"Token {token}"}
         response = requests.get(endpoint_url, headers=headers)
