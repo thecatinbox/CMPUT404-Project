@@ -145,7 +145,8 @@ def singleAuthor(request, pk):
         author.url = request.data.get('url', author.url)
         author.save()
         return Response(status=200)
-
+    
+@swagger_auto_schema(method='get', operation_description="Get the author's github link.")
 @api_view(['GET'])
 def showGithubActivity(request, pk):
     """
