@@ -16,7 +16,8 @@ from django.http import JsonResponse
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+import requests
+import json
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -144,7 +145,40 @@ def singleAuthor(request, pk):
         author.url = request.data.get('url', author.url)
         author.save()
         return Response(status=200)
+    
+@swagger_auto_schema(method='get', operation_description="Get the author's github link.")
+@api_view(['GET'])
+def showGithubActivity(request, pk):
+    """
+    This view is used to return one author's Github activity
+    """
+    try:
+        author = Authors.objects.get(uuid=pk)
+    except Authors.DoesNotExist:
+        return Response(status=404)
 
+    if request.method == 'GET':
+        serializer = AuthorSerializer(author)
+        data = serializer.data
+
+        # Extract GitHub username from profile URL
+        github_url = data['github']
+        username = github_url.split("/")[-1]
+
+        # Make API request to retrieve GitHub activity data
+        token = "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"
+        endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        headers = {"Authorization": f"Token {token}"}
+        response = requests.get(endpoint_url, headers=headers)
+        activity_data = json.loads(response.content)
+
+        # Format the response as a JSON file
+        responseData = {
+            "type": "author",
+            "github_activity": activity_data
+        }
+
+        return Response(responseData, status=200)
 
 """
 Posts
@@ -166,6 +200,17 @@ def getAllPublicPosts(request):
         author_data['displayName'] = author_data.pop('displayName')
         categories = data.pop('categories')
         comments_count = data.pop('count')
+
+        if data['contentImage']:
+            data['contentImage'] = data['contentImage'].url
+        else:
+            data['contentImage'] = None
+
+        if post.author.profileImage:
+            author_data['profileImage'] = post.author.profileImage.url
+        else:
+            author_data['profileImage'] = None
+
        
         item = {
             **data,
@@ -226,23 +271,30 @@ def Post(request, pk):
                 return Response(responseData, status=200)
 
             for item in posts:
-                dict = {}
-                serializer = PostsSerializer(item)
-                data = serializer.data
-                author_dict = {}
-                for k, v in data.items():
-                    dict[k] = v
-                for k, v in serializeAuthor.data.items():
-                    author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['displayName']
-                author_dict.pop('username')
-                categories = data['categories']
-                postsId = data['uuid']
-                dict.pop('categories')
-                dict['categories'] = categories
-                dict['author'] = author_dict
-                dict['count'] = item.count
-                item_list.append(dict)
+                data = PostsSerializer(item).data
+                author_data = AuthorSerializer(item.author).data
+                author_data['displayName'] = author_data.pop('displayName')
+                categories = data.pop('categories')
+                comments_count = data.pop('count')
+
+                if data['contentImage']:
+                    data['contentImage'] = data['contentImage'].url
+                else:
+                    data['contentImage'] = None
+
+                if item.author.profileImage:
+                    author_data['profileImage'] = item.author.profileImage.url
+                else:
+                    author_data['profileImage'] = None
+
+            
+                item = {
+                    **data,
+                    'author': author_data,
+                    'categories': categories,
+                    'count': comments_count,
+                }
+                item_list.append(item)
 
             responseData = {
                 "type": "posts",
@@ -252,34 +304,8 @@ def Post(request, pk):
             return Response(responseData, status=200)
 
         except Exception as e:
-
-            for item in posts:
-                dict = {}
-                serializer = PostsSerializer(item)
-                data = serializer.data
-                author_dict = {}
-                for k, v in data.items():
-                    dict[k] = v
-                for k, v in serializeAuthor.data.items():
-                    author_dict[k] = v
-                author_dict['displayName'] = serializeAuthor.data['displayName']
-                author_dict.pop('username')
-                categories = data['categories']
-                postsId = data['uuid']
-                dict.pop('categories')
-                dict['categories'] = categories
-                dict['author'] = author_dict
-                dict['count'] = item.count
-                item_list.append(dict)
-
-
-            # Return empty item_list if there was an exception
-            responseData = {
-                "type": "posts",
-                "items": item_list
-            }
-            print(responseData)
-            return Response(responseData, status=200)
+            return Response("cannot read post", status=500)
+            
 
     # Create new post
     elif request.method == 'POST':
@@ -345,6 +371,7 @@ def get_post(request, pk, postsId):
             'description': post.description,
             'contentType': post.contentType,
             'content': post.content,
+            'contentImage': post.contentImage.url if post.contentImage else "",
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
@@ -374,6 +401,18 @@ def get_post(request, pk, postsId):
         post.content = request.data.get('content', post.content)
         post.visibility = request.data.get('visibility', post.visibility)
         post.categories = request.data.get('categories', post.categories)
+
+        if 'contentImage' in request.data:
+            profileImage_data = request.data.get('contentImage')
+            if profileImage_data:
+                format, imgstr = profileImage_data.split(';base64,')
+                ext = format.split('/')[-1]
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                contentImage = decoded_image
+        else:
+            contentImage = post.contentImage
+        post.contentImage = contentImage
+
         post.save()
         return Response(status=200)
 
@@ -385,32 +424,6 @@ def get_post(request, pk, postsId):
 
         post.delete()
         return Response(status=204)
-
-"""
-Image Posts
-"""
-
-@swagger_auto_schema(method='get', operation_description="Get the image of a post.")
-@api_view(['GET'])
-#@permission_classes([AllowAny])
-def getImage(request, pk, postsId):
-    """
-    This is in order to display the image post or the image in the post
-    """
-    try:
-        post = Posts.objects.get(uuid=postsId)
-    except Posts.DoesNotExist:
-        raise Http404()
-
-    if not post.post_image:
-        return HttpResponseBadRequest("This post does not have an image.")
-
-    img_path = post.post_image.path
-    img = open(img_path, 'rb')
-
-    return FileResponse(img)
-
-
 
 @swagger_auto_schema(method='post', operation_description="Post new comments. Don't use this one, just for test.")
 @swagger_auto_schema(method='get', operation_description="Get all the comments of specific post.")
@@ -798,10 +811,13 @@ def inbox(request, pk):
             for i in posts_list:
                 user = Authors.objects.get(username=i['author'])
                 i['author'] = AuthorSerializer(user).data
+                i['author']['profileImage'] = i['author']['profileImage'].url if i['author']['profileImage'] else ""
                 temp_post = Posts.objects.get(id=i['post'])
                 i['post'] = PostsSerializer(temp_post).data
                 temp_post_author = Authors.objects.get(username=i['post']['author'])
                 i['post']['author'] = AuthorSerializer(temp_post_author).data
+                i['post']['author']['profileImage'] = i['post']['author']['profileImage'].url if i['post']['author']['profileImage'] else ""
+                i['post']['contentImage'] = i['post']['contentImage'].url if i['post']['contentImage'] else ""
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
                 user = Authors.objects.get(username=i['author'])
@@ -860,51 +876,94 @@ def inbox(request, pk):
             inbox.save()
 
         elif post_type == 'follow':
-            
-            try:
-                #summary = request.data.get('summary')
-                actor = request.data.get('actor')
-                
-                if Authors.objects.filter(url=actor.get('url')):
-                    current_user = Authors.objects.get(url=actor.get('url'))
-                else:
-                    uid = str(uuid.uuid4())
-                    temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
-                    temp.save()
-                    current_user = Authors.objects.get(uuid=uid)
-                    print(current_user,'\n')
-                   
-                foreign_user = Authors.objects.get(uuid=pk)
-                
-            except Authors.DoesNotExist:
-                return Response({"message": "User not found"}, status=404)
-            #print(current_user)
-            #print('\n',foreign_user)
-            if current_user == foreign_user:
-                return Response({"message": "You cannot follow yourself"}, status=404)
-                
-            author_name = current_user.displayName
-            object_name = foreign_user.displayName
-            belongTo = foreign_user.uuid
-            summary = author_name + " wants to follow " + object_name
-            print(summary)
-            if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+            if request.data.get('approved') and request.data.get('approved') == True:
                 try:
-                    makeRequest = FollowRequests.objects.create()
-                    
-                    makeRequest.summary = summary
-                    makeRequest.actor = current_user
-                    makeRequest.object = foreign_user
-                    makeRequest.save()
-                except Exception as e:
-                    print('this is error:',e)
-                    return Response({"message": "Follow request failed"}, status=404)
+                    actor = request.data.get('actor')
+                    if Authors.objects.filter(url=actor.get('url')):
+                        foreign_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        foreign_user = Authors.objects.get(uuid=uid)
 
-                #return Response(status=200)
-                inbox.followRequests.add(makeRequest)
-                inbox.save()
-            else:
-                return Response({"message": "You are already following this user"}, status=404)
+                    
+                    current_user = Authors.objects.get(uuid=pk)
+                    
+                except Authors.DoesNotExist:
+                    return Response({"message": "User not found"}, status=404)
+                #print(current_user)
+                #print('\n',foreign_user)
+                if current_user == foreign_user:
+                    return Response({"message": "You cannot follow yourself"}, status=404)
+                    
+                author_name = current_user.displayName
+                object_name = foreign_user.displayName
+                belongTo = foreign_user.uuid
+                summary = author_name + " wants to follow " + object_name
+                print(summary)
+                if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                    try:
+                        makeRequest = FollowRequests.objects.create()
+                        
+                        makeRequest.summary = summary
+                        makeRequest.actor = current_user
+                        makeRequest.object = foreign_user
+                        makeRequest.save()
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Follow request failed"}, status=404)
+
+                    follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(forign_user.uuid)}"
+                    response = requests.put(follow_url, data={"approved": True})
+
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
+
+            else:    
+                try:
+                    actor = request.data.get('actor')
+                    
+                    if Authors.objects.filter(url=actor.get('url')):
+                        current_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        current_user = Authors.objects.get(uuid=uid)
+
+                    
+                    foreign_user = Authors.objects.get(uuid=pk)
+                    
+                except Authors.DoesNotExist:
+                    return Response({"message": "User not found"}, status=404)
+                #print(current_user)
+                #print('\n',foreign_user)
+                if current_user == foreign_user:
+                    return Response({"message": "You cannot follow yourself"}, status=404)
+                    
+                author_name = current_user.displayName
+                object_name = foreign_user.displayName
+                belongTo = foreign_user.uuid
+                summary = author_name + " wants to follow " + object_name
+                print(summary)
+                if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                    try:
+                        makeRequest = FollowRequests.objects.create()
+                        
+                        makeRequest.summary = summary
+                        makeRequest.actor = current_user
+                        makeRequest.object = foreign_user
+                        makeRequest.save()
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Follow request failed"}, status=404)
+
+                    #return Response(status=200)
+                    inbox.followRequests.add(makeRequest)
+                    inbox.save()
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
 
         elif post_type == 'like': 
             try:
@@ -988,3 +1047,5 @@ def inbox(request, pk):
 
     else:
         return Response(status=405)
+    
+
