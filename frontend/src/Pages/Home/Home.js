@@ -34,10 +34,53 @@ function Home() {
       // Handle the error here
     }
   }
+  
+  async function fetchTeam16Data() {
+    const TEAM16_ENDPOINT = 'https://sd16-api.herokuapp.com/service/authors/'; 
+    return axios.get(TEAM16_ENDPOINT, {
+      headers: {
+        "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
+      }
+    })
+      .then(async res => {
+        // console.log(res.data.items); 
+        const team1authorsList = res.data.items; 
+        let promises = []; // to store all post requests
+  
+        for (let author of team1authorsList) {
+          if (author.id.includes(TEAM16_ENDPOINT)) {
+            const url = author.id + '/posts/'; 
+            // console.log(url); 
+            const promise = axios.get(url, {
+              headers: {
+                "Authorization": 'Basic ' + btoa('Team12:P*ssw0rd!')
+              }
+            }).then(res => {
+              // console.log(res.data.items); 
+              return res.data.items; 
+            }).catch(err => {
+              // console.error(err);
+              return []; 
+            });
+            if (promise != []) { 
+              promises.push(promise); // add the post request promise to array
+            }
+          }
+        }
 
   useEffect(() => {
-    fetchData(); 
-  })
+    const interval = setInterval(() => {
+      // console.log('This will run every second!');
+      Promise.all([fetchData(), fetchTeam16Data(), fetchTeam1Data()]).then(results => {
+        const postList12 = results[0];
+        const postList16 = []; //results[1];
+        const postList1 = results[2];
+        const mergedPostList = [...postList12, ...postList16, ...postList1];
+        setPostList(mergedPostList.sort((a, b) => new Date(a.published) - new Date(b.published)));
+      });
+    }, 1000); 
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>

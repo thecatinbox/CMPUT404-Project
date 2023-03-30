@@ -57,7 +57,8 @@ function Post({post}) {
       }
 
     } catch (error) {
-      console.error('Error:', error);
+      // console.error('Error:', error);
+      setLikeNum(0); 
     }
   }
 

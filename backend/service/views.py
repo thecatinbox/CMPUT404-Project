@@ -12,7 +12,13 @@ from allModels.models import Posts, Comments, Likes, Liked, Shares
 from allModels.models import Inbox
 from rest_framework.permissions import AllowAny
 import uuid
-
+from django.http import JsonResponse
+from django.views import View
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+import requests
+import json
+from requests_oauthlib import OAuth2Session
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -129,8 +135,82 @@ def singleAuthor(request, pk):
         author.url = request.data.get('url', author.url)
         author.save()
         return Response(status=200)
+    
+@swagger_auto_schema(method='get', operation_description="Get the author's github link.")
+@api_view(['GET'])
+def showGithubActivity(request, pk):
+    """
+    This view is used to return one author's Github activity
+    """
+    try:
+        author = Authors.objects.get(uuid=pk)
+    except Authors.DoesNotExist:
+        return Response(status=404)
+    
+
+    if request.method == 'GET':
+        serializer = AuthorSerializer(author)
+        data = serializer.data
+
+        # Extract GitHub username from profile URL
+        github_url = data['github']
+        username = github_url.split("/")[-1]
+
+        endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        response = requests.get(endpoint_url)
+        activity_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            activity_data = json.loads(response.content)
+
+            # Format the response as a JSON file
+            responseData = {
+                "type": "author",
+                "github_activity": activity_data
+            }
+
+            return Response(responseData, status=200)
+        else:
+            return Response(status=response.status_code)
+    # if request.method == 'GET':
+    #     serializer = AuthorSerializer(author)
+    #     data = serializer.data
+
+    #     # Extract GitHub username from profile URL
+    #     github_url = data['github']
+    #     username = github_url.split("/")[-1]
 
 
+    #     token = "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"
+    #     endpoint_url = f"https://api.github.com/users/{username}/events/public"
+    #     headers = {"Authorization": f"Token {token}"}
+    #     response = requests.get(endpoint_url, headers=headers)
+    #     activity_data = json.loads(response.content)
+
+    #     # Format the response as a JSON file
+    #     responseData = {
+    #         "type": "author",
+    #         "github_activity": activity_data
+    #     }
+
+    #     return Response(responseData, status=200)
+        # # Set up OAuth session
+        # token = "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"
+        # oauth = OAuth2Session(token=token)
+
+        # # Make API request to retrieve GitHub activity data
+        # endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        # response = oauth.get(endpoint_url)
+        # activity_data = json.loads(response.content)
+
+        # # Format the response as a JSON file
+        # responseData = {
+        #     "type": "author",
+        #     "github_activity": activity_data
+        # }
+
+        # return Response(responseData, status=200)
+        # Make API request to retrieve GitHub activity data
 """
 Posts
 """
@@ -535,7 +615,8 @@ def oneFollower(request, pk, foreignPk):
             return Response({"message": "No such follower relationship"}, status=404)
 
     elif request.method == 'PUT':
-        if Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+        
+        if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             return Response({"message": "Already followed"}, status=400)
         else:
             if current_user == foreign_user:
@@ -720,7 +801,45 @@ def get_comment_likes(request, pk, commentId):
         }
 
         return Response(response_data, status=200)
-'''
+
+author_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, author.'),
+        'id': openapi.Schema(type=openapi.TYPE_STRING, description='author.id', minLength=1),
+        'url': openapi.Schema(type=openapi.TYPE_STRING, description='author.url', minLength=1),
+        'host': openapi.Schema(type=openapi.TYPE_STRING, description='author.host', minLength=1),
+        'displayName': openapi.Schema(type=openapi.TYPE_STRING, description='author.displayname', maxLength=100, minLength=1),
+        'github': openapi.Schema(type=openapi.TYPE_STRING, description='author.github'),
+        'profileImage': openapi.Schema(type=openapi.TYPE_STRING, description='author.profileimage', x_nullable=True),
+    },
+    required=['id', 'url', 'host', 'displayName', 'github', 'profileImage'],
+)
+
+followRequest_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, post/follow/like/comment.'),
+        'summary': openapi.Schema(type=openapi.TYPE_STRING, description='Summary of the follow.', x_nullable=True),
+        'author': author_schema,
+
+    },
+    required=['type', 'summary', 'author'],
+)
+
+inbox_example = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'followRequest': followRequest_schema,
+
+
+    },
+    required=['type'],
+)
+
+@swagger_auto_schema(method='post', operation_description="###attention: only followRequest is valid now.### Create posts or comments or follow requests or likes to specific author's inbox.", request_body=inbox_example)
+@swagger_auto_schema(method='delete', operation_description="Clear inbox for specific author.")
+@swagger_auto_schema(method='get', operation_description="Get all the posts, comments, follow requests and likes in specific author's inbox.")
 @api_view(['GET', 'DELETE', 'POST'])
 @permission_classes([AllowAny])
 def get_inbox(request, pk):
@@ -834,56 +953,6 @@ def inbox(request, pk):
         post_type = request.data.get('type')
 
         if post_type == 'post':
-        #     title = request.data.get('title')
-        #     #return Response(f"{title}", status=400)
-        #     if "description" in request.data:
-        #         description = request.data.get('description')
-        #     else:
-        #         description = ""
-        #     if "content" in request.data:
-        #         content = request.data.get('content')
-        #     else:
-        #         content = ""
-        #     if "visibility" in request.data:
-        #         visibility = request.data.get('visibility')
-        #     else:
-        #         visibility = "PUBLIC"
-        #     if "contentType" in request.data:
-        #         content_type = request.data.get('content_type')
-        #     else:
-        #         content_type = "text/plain"
-        #     if "categories" in request.data:
-        #         categories = request.data.get('categories')
-        #     else:
-        #         categories = ""
-        #     uid = str(uuid.uuid4())
-
-        #     tempCheck = 0
-        #     if 'image' in request.FILES:
-        #         image = request.FILES['image']
-        #         image_path = default_storage.save(f'uploads/{pk}/{image.name}', image)
-        #         contentImage = f"{request.build_absolute_uri('/')[:-1]}/{image_path}"
-        #         content_type = 'image'  
-        #         tempCheck = 1
-
-        #     new_post = Posts()
-        #     new_post.title = title
-        #     new_post.description = description
-        #     if tempCheck == 1:
-        #         new_post.contentImage = contentImage
-        #     else:
-        #         new_post.content = content
-        #     new_post.visibility = visibility
-        #     new_post.contentType = content_type
-        #     new_post.uuid = uid
-        #     new_post.id = f"{request.build_absolute_uri('/')[:-1]}/authors/{pk}/posts/{uid}"
-        #     new_post.source = new_post.id
-        #     new_post.origin = new_post.id
-        #     current_author = Authors.objects.get(uuid=pk)
-        #     new_post.author = current_author
-        #     new_post.categories = categories
-        #     new_post.count = "0"
-        #     new_post.save()
             postId = request.data.get('postId')
             sender = request.data.get('sender')
             sender_author = Authors.objects.get(uuid=sender)
@@ -898,6 +967,16 @@ def inbox(request, pk):
             inbox.save()
 
         elif post_type == 'follow':
+            if request.data.get('approved') and request.data.get('approved') == True:
+                try:
+                    actor = request.data.get('actor')
+                    if Authors.objects.filter(url=actor.get('url')):
+                        foreign_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        foreign_user = Authors.objects.get(uuid=uid)
 
             try:
                 follower_user = request.data.get('follower')
@@ -906,21 +985,56 @@ def inbox(request, pk):
             except Authors.DoesNotExist:
                 return Response({"message": "User not found"}, status=404)
 
-            if current_user == foreign_user:
-                return Response({"message": "You cannot follow yourself"}, status=404)
-                
-            author_name = current_user.displayName
-            object_name = foreign_user.displayName
-            belongTo = foreign_user.uuid
-            summary = author_name + " wants to follow " + object_name
-            
-            if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
-                makeRequest = FollowRequests.objects.create(actor=current_user, object=foreign_user, belongTo=belongTo, summary=summary)
-                makeRequest.save()
-                inbox.followRequests.add(makeRequest)
-                inbox.save()
-            else:
-                return Response({"message": "You are already following this user"}, status=404)
+                    follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(forign_user.uuid)}"
+                    response = requests.put(follow_url, data={"approved": True})
+
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
+
+            else:    
+                try:
+                    actor = request.data.get('actor')
+                    
+                    if Authors.objects.filter(url=actor.get('url')):
+                        current_user = Authors.objects.get(url=actor.get('url'))
+                    else:
+                        uid = str(uuid.uuid4())
+                        temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                        temp.save()
+                        current_user = Authors.objects.get(uuid=uid)
+
+                    
+                    foreign_user = Authors.objects.get(uuid=pk)
+                    
+                except Authors.DoesNotExist:
+                    return Response({"message": "User not found"}, status=404)
+                #print(current_user)
+                #print('\n',foreign_user)
+                if current_user == foreign_user:
+                    return Response({"message": "You cannot follow yourself"}, status=404)
+                    
+                author_name = current_user.displayName
+                object_name = foreign_user.displayName
+                belongTo = foreign_user.uuid
+                summary = author_name + " wants to follow " + object_name
+                print(summary)
+                if not Followers.objects.filter(follower=current_user, followedUser=foreign_user):
+                    try:
+                        makeRequest = FollowRequests.objects.create()
+                        
+                        makeRequest.summary = summary
+                        makeRequest.actor = current_user
+                        makeRequest.object = foreign_user
+                        makeRequest.save()
+                    except Exception as e:
+                        print('this is error:',e)
+                        return Response({"message": "Follow request failed"}, status=404)
+
+                    #return Response(status=200)
+                    inbox.followRequests.add(makeRequest)
+                    inbox.save()
+                else:
+                    return Response({"message": "You are already following this user"}, status=404)
 
         elif post_type == 'like': 
             try:
