@@ -233,7 +233,7 @@ function Post({post}) {
 
   async function fetchGithubData() {
     try {
-      const response = await fetch(GITHUB_ENDPOINT, {
+      const response = await fetch("http://127.0.0.1:8000/service/authors/4e886755-295b-4a9f-9251-3c71732e9f5e/github/", {
         headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
         method: "GET"
       });
