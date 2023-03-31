@@ -39,7 +39,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('signIn.urls')),
     path('', include('signUp.urls')),
-    path('user/', include('authors.urls')),
     path('post/', include('post.urls')),
     path('service/', include('service.urls')),
     

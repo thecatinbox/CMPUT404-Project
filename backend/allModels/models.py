@@ -63,7 +63,7 @@ class Followers(models.Model):
     class Meta:
         verbose_name_plural = 'Followers'
         
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=str(uuid.uuid4()), editable=False)
     followedId = models.CharField(max_length = 255, blank=True)#store uuid of author being followed
     type = models.CharField(max_length = 255,default="followers",editable=False)
     followedUser = models.ForeignKey(Authors, on_delete= models.CASCADE, related_name = "followedUser")
@@ -77,7 +77,7 @@ class FollowRequests(models.Model):
     class Meta:
         verbose_name_plural = 'FollowRequests'
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=str(uuid.uuid4()), editable=False)
     belongTo = models.CharField(max_length = 255, blank=True,default="")#store uuid of the author who received the request
     type = models.CharField(max_length = 255,default="Follow",editable=False)
     summary = models.TextField(max_length=255, blank=True,default='')
