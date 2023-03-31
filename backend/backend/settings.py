@@ -70,7 +70,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'signIn',
     'signUp',
-    'authors',
     'post',
     'service',
     "drf_yasg"
