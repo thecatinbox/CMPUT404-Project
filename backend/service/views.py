@@ -18,6 +18,9 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import requests
 import json
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -166,32 +169,21 @@ def showGithubActivity(request, pk):
         username = github_url.split("/")[-1]
 
         # Set up OAuth session
-        token = "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"
+        with open(os.path.join(BASE_DIR, 'service/github_token.txt'), 'r') as f:
+            token = f.read().strip()
         oauth = requests.Session()
         oauth.auth = (token, '')
 
         # Make a request to the GitHub API rate limit endpoint to get the current rate limit information
         rate_limit_response = oauth.get('https://api.github.com/rate_limit')
-        if rate_limit_response.status_code in [401,403]:
-            # Token is expired or invalid, need to update the token
-            # 60 time limit per hour
-            # Extract the remaining requests count from the rate limit information
-            rate_limit_data = json.loads(rate_limit_response.content)
-            remaining_requests = rate_limit_data['resources']['core']['remaining']
 
-            # we use direct request without authorization
-            endpoint_url = f"https://api.github.com/users/{username}/events/public"
-            response = requests.get(endpoint_url)
-            activity_data = json.loads(response.content)
-        else:
-            # Extract the remaining requests count from the rate limit information
-            rate_limit_data = json.loads(rate_limit_response.content)
-            remaining_requests = rate_limit_data['resources']['core']['remaining']
+        # Extract the remaining requests count from the rate limit information
+        rate_limit_data = json.loads(rate_limit_response.content)
+        remaining_requests = rate_limit_data['resources']['core']['remaining']
 
-            # Use access token to make API request to retrieve GitHub activity data
-            endpoint_url = f"https://api.github.com/users/{username}/events/public"
-            response = oauth.get(endpoint_url)
-            activity_data = json.loads(response.content)
+        # Use access token to make API request to retrieve GitHub activity data
+        endpoint_url = f"https://api.github.com/users/{username}/events/public"
+        response = oauth.get(endpoint_url)
 
         if response.status_code == 200:
             activity_data = json.loads(response.content)
