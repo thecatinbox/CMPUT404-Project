@@ -17,10 +17,10 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import requests
-import jso
+import json
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -170,7 +170,6 @@ def showGithubActivity(request, pk):
         github_url = data['github']
         username = github_url.split("/")[-1]
                            
-
         # Set up OAuth session
         with open(os.path.join(BASE_DIR, 'service/github_token.txt'), 'r') as f:
             token = f.read().strip()
@@ -186,7 +185,7 @@ def showGithubActivity(request, pk):
 
         # Use access token to make API request to retrieve GitHub activity data
         endpoint_url = f"https://api.github.com/users/{username}/events/public"
-        response = oauth.get(endpoint_url
+        response = oauth.get(endpoint_url)
 
         if response.status_code == 200:
             activity_data = json.loads(response.content)
@@ -194,6 +193,7 @@ def showGithubActivity(request, pk):
             # Format the response as a JSON file
             responseData = {
                 "type": "author",
+                "remaining_requests":remaining_requests,
                 "github_activity": activity_data
             }
 
