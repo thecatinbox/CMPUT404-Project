@@ -61,7 +61,7 @@ function SignIn() {
             headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
-            console.log(data.items); 
+            // console.log(data.items); 
             var result = data.items.find(item => item.username === inputs.username);
             if (result) {
                 // console.log(result.username); 

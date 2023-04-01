@@ -25,16 +25,14 @@ function Home() {
   
   async function fetchData() {
     try {
-      const response = await fetch(ENDPOINT, {
+      const response = await axios.get(ENDPOINT, {
         headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
-        method: "GET"
       });
-  
-      const data = await response.json();
-      return data.items;
+    
+      return response.data.items;
     } catch (error) {
       console.error('Error:', error);
-      return []; 
+      return [];
       // Handle the error here
     }
   }
@@ -47,7 +45,7 @@ function Home() {
       }
     })
       .then(async res => {
-        console.log(res.data.items); 
+        // console.log(res.data.items); 
         const team1authorsList = res.data.items; 
         let promises = []; // to store all post requests
   
