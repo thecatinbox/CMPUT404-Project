@@ -22,6 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
+import Like from "../Like/Like";
 import Share from "../Share/Share";
 import Username from "../Username/Username";
 
@@ -45,6 +46,7 @@ function Post({post}) {
   const [likeNum, setLikeNum] = useState();
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   const theme = createTheme({
     palette: {
@@ -63,17 +65,19 @@ function Post({post}) {
 
   async function fetchLikes() {
     try {
-      const response = await fetch(LIKE_ENDPOINT, {
-        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
-        method: "GET"
-      });
+      if (LIKE_ENDPOINT.includes("cmput404-project-data.herokuapp.com")) {
+        const response = await fetch(LIKE_ENDPOINT, {
+          headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+          method: "GET"
+        });
+    
+        const data = await response.json();
+        setLikeNum(data.total_likes); 
   
-      const data = await response.json();
-      setLikeNum(data.total_likes); 
-
-      const isLikedByCurrentUser = data.items.some(item => item.author && item.author.uuid === uuid);
-      if (isLikedByCurrentUser) {
-        setLiked(true); 
+        const isLikedByCurrentUser = data.items.some(item => item.author && item.author.uuid === uuid);
+        if (isLikedByCurrentUser) {
+          setLiked(true); 
+        }
       }
 
     } catch (error) {
@@ -82,7 +86,10 @@ function Post({post}) {
   }
 
   useEffect(() => {
-    fetchLikes(); 
+    if (!isDataFetched) {
+      fetchLikes(); 
+      setIsDataFetched(true); 
+    } 
   }); 
   
   // Handle input change 
@@ -121,6 +128,8 @@ function Post({post}) {
           body: body, 
           method: "POST"
         }); 
+
+        setIsDataFetched(false); 
 
         } catch (error) {
           console.error('Error:', error);
@@ -444,10 +453,7 @@ function Post({post}) {
         </CardContent>
 
         <CardActions disableSpacing>
-          <IconButton onClick={handleNewLike}>
-            <FontAwesomeIcon id="like_button" icon={faHeart} color={liked ? 'red' : ''}/>
-            <Typography variant="body2" marginLeft={"8px"}>{likeNum}</Typography>
-          </IconButton>
+          <Like post={post}/>
           <IconButton onClick={() => setShowComments(!showComments)}>
             <FontAwesomeIcon icon={faComment} />
           </IconButton>

@@ -15,7 +15,7 @@ function CommentList({post}) {
     const handleChange = (event) => {
         const { name, value } = event.target;
         setInputs((prevInputs) => ({ ...prevInputs, [name]: value }));
-        console.log(inputs); 
+        /// console.log(inputs); 
     };
 
     const uuid = localStorage.getItem('uuid'); 
@@ -29,16 +29,18 @@ function CommentList({post}) {
     
     async function fetchComments() {
         try {
-        const response = await fetch(COMMENT_ENDPOINT, {
-            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
-            method: "GET"
-        });
-    
-        const data = await response.json();
-        setCommentList(data.items);
-        setFetched(true); 
+            if (!fetched) {
+                const response = await fetch(COMMENT_ENDPOINT, {
+                    headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+                    method: "GET"
+                });
+            
+                const data = await response.json();
+                setCommentList(data.items);
+                setFetched(true); 
+            } 
         } catch (error) {
-        console.error('Error:', error);
+            console.error('Error:', error);
         }
     }
 
@@ -65,14 +67,15 @@ function CommentList({post}) {
            }
           ); 
   
-          console.log(body); 
+          // console.log(body); 
   
           await fetch(MESSAGE_ENDPOINT, {
             headers: header,
             body: body, 
             method: "POST"
           }); 
-  
+          
+          setFetched(false); 
           } catch (error) {
             console.error('Error:', error);
           }
