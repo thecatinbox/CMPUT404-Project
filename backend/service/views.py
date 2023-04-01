@@ -44,24 +44,6 @@ def paginate(request,objects):
     objects = objects[start_index:end_index]
     
     return objects
-
-'''
-def pagination(request,object):
-    """
-    This function is hand write pagination method, to get the page and size of user want,
-    that returns the range of objects to them
-    """
-    absURL = request.build_absolute_uri()
-    value = absURL.split('?')[1].split('&')
-    page = int(value[0].split('=')[1])
-    size = int(value[1].split('=')[1])
-    fromNum = page * size - size
-    toNum = page * size
-
-    object = object[fromNum:toNum]
-
-    return object
-'''
 """
 Authors 
 """
@@ -618,12 +600,16 @@ def oneFollower(request, pk, foreignPk):
                             "actor": send_actor,
                             "object": send_object
                         }
-                        username = "testvivian" #change when ever need
-                        password = "vivian" #change when ever need
-                        response = requests.post(inbox_url, data=object, auth=(username, password))
+                        username = "p2padmin" #change when ever need
+                        password = "p2padmn" #change when ever need
+                        response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
                     except Exception as e:
                         print('this is error:',e)
                         return Response({"message": "send approved follow request back fail"}, status=404)
+
+
+                elif host == connect_group2:
+                    pass ##change when ever need
 
             return Response({"message": "Followed successfully"}, status=200)
 
@@ -1029,7 +1015,7 @@ def inbox(request, pk):
 
                     try:
                         follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}"
-                        response = requests.put(follow_url, data={"approved": True}, auth=(str(current_user.username), str(current_user.password)))
+                        response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(username1, password1)(str(current_user.username), str(current_user.password)))
                     except Exception as e:
                         print('this is error:',e)
                         return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)

@@ -21,6 +21,7 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.core.files.base import ContentFile
+from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 
 create_post_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -31,9 +32,9 @@ create_post_example = openapi.Schema(
         'visibility': openapi.Schema(type=openapi.TYPE_STRING, example='PUBLIC'),
         'content_type': openapi.Schema(type=openapi.TYPE_STRING, example='text/plain'),
         'categories': openapi.Schema(type=openapi.TYPE_STRING, example='Category1, Category2'),
-        'image': openapi.Schema(type=openapi.TYPE_FILE, example='image.png', description='Image is optional(image post or text post)'),
+        'contentImage': openapi.Schema(type=openapi.TYPE_FILE, example='image.png', description='Image is optional(image post or text post)'),
     },
-    required=['title', 'content', 'image'],
+    required=['title', 'visibility','description'],
 )
 
 @swagger_auto_schema(method='post', operation_description="Create a new post.", request_body=create_post_example)
@@ -108,13 +109,43 @@ def create_post(request, userId):
         new_post.save()
 
         # notice a new post from me
-        current_author_followers = Followers.objects.filter(follower=current_author)
+        current_author_followers = Followers.objects.filter(followedUser=current_author)
         if current_author_followers:
             for item in current_author_followers:
-                follower = item.author
-                follower_inbox = Inbox.objects.get(author=follower)
-                follower_inbox.posts.add(new_post)
-                follower_inbox.save()
+                if item.author.uuid == item.author.username:
+                    connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
+                    username1 = "p2padmin" #change when ever need
+                    password1 = "p2padmn" #change when ever need
+                       
+                    connect_group2 = "None" #change when ever need
+                    username1 = "" #change when ever need
+                    password1 = "" #change when ever need
+        
+                    uuuid = item.author.url.split('/')[-1]
+                    host = item.author.host
+                    if host == connect_group1:
+                        inbox_url = f"{str(connect_group1)}/authors/{str(uuuid)}/inbox/"
+                        send_author = AuthorSerializer(current_author)
+                        send_post = PostsSerializer(new_post)
+                        send_data = {
+                            "type": "post",
+                            "author": send_author.data,
+                            "post": send_post.data
+                        }
+                        try:
+                            response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(username1, password1))
+                        except Exception as e:
+                            print(e)
+                            return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
+                    elif host == connect_group2:
+                        pass #change when ever need
+
+                else:
+                    follower = item.author
+                    follower_inbox = Inbox.objects.get(author=follower)
+                    new_share = Shares.objects.create(author=current_author, post=new_post)
+                    follower_inbox.posts.add(new_share)
+                    follower_inbox.save()
         
         responseData = {
             "type": "post",
