@@ -39,7 +39,7 @@ def signIn(request):
         try:
             userLogin = User.objects.get(username=username)
         except:
-            return HttpResponse("Username does not exist")
+            return Response({"message": "User does not exist"}, status=404)
 
         if userLogin.is_active == True:
             user = authenticate(request, username=username, password=password)
@@ -53,7 +53,7 @@ def signIn(request):
                 #url should be main/authorId
                 return Response(f"current_author_id:{current_author_id}", status=200)
             else:
-                return HttpResponse("The username or password are incorrect.")
+                return Response({"message": "The username or password are incorrect."}, status=404)
 
         else:
             return Response("user is not active",status=200)

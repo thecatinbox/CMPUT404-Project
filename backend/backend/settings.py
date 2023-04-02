@@ -27,10 +27,19 @@ SECRET_KEY = 'django-insecure-$%q1-_ii&csvh^so0i0m8x=1%-x-+l74*ks5q2km*tjexv8%gd
 DEBUG = True
 
 
-ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com",'localhost','127.0.0.1','sd16-api.herokuapp.com','p2psd.herokuapp.com']
+ALLOWED_HOSTS = ["cmput404-project-app.herokuapp.com","cmput404-project-data.herokuapp.com",'localhost','127.0.0.1','sd16-api.herokuapp.com','p2psd.herokuapp.com','cmput-404-project-socialdistribution.vercel.app']
 
 CORS_ALLOWED_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'https://cmput404-project-app.herokuapp.com', 'https://cmput404-project-data.herokuapp.com','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000','http://sd16-api.herokuapp.com','https://p2psd.herokuapp.com','https://sd16-api.herokuapp.com']
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 
+                        'https://cmput404-project-app.herokuapp.com', 
+                        'https://cmput404-project-data.herokuapp.com',
+                        'http://localhost:8000',
+                        'http://127.0.0.1:3000',
+                        'http://127.0.0.1:8000',
+                        'http://sd16-api.herokuapp.com',
+                        'https://p2psd.herokuapp.com',
+                        'https://cmput-404-project-socialdistribution.vercel.app',
+                        'https://sd16-api.herokuapp.com']
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -86,6 +95,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -179,9 +189,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-

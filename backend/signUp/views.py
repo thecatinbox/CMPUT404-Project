@@ -12,6 +12,7 @@ from django.forms.models import model_to_dict
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 import json
+import base64
 from django.http import JsonResponse
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema

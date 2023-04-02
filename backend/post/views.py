@@ -8,9 +8,10 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 import uuid
 from django.db.models import Q
-from allModels.models import Inbox
+from allModels.models import Inbox, Node
 import requests
 from requests.auth import HTTPBasicAuth
+import base64
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import permissions, authentication
@@ -21,6 +22,7 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.core.files.base import ContentFile
+from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 
 create_post_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -31,9 +33,9 @@ create_post_example = openapi.Schema(
         'visibility': openapi.Schema(type=openapi.TYPE_STRING, example='PUBLIC'),
         'content_type': openapi.Schema(type=openapi.TYPE_STRING, example='text/plain'),
         'categories': openapi.Schema(type=openapi.TYPE_STRING, example='Category1, Category2'),
-        'image': openapi.Schema(type=openapi.TYPE_FILE, example='image.png', description='Image is optional(image post or text post)'),
+        'contentImage': openapi.Schema(type=openapi.TYPE_FILE, example='image.png', description='Image is optional(image post or text post)'),
     },
-    required=['title', 'content', 'image'],
+    required=['title', 'visibility','description'],
 )
 
 @swagger_auto_schema(method='post', operation_description="Create a new post.", request_body=create_post_example)
@@ -59,7 +61,7 @@ def create_post(request, userId):
             visibility = request.data.get('visibility')
         else:
             visibility = "PUBLIC"
-        if "contentType" in request.data:
+        if "content_type" in request.data:
             content_type = request.data.get('content_type')
         else:
             content_type = "text/plain"
@@ -74,9 +76,9 @@ def create_post(request, userId):
             tempCheck = 1
             image_data = request.data.get('contentImage')
             if image_data:
-                format, imgstr = profileImage_data.split(';base64,')
+                format, imgstr = image_data.split(';base64,')
                 ext = format.split('/')[-1]
-                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{uid}.{ext}')
                 contentImage = decoded_image
             else:
                 contentImage = ""
@@ -108,20 +110,48 @@ def create_post(request, userId):
         new_post.save()
 
         # notice a new post from me
-        current_author_followers = Followers.objects.filter(follower=current_author)
+        current_author_followers = Followers.objects.filter(followedUser=current_author)
         if current_author_followers:
+            all_node = Node.objects.all()
             for item in current_author_followers:
-                follower = item.author
-                follower_inbox = Inbox.objects.get(author=follower)
-                follower_inbox.posts.add(new_post)
-                follower_inbox.save()
-        
-        responseData = {
-            "type": "post",
-            "items": model_to_dict(new_post)
-        }
+                if item.follower.uuid == item.follower.username:
+                    
 
-        return Response(status=201)
+                    # connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
+                    # username1 = "p2padmin" #change when ever need
+                    # password1 = "p2padmin" #change when ever need
+                       
+                    # connect_group2 = "None" #change when ever need
+                    # username1 = "" #change when ever need
+                    # password1 = "" #change when ever need
+                    uuuid = item.follower.url.split('/')[-1]
+                    host = item.follower.host
+                    for node in all_node:
+                        temp_node = str(node.host).replace("/service","")
+                        if str(host) == temp_node:
+                            inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
+                            send_author = AuthorSerializer(current_author)
+                            send_post = PostsSerializer(new_post)
+                            send_data = {
+                                "type": "post",
+                                "author": send_author.data,
+                                "post": send_post.data
+                            }
+                            try:
+                                response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+                                break
+                            except Exception as e:
+                                print(e)
+                                return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
+
+                else:
+                    follower = item.follower
+                    follower_inbox = Inbox.objects.get(author=follower)
+                    new_share = Shares.objects.create(author=current_author, post=new_post)
+                    follower_inbox.posts.add(new_share)
+                    follower_inbox.save()
+
+        return Response({"message": "Create post done"},status=201)
     else:
         responseData = {
             "type": "creat post",
