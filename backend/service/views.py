@@ -9,9 +9,11 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 from allModels.models import Authors, Followers, FollowRequests
 from allModels.models import Posts, Comments, Likes, Liked, Shares
-from allModels.models import Inbox
+from allModels.models import Inbox, Node
 from rest_framework.permissions import AllowAny
 import uuid
+import base64
+from itertools import chain
 from django.http import JsonResponse
 from django.views import View
 from drf_yasg.utils import swagger_auto_schema
@@ -22,6 +24,22 @@ import json
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def get_image(image_url):
+    img_type = str(image_url).split(".")[-1]
+    try:
+        imagePath = '.' + str(image_url)
+    except:
+        return Response(status=404)
+
+    with open(imagePath, 'rb') as img:
+        image_data = img.read()
+
+    base64_encoded_image = base64.b64encode(image_data).decode('utf-8')
+
+    result =  f'data:image/{img_type};base64,{base64_encoded_image}'
+
+    return result
 
 def getURLId(url):
     return url.split('/')[-1]
@@ -56,7 +74,9 @@ def authorsList(request):
     This view is used to display all authors information
     """
     #authors = Authors.objects.all()
-    authors = Authors.objects.filter(url__icontains="https://cmput404-project-data.herokuapp.com")
+    authors1 = Authors.objects.filter(url__icontains="https://cmput404-project-data.herokuapp.com")#change when different deployment
+    authors2 = Authors.objects.filter(url__icontains="http://127.0.0.1")
+    authors = list(chain(authors1,authors2))
 
     # # Get page and size from query parameters
     # page = int(request.query_params.get('page', 1))
@@ -77,7 +97,11 @@ def authorsList(request):
             dict[k] = v
 
         dict['displayName'] = data['displayName']
-        dict['profileImage'] = data['profileImage'].url if data['profileImage'] else None
+        img = item.profileImage.url if item.profileImage else None
+        if img:
+            dict['profileImage'] = get_image(img)
+        else:
+            dict['profileImage'] = None
 
         itemsList.append(dict)
 
@@ -120,7 +144,11 @@ def singleAuthor(request, pk):
         serializer = AuthorSerializer(author)
         data = serializer.data
         data['displayName'] = data.pop('displayName')
-        data['profileImage'] = data['profileImage'].url if data['profileImage'] else None
+        img = author.profileImage.url if author.profileImage else None
+        if img:
+            data['profileImage'] = get_image(img)
+        else:
+            data['profileImage'] = None
         responseData = {
             "type": "authors",
             "items": data
@@ -129,7 +157,7 @@ def singleAuthor(request, pk):
 
     elif request.method == 'POST':
         author.github = request.data.get('github', author.github)
-
+        author.displayName = request.data.get('displayName', author.displayName)
         uid = str(uuid.uuid4())
         if request.data.get('profileImage'):
             profileImage_data = request.data.get('profileImage')
@@ -207,10 +235,20 @@ def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    posts = Posts.objects.filter(visibility='PUBLIC', id__icontains="https://cmput404-project-data.herokuapp.com").prefetch_related('author')
+    #"https://cmput404-project-data.herokuapp.com"
+    posts1 = Posts.objects.filter(visibility='PUBLIC', id__icontains="https://cmput404-project-data.herokuapp.com").prefetch_related('author')#change when different deployment
+    posts2 = Posts.objects.filter(visibility='PUBLIC', id__icontains="http://127.0.0.1").prefetch_related('author')#change when different deployment
+    posts = list(chain(posts1, posts2))
     items_list = []
 
     for post in posts:
+        the_image = post.contentImage.url if post.contentImage else None
+        if the_image:
+            the_image = get_image(the_image)
+        #the_image = str(the_image).split(".")[-1]
+        the_author_image = post.author.profileImage.url if post.author.profileImage else None
+        if the_author_image:
+            the_author_image = get_image(the_author_image)
         data = PostsSerializer(post).data
         author_data = AuthorSerializer(post.author).data
         author_data['displayName'] = author_data.pop('displayName')
@@ -218,12 +256,12 @@ def getAllPublicPosts(request):
         comments_count = data.pop('count')
 
         if data['contentImage']:
-            data['contentImage'] = data['contentImage'].url if data['contentImage'] else None
+            data['contentImage'] = str(the_image)
         else:
             data['contentImage'] = None
 
         if post.author.profileImage:
-            author_data['profileImage'] = post.author.profileImage.url if post.author.profileImage else None
+            author_data['profileImage'] = str(the_author_image)
         else:
             author_data['profileImage'] = None
 
@@ -292,17 +330,25 @@ def Post(request, pk):
                 author_data['displayName'] = author_data.pop('displayName')
                 categories = data.pop('categories')
                 comments_count = data.pop('count')
-
+                
                 if data['contentImage']:
-                    data['contentImage'] = data['contentImage'].url if data['contentImage'] else None
+                    img = item.contentImage.url if item.contentImage else None
+                    if img:
+                        data['contentImage'] = get_image(img)
+                    else:
+                        data['contentImage'] = None
                 else:
                     data['contentImage'] = None
-
+                
                 if item.author.profileImage:
-                    author_data['profileImage'] = item.author.profileImage.url if item.author.profileImage else None
+                    img2 = item.author.profileImage.url if item.author.profileImage else None
+                    if img2:
+                        author_data['profileImage'] = get_image(img2)
+                    else:
+                        author_data['profileImage'] = None
                 else:
                     author_data['profileImage'] = None
-
+                
             
                 item = {
                     **data,
@@ -311,7 +357,7 @@ def Post(request, pk):
                     'count': comments_count,
                 }
                 item_list.append(item)
-
+            #return Response({"message":"there"}, status=200)
             responseData = {
                 "type": "posts",
                 "items": item_list
@@ -320,6 +366,7 @@ def Post(request, pk):
             return Response(responseData, status=200)
 
         except Exception as e:
+            print(e)
             return Response("cannot read post", status=500)
             
 
@@ -380,6 +427,12 @@ def get_post(request, pk, postsId):
         if not post:
             return Response(status=404)
 
+        img = post.contentImage.url if post.contentImage else ""
+        if img:
+            send_img = get_image(img)
+        else:
+            send_img = None
+
         post_dict = {
             'title': post.title,
             'id': post.id,
@@ -388,7 +441,7 @@ def get_post(request, pk, postsId):
             'description': post.description,
             'contentType': post.contentType,
             'content': post.content,
-            'contentImage': post.contentImage.url if post.contentImage else "",
+            'contentImage': send_img,
             'origin': post.origin,
             'published': post.published,
             'visibility': post.visibility,
@@ -418,13 +471,13 @@ def get_post(request, pk, postsId):
         post.content = request.data.get('content', post.content)
         post.visibility = request.data.get('visibility', post.visibility)
         post.categories = request.data.get('categories', post.categories)
-
+        uid = str(uuid.uuid4())
         if 'contentImage' in request.data:
-            profileImage_data = request.data.get('contentImage')
-            if profileImage_data:
-                format, imgstr = profileImage_data.split(';base64,')
+            contentImage_data = request.data.get('contentImage')
+            if contentImage_data:
+                format, imgstr = contentImage_data.split(';base64,')
                 ext = format.split('/')[-1]
-                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{uid}.{ext}')
                 contentImage = decoded_image
         else:
             contentImage = post.contentImage
@@ -589,7 +642,7 @@ def oneFollower(request, pk, foreignPk):
 
     elif request.method == 'PUT':
         connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
-        connect_group2 = "None" #change when ever need
+        connect_group2 = "https://sd16-api.herokuapp.com" #change when ever need
         
         if Followers.objects.filter(follower=foreign_user, followedUser=current_user):
             return Response({"message": "Already followed"}, status=400)
@@ -598,32 +651,71 @@ def oneFollower(request, pk, foreignPk):
                 return Response({"message": "You cannot follow yourself"}, status=400)
             new_follow = Followers.objects.create(followedId=pk ,follower=foreign_user, followedUser=current_user)
             new_follow.save()
-
+            
             if foreign_user.uuid == foreign_user.username:
+                all_node = Node.objects.all()
                 uid = foreign_user.url.split('/')[-1]
                 host = foreign_user.host
-                if host == connect_group1:
-                    try:
-                        inbox_url = f"{str(connect_group1)}/authors/{str(uid)}/inbox/"
-                        send_actor = AuthorSerializer(foreign_user).data
-                        send_object = AuthorSerializer(current_user).data
-                        object = {
-                            "approved": True,
-                            "type": "follow",
-                            "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
-                            "actor": send_actor,
-                            "object": send_object
-                        }
-                        username = "p2padmin" #change when ever need
-                        password = "p2padmin" #change when ever need
-                        response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
-                    except Exception as e:
-                        print('this is error:',e)
-                        return Response({"message": "send approved follow request back fail"}, status=404)
+                for node in all_node:
+                    temp_node = str(node.host).replace("/service","")
+                    if str(host) == temp_node:
+                        try:
+                            inbox_url = f"{str(node.host)}/authors/{str(uid)}/inbox/"
+                            send_actor = AuthorSerializer(foreign_user).data
+                            send_object = AuthorSerializer(current_user).data
+                            object = {
+                                "approved": True,
+                                "type": "follow",
+                                "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
+                                "actor": send_actor,
+                                "object": send_object
+                            }
+                            #username = "p2padmin" #change when ever need
+                            #password = "p2padmin" #change when ever need
+                            response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+                            break
+                        except Exception as e:
+                            print('this is error:',e)
+                            return Response({"message": "send approved follow request back fail"}, status=404)
 
+                # if host == connect_group1:
+                #     try:
+                #         inbox_url = f"{str(connect_group1)}/authors/{str(uid)}/inbox/"
+                #         send_actor = AuthorSerializer(foreign_user).data
+                #         send_object = AuthorSerializer(current_user).data
+                #         object = {
+                #             "approved": True,
+                #             "type": "follow",
+                #             "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
+                #             "actor": send_actor,
+                #             "object": send_object
+                #         }
+                #         username = "p2padmin" #change when ever need
+                #         password = "p2padmin" #change when ever need
+                #         response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
+                #     except Exception as e:
+                #         print('this is error:',e)
+                #         return Response({"message": "send approved follow request back fail"}, status=404)
 
-                elif host == connect_group2:
-                    pass ##change when ever need
+                # elif host == connect_group2:
+                #     try:
+                #         inbox_url = f"{str(connect_group2)}/service/authors/{str(uid)}/inbox/"
+                #         send_actor = AuthorSerializer(foreign_user).data
+                #         send_object = AuthorSerializer(current_user).data
+                #         object = {
+                #             "approved": True,
+                #             "type": "follow",
+                #             "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
+                #             "actor": send_actor,
+                #             "object": send_object
+                #         }
+                #         username = "Team12" #change when ever need
+                #         password = "P*ssw0rd!" #change when ever need
+                #         response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
+                #     except Exception as e:
+                #         print('this is error:',e)
+                #         return Response({"message": "send approved follow request back fail"}, status=404)
+
 
             return Response({"message": "Followed successfully"}, status=200)
 
@@ -918,13 +1010,13 @@ def inbox(request, pk):
                 user = Authors.objects.get(username=i['author'])
                 
                 i['author'] = AuthorSerializer(user).data
-                i['author']['profileImage'] = i['author']['profileImage'].url if i['author']['profileImage'] else ""
+                i['author']['profileImage'] = get_image(i['author']['profileImage']) if i['author']['profileImage'] else ""
                 temp_post = Posts.objects.get(id=i['post'])
                 i['post'] = PostsSerializer(temp_post).data
                 temp_post_author = Authors.objects.get(username=i['post']['author'])
                 i['post']['author'] = AuthorSerializer(temp_post_author).data
-                i['post']['author']['profileImage'] = i['post']['author']['profileImage'].url if i['post']['author']['profileImage'] else ""
-                i['post']['contentImage'] = i['post']['contentImage'].url if i['post']['contentImage'] else ""
+                i['post']['author']['profileImage'] = get_image(i['post']['author']['profileImage']) if i['post']['author']['profileImage'] else ""
+                i['post']['contentImage'] = get_image(i['post']['contentImage']) if i['post']['contentImage'] else ""
             #return Response(status=200)
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
@@ -998,7 +1090,7 @@ def inbox(request, pk):
                 temp1 = Posts.objects.create(
                     title=post_entity.get('title'),
                     description=post_entity.get('description'),
-                    contentImage=post_entity.get('contentImage'),
+                    #contentImage=post_entity.get('contentImage'),
                     contentType=post_entity.get('contentType'),
                     content=post_entity.get('content'),
                     visibility=post_entity.get('visibility'),

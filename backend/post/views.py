@@ -8,9 +8,10 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 import uuid
 from django.db.models import Q
-from allModels.models import Inbox
+from allModels.models import Inbox, Node
 import requests
 from requests.auth import HTTPBasicAuth
+import base64
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import permissions, authentication
@@ -111,37 +112,40 @@ def create_post(request, userId):
         # notice a new post from me
         current_author_followers = Followers.objects.filter(followedUser=current_author)
         if current_author_followers:
+            all_node = Node.objects.all()
             for item in current_author_followers:
-                if item.author.uuid == item.author.username:
-                    connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
-                    username1 = "p2padmin" #change when ever need
-                    password1 = "p2padmin" #change when ever need
+                if item.follower.uuid == item.follower.username:
+                    
+
+                    # connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
+                    # username1 = "p2padmin" #change when ever need
+                    # password1 = "p2padmin" #change when ever need
                        
-                    connect_group2 = "None" #change when ever need
-                    username1 = "" #change when ever need
-                    password1 = "" #change when ever need
-        
-                    uuuid = item.author.url.split('/')[-1]
-                    host = item.author.host
-                    if host == connect_group1:
-                        inbox_url = f"{str(connect_group1)}/authors/{str(uuuid)}/inbox/"
-                        send_author = AuthorSerializer(current_author)
-                        send_post = PostsSerializer(new_post)
-                        send_data = {
-                            "type": "post",
-                            "author": send_author.data,
-                            "post": send_post.data
-                        }
-                        try:
-                            response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(username1, password1))
-                        except Exception as e:
-                            print(e)
-                            return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
-                    elif host == connect_group2:
-                        pass #change when ever need
+                    # connect_group2 = "None" #change when ever need
+                    # username1 = "" #change when ever need
+                    # password1 = "" #change when ever need
+                    uuuid = item.follower.url.split('/')[-1]
+                    host = item.follower.host
+                    for node in all_node:
+                        temp_node = str(node.host).replace("/service","")
+                        if str(host) == temp_node:
+                            inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
+                            send_author = AuthorSerializer(current_author)
+                            send_post = PostsSerializer(new_post)
+                            send_data = {
+                                "type": "post",
+                                "author": send_author.data,
+                                "post": send_post.data
+                            }
+                            try:
+                                response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+                                break
+                            except Exception as e:
+                                print(e)
+                                return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
 
                 else:
-                    follower = item.author
+                    follower = item.follower
                     follower_inbox = Inbox.objects.get(author=follower)
                     new_share = Shares.objects.create(author=current_author, post=new_post)
                     follower_inbox.posts.add(new_share)

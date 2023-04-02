@@ -172,3 +172,15 @@ class Inbox(models.Model):
             f"followRequests:{', '.join(str(request) for request in self.followRequests.all())} "
             f"likes:{', '.join(str(like) for like in self.likes.all())}"
         )
+
+class Node(models.Model):
+    class Meta:
+        verbose_name_plural = 'Node'
+
+    type = models.CharField(max_length = 255,default = "node", editable = False)
+    host = models.CharField(primary_key=True, max_length=255, null=False)
+    username = models.CharField(max_length=255, null=False)
+    password = models.CharField(max_length=255, null=False)
+
+    def __str__(self):
+        return f"type:{self.type} host:{self.host} username:{self.username} password:{self.password}"
