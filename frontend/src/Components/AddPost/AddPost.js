@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import "./AddPost.css"; 
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faImage } from '@fortawesome/free-solid-svg-icons'
-//line22-24: The option tag has an attribute of value that specifies a value that is submitted from the form when an option gets selected.
 const AddPost = () => {
 
   const uuid = localStorage.getItem('uuid'); 
@@ -11,6 +8,31 @@ const AddPost = () => {
   // console.log(app_url); 
   const ENDPOINT = app_url + '/post/authors/' + uuid + '/posts/create'; 
   // console.log(ENDPOINT); 
+
+  const [selectedType, setSelectedType] = useState('text');
+  const [showImageBox, setShowImageBox] = useState(false);
+  const [imagePreview, setImagePreview] = useState([]);
+
+  function handleTypeChange(event) {
+    setSelectedType(event.target.value);
+    setShowImageBox(event.target.value === 'image/png;base64'||event.target.value === 'image/jpeg;base64');
+  }
+
+  function previewImages(event) {
+	  const file = event.target.files[0];
+
+		const reader = new FileReader();
+    
+		reader.onload = function(event) {
+      
+			setImagePreview(reader.result);
+      
+		};
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
+  }
 
   const addPost = (title, content) => {
 
@@ -25,22 +47,28 @@ const AddPost = () => {
       "Origin": 'http://localhost:3000', 
       "Authorization": 'Basic ' + btoa('username1:123')
     }
+    var typeSelected=document.getElementById("content-type");
+    var type = typeSelected.options[e.selectedIndex].value;
 
-    var e = document.getElementById("post-category");
+    var e = document.getElementById("post-visibility");
     var visibility = e.options[e.selectedIndex].value;
+    var image = null;
 
-    // console.log(title); 
     // console.log(content); 
-    // console.log(visibility); 
+    
+    if (imagePreview!==undefined || imagePreview!==null) {
+      image = document.getElementById("preview-image").value;
+    }
+    console.log(document.getElementById("preview-image").value);
 
     const body = JSON.stringify({
       "title": title,
       "content": content,
-      "visibility": visibility
+      "content_type": type,
+      "visibility": visibility,
+      "contentImage": image
     }); 
 
-    // console.log(header); 
-    console.log(body); 
 
     fetch(ENDPOINT, {
       headers: header,
@@ -54,81 +82,51 @@ const AddPost = () => {
     
     // .catch(error => console.log(error.message));
   }
-
   
-  //Users can preview Images. Did not write funtion for sending images to backend yet. (may add in line 87)
-  const [imagePreview, setImagePreview] = useState([]);
-  
-  function previewImages(event) {
-    const previewContainer = document.getElementById('image-preview-container');
-   /*  const files = event.target.files;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-
-      reader.onload = function (event) {
-        const img = document.createElement('img');
-        img.src = event.target.result;
-        img.classList.add('preview-image');
-        previewContainer.appendChild(img);
-      };
-
-      reader.readAsDataURL(file);
-      setImagePreview((prevState) => [...prevState, file]);
-    }
- */
-		const file = event.target.files[0];
-
-		// Create preview image
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = function(event) {
-      
-			setImagePreview(event.target.result);
-		};
-    
-
-  }
-
   return (
     <div className="post-container">
-     
-      <input id="post-title" className="title" type="text" placeholder="Title.." name="title" maxLength="60" ></input>
-      <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
+      <div className="dropdown">
+        <a>Content Type: </a>
+        <select id="content-type" value={selectedType} onChange={handleTypeChange}>
+          <option value="text/plain" selected>Text (plain)</option>
+          <option value="text/markdown">Text (markdown)</option>
+          <option value="image/png;base64">Image (png)</option>
+          <option value="image/jpeg;base64">Image (jpeg)</option></select>
+      </div>
 
-      <div className="buttons-container">
-        <input className="file-input"  type="file" id="image-upload" name="images[]" onChange={(event) => previewImages(event)} />
-        <button className="upload-btn" onClick={() => document.getElementById('image-upload').click()}>Choose Images</button>
-        <div>
-						<img className="preview-image" src={imagePreview} onError={({ currentTarget }) => {
-                  currentTarget.onerror = null; // prevents looping
-                  currentTarget.src="";}} /><br />
-					</div>
-        {/* Dropdown */}
-        <div className="dropdown">
-          <label htmlFor="post-category"></label>
-          <select name="post-category" id="post-category">
+      {/* Dropdown for visibility*/}
+      <div className="dropdown">
+        <a>Visibility: </a>
+          <select id="post-visibility">
             <option value="PUBLIC" selected>Public</option>
             <option value="FRIENDS">Friends</option>
             <option value="PRIVATE">Private</option></select>
-        </div>
-
-        <div>
-        <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
-        </div>
       </div>
+      <button className="submit-button" onClick={() => addPost(document.getElementById("post-title").value, document.getElementById("post-content").value)}><b> Submit</b> </button> 
+        
 
-      
-      
-					
-			
-      
-    
+      <input id="post-title" className="title" type="text" placeholder="Title.." name="title" maxLength="60" ></input>
+      {showImageBox ? (
+        <div>
+          <input className="file-input" type="file" id="image-upload" name="images[]" onChange={(event) => previewImages(event)}/>
+          <button className="upload-btn" onClick={() => document.getElementById('image-upload').click()}>Choose Images</button>
+          {imagePreview && (
+            <div>
+              <img className="preview-image" src={imagePreview} onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // prevents looping
+                currentTarget.src = "";
+              } } /><br />
+            </div>
+            )}
+
+        </div>
+        ) : (
+          <div>
+            <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
+          </div>
+        )}
 
     </div>
   );
 }
-
-
 export default AddPost;
