@@ -60,7 +60,7 @@ def create_post(request, userId):
             visibility = request.data.get('visibility')
         else:
             visibility = "PUBLIC"
-        if "contentType" in request.data:
+        if "content_type" in request.data:
             content_type = request.data.get('content_type')
         else:
             content_type = "text/plain"
@@ -75,9 +75,9 @@ def create_post(request, userId):
             tempCheck = 1
             image_data = request.data.get('contentImage')
             if image_data:
-                format, imgstr = profileImage_data.split(';base64,')
+                format, imgstr = image_data.split(';base64,')
                 ext = format.split('/')[-1]
-                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{username}.{ext}')
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{uid}.{ext}')
                 contentImage = decoded_image
             else:
                 contentImage = ""
@@ -115,7 +115,7 @@ def create_post(request, userId):
                 if item.author.uuid == item.author.username:
                     connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
                     username1 = "p2padmin" #change when ever need
-                    password1 = "p2padmn" #change when ever need
+                    password1 = "p2padmin" #change when ever need
                        
                     connect_group2 = "None" #change when ever need
                     username1 = "" #change when ever need
@@ -146,13 +146,8 @@ def create_post(request, userId):
                     new_share = Shares.objects.create(author=current_author, post=new_post)
                     follower_inbox.posts.add(new_share)
                     follower_inbox.save()
-        
-        responseData = {
-            "type": "post",
-            "items": model_to_dict(new_post)
-        }
 
-        return Response(status=201)
+        return Response({"message": "Create post done"},status=201)
     else:
         responseData = {
             "type": "creat post",

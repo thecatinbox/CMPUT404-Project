@@ -17,6 +17,7 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 import os
 
@@ -76,6 +77,7 @@ def authorsList(request):
             dict[k] = v
 
         dict['displayName'] = data['displayName']
+        dict['profileImage'] = data['profileImage'].url if data['profileImage'] else None
 
         itemsList.append(dict)
 
@@ -118,6 +120,7 @@ def singleAuthor(request, pk):
         serializer = AuthorSerializer(author)
         data = serializer.data
         data['displayName'] = data.pop('displayName')
+        data['profileImage'] = data['profileImage'].url if data['profileImage'] else None
         responseData = {
             "type": "authors",
             "items": data
@@ -126,7 +129,17 @@ def singleAuthor(request, pk):
 
     elif request.method == 'POST':
         author.github = request.data.get('github', author.github)
-        author.profileImage = request.data.get('profileImage', author.profileImage)
+
+        uid = str(uuid.uuid4())
+        if request.data.get('profileImage'):
+            profileImage_data = request.data.get('profileImage')
+            if profileImage_data:
+                format, imgstr = profileImage_data.split(';base64,')
+                ext = format.split('/')[-1]
+                decoded_image = ContentFile(base64.b64decode(imgstr), name=f'{uid}.{ext}')
+                profileImage = decoded_image
+                author.profileImage = profileImage
+
         author.host = request.data.get('host', author.host)
         author.url = request.data.get('url', author.url)
         author.save()
@@ -205,12 +218,12 @@ def getAllPublicPosts(request):
         comments_count = data.pop('count')
 
         if data['contentImage']:
-            data['contentImage'] = data['contentImage'].url
+            data['contentImage'] = data['contentImage'].url if data['contentImage'] else None
         else:
             data['contentImage'] = None
 
         if post.author.profileImage:
-            author_data['profileImage'] = post.author.profileImage.url
+            author_data['profileImage'] = post.author.profileImage.url if post.author.profileImage else None
         else:
             author_data['profileImage'] = None
 
@@ -281,12 +294,12 @@ def Post(request, pk):
                 comments_count = data.pop('count')
 
                 if data['contentImage']:
-                    data['contentImage'] = data['contentImage'].url
+                    data['contentImage'] = data['contentImage'].url if data['contentImage'] else None
                 else:
                     data['contentImage'] = None
 
                 if item.author.profileImage:
-                    author_data['profileImage'] = item.author.profileImage.url
+                    author_data['profileImage'] = item.author.profileImage.url if item.author.profileImage else None
                 else:
                     author_data['profileImage'] = None
 
@@ -316,6 +329,7 @@ def Post(request, pk):
         new_post = request.data
         new_postId = uuid.uuid4()
         id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/posts/{str(new_postId)}"
+
         newPost = Posts.objects.create(
             title=new_post['title'],
             uuid=new_postId,
@@ -601,7 +615,7 @@ def oneFollower(request, pk, foreignPk):
                             "object": send_object
                         }
                         username = "p2padmin" #change when ever need
-                        password = "p2padmn" #change when ever need
+                        password = "p2padmin" #change when ever need
                         response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
                     except Exception as e:
                         print('this is error:',e)
@@ -847,13 +861,38 @@ sharePost_schema = openapi.Schema(
     required=['type', 'summary', 'author'],
 )
 
+new_likes_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, like.'),
+        'p_or_c': openapi.Schema(type=openapi.TYPE_STRING, description='Whether the like is for a post or a comment.'),
+        'postId': openapi.Schema(type=openapi.TYPE_STRING, description='Post id, if comment no need this.'),
+        'commentId': openapi.Schema(type=openapi.TYPE_STRING, description='Comment id, if post no need this.'),
+        'author': author_schema,
+    },
+    required=['type', 'p_or_c', 'author'],
+)
+
+new_comment_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'type': openapi.Schema(type=openapi.TYPE_STRING, description='Type of the object, comment.'),
+        'postId': openapi.Schema(type=openapi.TYPE_STRING, description='Post id.'),
+        'comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment content.'),
+        'contentType': openapi.Schema(type=openapi.TYPE_STRING, description='Content type of the comment, text/markdown,text/plain, image.'),
+        'author': author_schema,
+
+    },
+    required=['type', 'postId', 'comment', 'author', 'contentType'],
+)
+
 inbox_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
         'sharePost': sharePost_schema,
-        'followRequest': followRequest_schema
-
-
+        'followRequest': followRequest_schema,
+        'newLikes': new_likes_schema,
+        'newComment': new_comment_schema,
     },
     required=['type'],
 )
@@ -865,15 +904,19 @@ inbox_example = openapi.Schema(
 #@permission_classes([AllowAny])
 def inbox(request, pk):
     if request.method == 'GET':
+        
         try:
             author = Authors.objects.get(uuid=pk)
             author_inbox = Inbox.objects.get(author=author)
             #print(author_inbox.comments.all())
+            
         
         
             posts_list = [ShareSerializer(post).data for post in author_inbox.posts.all()]
+            
             for i in posts_list:
                 user = Authors.objects.get(username=i['author'])
+                
                 i['author'] = AuthorSerializer(user).data
                 i['author']['profileImage'] = i['author']['profileImage'].url if i['author']['profileImage'] else ""
                 temp_post = Posts.objects.get(id=i['post'])
@@ -882,6 +925,7 @@ def inbox(request, pk):
                 i['post']['author'] = AuthorSerializer(temp_post_author).data
                 i['post']['author']['profileImage'] = i['post']['author']['profileImage'].url if i['post']['author']['profileImage'] else ""
                 i['post']['contentImage'] = i['post']['contentImage'].url if i['post']['contentImage'] else ""
+            #return Response(status=200)
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
                 user = Authors.objects.get(username=i['author'])
@@ -892,7 +936,7 @@ def inbox(request, pk):
                 user_b = Authors.objects.get(username=i['object'])
                 i['actor'] = AuthorSerializer(user_a).data
                 i['object'] = AuthorSerializer(user_b).data
-
+            
             likes_list = [LikedSerializer(like).data for like in author_inbox.likes.all()]
             for i in likes_list:
                 user = Authors.objects.get(username=i['author'])
@@ -937,10 +981,10 @@ def inbox(request, pk):
                 temp.save()
                 sender_author = Authors.objects.get(uuid=uid)
 
-            if Posts.objects.filter(id=post_entity.get('id')):
-                selectedPost = Posts.objects.get(id=post_entity.get('id'))##############
+            if Posts.objects.filter(source=post_entity.get('id')):
+                selectedPost = Posts.objects.get(source=post_entity.get('id'))##############
             else:
-                uid = str(post_entity.get('id')).split('/')[-1]
+                
                 temp_author = post_entity.get('author')
                 if Authors.objects.filter(url=temp_author.get('url')):
                     post_author = Authors.objects.get(url=temp_author.get('url'))############
@@ -949,7 +993,8 @@ def inbox(request, pk):
                     temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=temp_author.get("displayName"), host=temp_author.get('host'), url=temp_author.get('url'), github=temp_author.get('github'), profileImage=temp_author.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
                     temp.save()
                     post_author = Authors.objects.get(uuid=uid)
-
+                
+                uid = str(post_entity.get('id')).split('/')[-1]
                 temp1 = Posts.objects.create(
                     title=post_entity.get('title'),
                     description=post_entity.get('description'),
@@ -965,14 +1010,16 @@ def inbox(request, pk):
                     categories=post_entity.get('categories'),
                     count=post_entity.get('count'),
                 )
+                return Response({"message":"this one"}, status=404)
                 temp1.save()
                 selectedPost = Posts.objects.get(uuid = uid)
-
+                
             newShare = Shares.objects.create(post=selectedPost, author=sender_author)
             newShare.save()
 
             inbox.posts.add(newShare)
             inbox.save()
+            return Response(status=201)
 
         elif post_type == 'follow':
             if request.data.get('approved') and request.data.get('approved') == True:
@@ -1071,14 +1118,21 @@ def inbox(request, pk):
                     #return Response(status=200)
                     inbox.followRequests.add(makeRequest)
                     inbox.save()
+                    return Response(status=201)
                 else:
                     return Response({"message": "You are already following this user"}, status=404)
 
         elif post_type == 'like': 
             try:
                 p_or_c = request.data.get('p_or_c')#get post or comment
-                userId = request.data.get('userId')
-                currentAuthor = Authors.objects.get(uuid=userId)
+                user = request.data.get('author')
+                if Authors.objects.filter(url=user.get('url')):
+                    currentAuthor = Authors.objects.get(url=user.get('url'))
+                else:
+                    uid = str(user.get('url')).split('/')[-1]
+                    temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=user.get("displayName"), host=user.get('host'), url=user.get('url'), github=user.get('github'), profileImage=user.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                    temp.save()
+                    currentAuthor = Authors.objects.get(uuid=uid)
                 author_name = currentAuthor.displayName
                 
                 if p_or_c == "post":
@@ -1089,20 +1143,25 @@ def inbox(request, pk):
                     post = Comments.objects.get(uuid=commentId).id
                 
                 summary = author_name + " liked your "+p_or_c
-            except:
+            except Exception as e:
+                print('this is error:',e)
                 return Response({"message": "Post not found"}, status=404)
 
-
-            if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post):
+            
+            if not Likes.objects.filter(author=currentAuthor, object=post):
                 like = Likes.objects.create(author=currentAuthor, summary=summary, object=post)
                 like.save()
                 if not Liked.objects.filter(object=post):
                     receiver_liked = Liked.objects.create(object=post)
                 liked = Liked.objects.get(object=post)
                 liked.items.add(like)
-
-                inbox.likes.add(like)
-                inbox.save()
+                
+                if not inbox.likes.filter(id=like.id):
+                    inbox.likes.add(like)
+                    inbox.save()
+                    return Response(status=201)
+                else:
+                    return Response({"message": "You have already liked this post"}, status=404)
             else:
                 return Response({"message": "You have already liked this post"}, status=404)
 
@@ -1110,7 +1169,16 @@ def inbox(request, pk):
         elif post_type == 'comment':
             comment = request.data.get('comment')
             postId = request.data.get('postId')
-            userId = request.data.get('userId')
+            user = request.data.get('author')
+            if Authors.objects.filter(url=user.get('url')):
+                currentAuthor = Authors.objects.get(url=user.get('url'))
+            else:
+                uid = str(actor.get('url')).split('/')[-1]
+                temp = Authors.objects.create(username=uid, password=uid, uuid=uid, displayName=actor.get("displayName"), host=actor.get('host'), url=actor.get('url'), github=actor.get('github'), profileImage=actor.get("profileImage"), id=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{uid}")
+                temp.save()
+                currentAuthor = Authors.objects.get(uuid=uid)
+
+            
             content_type = request.data.get('content_type', 'text/plain')
             uid = str(uuid.uuid4())
 
@@ -1118,11 +1186,8 @@ def inbox(request, pk):
             newComment.comment = comment
             newComment.contentType = content_type
             newComment.uuid = uid
-            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{str(postId)}/comments/{uid}"
-            
-            currentAuthor = Authors.objects.get(uuid=userId)
+            newComment.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(currentAuthor.uuid)}/posts/{str(postId)}/comments/{uid}"
             newComment.author = currentAuthor
-
             currentPost = Posts.objects.get(uuid=postId)
             newComment.post = currentPost
             newComment.save()
@@ -1133,12 +1198,14 @@ def inbox(request, pk):
 
             inbox.comments.add(newComment)
             inbox.save()
+            return Response(status=201)
 
         else:
             return Response(status=400)
-
+        
         inbox.save()
         return Response(status=201)
+
 
     elif request.method == 'DELETE':
         try:
