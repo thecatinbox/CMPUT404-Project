@@ -11,7 +11,7 @@
   font-size: large;
   width: 98%;
   border-radius: 10px;
-  margin: 10px 10px 10px 10px;
+  margin: 3px 10px 10px 10px;
   border:none;
 }
 
@@ -43,15 +43,15 @@ border-color: white;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
-  margin: auto 15px ;
+  margin: auto 20px ;
 }
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
-position: absolute;
 display: inline-block;
-right:130px;
-top: 30px;
+margin-top: 5px;
+margin-left: 15px;
+margin-bottom: 5px;
 }
 
 select {
@@ -72,9 +72,9 @@ font-weight: bold;
   font-weight: bold;
   border-radius: 10px;
   padding: 5px 10px;
-  position: absolute;
-  right:20px;
-  top: 30px;
+  margin-top: 5px;
+  margin-left: 340px;
+  
 }
 /* Add a background color on hover for all buttons*/
 button:hover {
@@ -83,11 +83,12 @@ color: white;
 }
 
 .preview-image {
-	height: 90px;
-	width: 90px;
+	height: 200px;
+	width: 200px;
 	object-fit: cover;
-	margin-left: 15px;
-  border-radius: 5px;
+	margin-left: 20px;
+  margin-top: 5px;
+  border-radius: 10px;
 
 }
 /* .image-preview-container{
@@ -101,4 +102,9 @@ color: white;
 } */
 img[src=""],img:not([src]){
   opacity:0;
+}
+a{
+color: #14849a;
+margin-right: 5px;
+margin-top: 5px; 
 }
