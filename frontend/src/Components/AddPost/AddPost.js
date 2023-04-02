@@ -80,7 +80,7 @@ const AddPost = () => {
       body = JSON.stringify({
         "title": title,
         "content": content,
-        "contentType": type,
+        "content_type": type,
         "visibility": visibility,
       }); 
   
@@ -94,7 +94,7 @@ const AddPost = () => {
 
       const content = {
         "title": title, 
-        "contentType": type, 
+        "content_type": type, 
         "visibility": visibility,
         "contentImage": image
       }; 
