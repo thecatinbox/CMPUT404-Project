@@ -39,14 +39,14 @@ function Post({post}) {
   const user_url = post.author.url; 
 
   var POST_ENDPOINT = user_url + "/posts/" + puid + "/"; 
-  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
-  var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+  // var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes/"; 
+  var MESSAGE_ENDPOINT = user_url + '/inbox/'; 
   // console.log(MESSAGE_ENDPOINT); 
   
-  const [likeNum, setLikeNum] = useState();
-  const [liked, setLiked] = useState(false);
+  // const [likeNum, setLikeNum] = useState();
+  // const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [isDataFetched, setIsDataFetched] = useState(false);
+  // const [isDataFetched, setIsDataFetched] = useState(false);
 
   const theme = createTheme({
     palette: {
@@ -63,6 +63,7 @@ function Post({post}) {
     },
   });
 
+  /*
   async function fetchLikes() {
     try {
       if (LIKE_ENDPOINT.includes("cmput404-project-data.herokuapp.com")) {
@@ -85,12 +86,13 @@ function Post({post}) {
     }
   }
 
+  
   useEffect(() => {
     if (!isDataFetched) {
       fetchLikes(); 
       setIsDataFetched(true); 
     } 
-  }); 
+  }); */
   
   // Handle input change 
   const [inputs, setInputs] = useState({});

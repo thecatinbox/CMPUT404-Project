@@ -128,17 +128,21 @@ function Home() {
   
 
   useEffect(() => {
-    if(!isDataFetched){ // Fetch data only if it has not been fetched already
-      Promise.all([fetchData(), fetchTeam16Data(), fetchTeam1Data()]).then(results => {
-        const postList12 = results[0];
-        const postList16 = results[1];
-        const postList1 = results[2];
-        const mergedPostList = [...postList12, ...postList16, ...postList1];
-        setPostList(mergedPostList.sort((a, b) => new Date(a.published) - new Date(b.published)));
-        setIsDataFetched(true); // Set the state variable to true after fetching the data
-      });
-    }
-  }, [isDataFetched]); // Add the state variable as a dependency of useEffect
+    const fetchDataInterval = setInterval(() => {
+      // if (!isDataFetched) { // Fetch data only if it has not been fetched already
+        Promise.all([fetchData(), fetchTeam16Data(), fetchTeam1Data()]).then(results => {
+          const postList12 = results[0];
+          const postList16 = results[1];
+          const postList1 = results[2];
+          const mergedPostList = [...postList12, ...postList16, ...postList1];
+          setPostList(mergedPostList.sort((a, b) => new Date(a.published) - new Date(b.published)));
+          // setIsDataFetched(true); // Set the state variable to true after fetching the data
+        });
+      // }
+    }, 1000);
+  
+    return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
+  }); //, [isDataFetched]
 
   return (
     <>

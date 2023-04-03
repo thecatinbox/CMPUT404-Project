@@ -11,8 +11,8 @@ function Like({post}) {
   const puid = post.uuid; 
   const user_url = post.author.url; 
 
-  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes"; 
-  var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+  var LIKE_ENDPOINT = user_url + "/posts/" + puid + "/likes/"; 
+  var MESSAGE_ENDPOINT = user_url + '/inbox/'; 
   // console.log(MESSAGE_ENDPOINT); 
   
   const [likeNum, setLikeNum] = useState();
