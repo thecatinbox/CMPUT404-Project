@@ -766,7 +766,7 @@ def followRequest(request, pk, foreignPk):
             }
             return Response(responseData, status=201)
         else:
-                return Response({"message": "You are already following this user"}, status=404)
+            return Response({"message": "You are already following this user"}, status=404)
     else:
         responseData = {
             "type": "creat comment",
@@ -1103,7 +1103,7 @@ def inbox(request, pk):
                     categories=post_entity.get('categories'),
                     count=post_entity.get('count'),
                 )
-                return Response({"message":"this one"}, status=404)
+                #return Response({"message":"this one"}, status=404)
                 temp1.save()
                 selectedPost = Posts.objects.get(uuid = uid)
                 
@@ -1163,7 +1163,7 @@ def inbox(request, pk):
                         print('this is error:',e)
                         return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)
                     
-                    if response.status_code == 200:
+                    if response.status_code == 200 or response.status_code == 201:
                         return Response({"message": "Successfully create the relation on our side too"}, status=200)
                     else:
                         #message = response.json().get('message')
