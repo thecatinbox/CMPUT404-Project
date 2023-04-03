@@ -195,10 +195,12 @@ def create_post(request, userId):
 
                             try:
                                 response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username),str(node.password)))
+                                break
                                 if response.status_code !=200 or response.status_code !=201:
                                     return Response({"response ":f"{response.status_code} {response.reason} {response.text}"}, status=404)
                                 break
                             except Exception as e:
+                                break
                                 print(e)
                                 return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
 
@@ -213,6 +215,7 @@ def create_post(request, userId):
                         follower_inbox.posts.add(new_share)
                         follower_inbox.save()
                     except Exception as e:
+                        break
                         print(e)
                         return Response({"message": "Create post send to follower's inbox raise error"}, status=404)
 
