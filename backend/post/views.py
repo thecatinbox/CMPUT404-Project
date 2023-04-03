@@ -102,7 +102,7 @@ def create_post(request, userId):
         if "origin" in request.data:
             new_post.origin = request.data.get('origin')
         else:
-            new_post.source = new_post.id
+            new_post.origin = new_post.id
         current_author = Authors.objects.get(uuid=userId)
         new_post.author = current_author
         new_post.categories = categories
@@ -111,13 +111,15 @@ def create_post(request, userId):
 
         # notice a new post from me
         current_author_followers = Followers.objects.filter(followedUser=current_author)
-        if current_author_followers:
+        #return Response(f"{new_post.visibility}", status=200)
+        if current_author_followers and (new_post.visibility!="PRIVATE" and new_post.visibility!="private"):
             all_node = Node.objects.all()
             #print(all_node)
-            #return Response(f"{all_node}", status=400)
+            
             for item in current_author_followers:
                 
                 if item.follower.uuid == item.follower.username:
+                    #return Response({"message": "there"}, status=200)
                     #print(item.follower.uuid, item.follower.username)
                     #return Response(f"{all_node}", status=400)
 
@@ -153,9 +155,7 @@ def create_post(request, userId):
                                 "visibility": send_post.data['visibility'],
                                 "unlisted": "false",
                             }
-                            #print(inbox_url)
-                            #print(send_data)
-                            #print("see ",str(node.username), str(node.password))
+
                             try:
                                 response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username),str(node.password)))
                                 if response.status_code !=200 or response.status_code !=201:
@@ -165,12 +165,19 @@ def create_post(request, userId):
                                 print(e)
                                 return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
 
-                else:
-                    follower = item.follower
-                    follower_inbox = Inbox.objects.get(author=follower)
-                    new_share = Shares.objects.create(author=current_author, post=new_post)
-                    follower_inbox.posts.add(new_share)
-                    follower_inbox.save()
+                else: 
+                    
+                    try:
+                        follower = item.follower
+                       
+
+                        follower_inbox = Inbox.objects.get(author=follower)
+                        new_share = Shares.objects.create(author=current_author, post=new_post)
+                        follower_inbox.posts.add(new_share)
+                        follower_inbox.save()
+                    except Exception as e:
+                        print(e)
+                        return Response({"message": "Create post send to follower's inbox raise error"}, status=404)
 
         return Response({"message": "Create post done"},status=201)
     else:
