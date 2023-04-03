@@ -30,7 +30,6 @@ function User({user, followed}) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000', 
       "Authorization": 'Basic ' + btoa('username1:123'),
     }
 

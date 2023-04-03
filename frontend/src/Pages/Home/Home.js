@@ -13,7 +13,7 @@ function Home() {
   // console.log(uuid); 
   const navigate = useNavigate();
   const [postList, setPostList] = useState([]);
-  const [isDataFetched, setIsDataFetched] = useState(false); // Add state variable
+  // const [isDataFetched, setIsDataFetched] = useState(false); // Add state variable
 
   // If not signed in, go to home page 
   if (!localStorage.getItem('uuid')) {
@@ -150,8 +150,7 @@ function Home() {
       {/* <Box sx={{  bgcolor: "#E6EAF3", height: '100%', minHeight: '100vw'}}> */}
       <div className="home">
         <div className="posts">
-        
-        <AddPost/>
+
         {postList.reverse().map(function(post){
             return <Post post={post} key={post.id}/>;
         })}

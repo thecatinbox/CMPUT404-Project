@@ -56,7 +56,6 @@ function Like({post}) {
         const header = {
           "Content-Type": 'application/json',
           "Accept": 'application/json', 
-          "Origin": 'http://localhost:3000', 
           "Authorization": 'Basic ' + btoa('username1:123')
         }
 
@@ -65,7 +64,7 @@ function Like({post}) {
           { 
             "type": "like", 
             "p_or_c": "post", 
-            "author": user, 
+            "author": JSON.parse(user), 
             "postId": puid
          }
         ); 

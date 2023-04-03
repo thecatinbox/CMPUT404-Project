@@ -79,18 +79,18 @@ SimpleDialog.propTypes = {
 function Share( {post} ) {
   const [open, setOpen] = React.useState(false);
   const uuid = localStorage.getItem('uuid'); 
+  const current_user = JSON.parse(localStorage.getItem('user')); 
 
   // Handle add new like
   const handleShare = (user_url) => {
     if (user_url == "") {return; }
 
     // const app_url = localStorage.getItem('url'); 
-    var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+    var MESSAGE_ENDPOINT = user_url + '/inbox/'; 
 
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000', 
       "Authorization": 'Basic ' + btoa('username1:123'),
     }
 
@@ -98,8 +98,8 @@ function Share( {post} ) {
     const body = JSON.stringify(
       { 
         "type": "post", 
-        "sender": uuid, 
-        "postId": post.uuid 
+        "sender": current_user, 
+        "post": post
      }
     ); 
 

@@ -23,8 +23,8 @@ function CommentList({post}) {
     const puid = post.uuid; 
     const user_url = post.author.url; 
 
-    var COMMENT_ENDPOINT = user_url + "/posts/" + puid + "/comments"; 
-    var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+    var COMMENT_ENDPOINT = user_url + "/posts/" + puid + "/comments/"; 
+    var MESSAGE_ENDPOINT = user_url + '/inbox/'; 
     // console.log(COMMENT_ENDPOINT); 
     // console.log(MESSAGE_ENDPOINT); 
     
@@ -46,7 +46,9 @@ function CommentList({post}) {
     }
 
     useEffect(() => {
-        fetchComments(); 
+        if (user_url.includes("cmput404-project")) {
+            fetchComments(); 
+        }
     }); 
 
     async function handleNewComment() {
@@ -54,7 +56,6 @@ function CommentList({post}) {
           const header = {
             "Content-Type": 'application/json',
             "Accept": 'application/json', 
-            "Origin": 'http://localhost:3000', 
             "Authorization": 'Basic ' + btoa('username1:123')
           }
   
@@ -63,7 +64,7 @@ function CommentList({post}) {
             { 
               "type": "comment", 
               "comment": inputs.comment, 
-              "author": user, 
+              "author": JSON.parse(user), 
               "contentType": "text/plain",
               "postId": puid
            }
