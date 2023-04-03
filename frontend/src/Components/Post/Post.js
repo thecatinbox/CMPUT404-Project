@@ -20,11 +20,27 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import ReactMarkdown from 'react-markdown';
+import styled from 'styled-components';
+
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
 import Like from "../Like/Like";
 import Share from "../Share/Share";
 import Username from "../Username/Username";
+
+const MarkdownWrapper = styled.div`
+  img {
+    max-width: 100%;
+  }
+`;
+
+const ImageRenderer = props => (
+  <img
+    {...props}
+    style={{ maxWidth: '400pt' }}
+  />
+);
 
 function Post({post}) { 
 
@@ -47,6 +63,10 @@ function Post({post}) {
   // const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   // const [isDataFetched, setIsDataFetched] = useState(false);
+
+  if (post.contentType) {
+    post.content_type = post.contentType; 
+  }
 
   const theme = createTheme({
     palette: {
@@ -449,9 +469,24 @@ function Post({post}) {
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {post.published.slice(0, 10)}
           </Typography>
-          <Typography variant="body2">
-            {post.content}
-          </Typography>
+          {post.content_type.includes("image") ? (
+          <div>
+            {post.contentImage ? (
+              <img src={post.contentImage} alt="Post content" />
+            ) : (
+              <img src={post.content} alt="Post content" />
+            )}
+          </div>
+        ) : post.content_type.includes("markdown") ? (
+          <MarkdownWrapper>
+            <ReactMarkdown renderers={{ image: ImageRenderer }}>
+              {post.content}
+            </ReactMarkdown>
+          </MarkdownWrapper>
+        ) : (
+          <Typography variant="body2">{post.content}</Typography>
+        )}
+          
         </CardContent>
 
         <CardActions disableSpacing>

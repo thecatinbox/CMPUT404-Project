@@ -65,21 +65,22 @@ border-radius: 10px;
 font-weight: bold;
 }
 .submit-button{
-  background-color: white;
-  color: #0091AE;
-  border-color: #a8cdec;
+  background-color: #ff9277;
+  color: white;
+  border-color: #dbf2f8;
   font-size: 20px;
   font-weight: bold;
   border-radius: 10px;
-  padding: 5px 10px;
-  margin-top: 5px;
-  margin-left: 340px;
+  padding: 8px 30px;
+  margin-bottom: 5px;
+  
+  margin-left:20px;
   
 }
 /* Add a background color on hover for all buttons*/
 button:hover {
-background-color: #FF9175;
-color: white;
+background-color: #ffede1;
+color: #FF9175;
 }
 
 .preview-image {

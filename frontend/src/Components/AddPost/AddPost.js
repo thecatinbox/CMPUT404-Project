@@ -134,8 +134,6 @@ const AddPost = () => {
             <option value="FRIENDS">Friends</option>
             <option value="PRIVATE">Private</option></select>
       </div>
-      <button className="submit-button" onClick={() => addPost()}><b> Submit</b> </button> 
-        
 
       <input id="post-title" className="title" type="text" placeholder="Title.." name="title" maxLength="60" ></input>
       {showImageBox ? (
@@ -157,6 +155,8 @@ const AddPost = () => {
             <textarea id="post-content" type="text" className="input-field" placeholder="Create a new post.." maxLength="450" size="450"></textarea>
           </div>
         )}
+
+      <button className="submit-button" onClick={() => addPost()}><b> Submit</b> </button> 
 
     </div>
   );
