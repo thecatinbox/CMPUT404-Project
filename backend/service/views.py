@@ -447,7 +447,7 @@ def get_post(request, pk, postsId):
             'author': {
                 'id': post.author.id,
                 'uuid': post.author.uuid,
-                'displayName': post.author.username,
+                'displayName': post.author.displayName,
                 'github': post.author.github,
                 'host': post.author.host,
                 'url': post.author.url,
