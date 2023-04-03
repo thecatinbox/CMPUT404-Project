@@ -18,7 +18,7 @@ function UserDetail({user, followed}) {
   const app_url = localStorage.getItem('url'); 
 
   // var FOLLOW_REQUEST_ENDPOINT = app_url + "/service/authors/" + uuid + "/followRequests/" + follow_uuid; 
-  var FOLLOWER_ENDPOINT = app_url + "/service/authors/" + current_user.uuid + "/followers/" + user.uuid; 
+  var FOLLOWER_ENDPOINT = app_url + "/service/authors/" + current_user.uuid + "/followers/" + user.uuid + "/"; 
   // console.log(FOLLOWER_ENDPOINT); 
 
   // Send to local/foreign user's inbox 
