@@ -31,10 +31,12 @@ function SimpleDialog(props) {
     fetch(ENDPOINT, {
       headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
-    }).then(response => response.json()).then(data => {
-      setFriends(data.items);
-    });
-  })
+    })
+      .then(response => response.json())
+      .then(data => {
+        setFriends(data.items);
+      });
+  }, []);
 
   const handleClose = () => {
     onClose("");

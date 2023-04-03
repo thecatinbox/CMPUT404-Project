@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework import permissions, authentication
 from django.core.paginator import Paginator
+from django.core.files.base import ContentFile
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
@@ -1154,7 +1155,9 @@ def inbox(request, pk):
                         return Response({"message": "Follow request failed"}, status=404)
 
                     try:
+
                         follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}/"
+
                         response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(str(current_user.username), str(current_user.password)))
                     except Exception as e:
                         print('this is error:',e)
@@ -1165,6 +1168,7 @@ def inbox(request, pk):
                     else:
                         #message = response.json().get('message')
                         return Response({"message":"response give error"}, status=404)
+
 
                 else:
                     return Response({"message": "You are already following this user"}, status=404)
