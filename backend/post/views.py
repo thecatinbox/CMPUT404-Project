@@ -116,6 +116,7 @@ def create_post(request, userId):
             #print(all_node)
             #return Response(f"{all_node}", status=400)
             for item in current_author_followers:
+
                 if item.follower.uuid == item.follower.username:
                     
 
@@ -132,7 +133,7 @@ def create_post(request, userId):
                         temp_node = str(node.host).replace("/service","")
                         if str(host) == temp_node:
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
-                            send_author = AuthorSerializer(current_author)
+                            send_author = AuthorSerializer(new_post.author)
                             send_post = PostsSerializer(new_post)
                             # send_data = {
                             #     "type": "post",
@@ -148,7 +149,7 @@ def create_post(request, userId):
                                 "description": send_post.data['description'],
                                 "contentType": send_post.data['contentType'],
                                 "content": send_post.data['content'],
-                                "author": AuthorSerializer(send_post.data['author']).data,
+                                "author": send_author.data,
                                 "comments": send_post.data['comments'],
                                 "published": send_post.data['published'],
                                 "visibility": send_post.data['visibility'],
