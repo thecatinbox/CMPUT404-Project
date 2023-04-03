@@ -75,16 +75,12 @@ def authorsList(request):
     """
     This view is used to display all authors information
     """
-    #authors = Authors.objects.all()
+    ############################################################################################################
     authors1 = Authors.objects.filter(url__icontains="https://cmput404-project-data.herokuapp.com")#change when different deployment
     authors2 = Authors.objects.filter(url__icontains="http://127.0.0.1")
     authors = list(chain(authors1,authors2))
+    ############################################################################################################
 
-    # # Get page and size from query parameters
-    # page = int(request.query_params.get('page', 1))
-    # page_size = int(request.query_params.get('size', 10))
-
-    # paginated_authors, total_pages, current_page = paginate(authors, page, page_size)
     paginated_authors = paginate(request,authors)
     if not paginated_authors:
         return Response(status=404)
@@ -237,12 +233,12 @@ def getAllPublicPosts(request):
     """
     This view will get all public posts
     """
-    #"https://cmput404-project-data.herokuapp.com"
+    ###################################################################################################################################
     posts1 = Posts.objects.filter(visibility='PUBLIC', id__icontains="https://cmput404-project-data.herokuapp.com").prefetch_related('author')#change when different deployment
     posts2 = Posts.objects.filter(visibility='PUBLIC', id__icontains="http://127.0.0.1").prefetch_related('author')#change when different deployment
     posts = list(chain(posts1, posts2))
     items_list = []
-
+    #####################################################################################################################################
     for post in posts:
         the_image = post.contentImage.url if post.contentImage else None
         if the_image:

@@ -129,11 +129,14 @@ def create_post(request, userId):
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
                             send_author = AuthorSerializer(current_author)
                             send_post = PostsSerializer(new_post)
-                            # send_data = {
+                            #change when other server deployed:#######################################################################
+                            # if host == "https://" 
+                            #    send_data = {
                             #     "type": "post",
                             #     "author": send_author.data,
                             #     "post": send_post.data
                             # }
+                            ############################################################################################################
                             comment = send_post.data['id'] + "/comments"
                             send_data = {
                                 "type": "post",
