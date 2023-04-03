@@ -11,10 +11,3 @@
     color:white !important;
     background-color: #FF694B !important;
  }
-img {
-height: 300px;
-width: 300px;
-object-fit: cover;
-border-radius: 10px;
-margin-left: 10px;
-}
