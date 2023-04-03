@@ -24,7 +24,7 @@ function Inbox() {
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
   // console.log(uuid); 
-  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox'; 
+  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox/'; 
   
   const [messageList, setMessageList] = useState([]);
   const [open, setOpen] = React.useState({
