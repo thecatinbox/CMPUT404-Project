@@ -19,6 +19,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import ReactMarkdown from 'react-markdown';
 
 import "./Post.css"; 
 import CommentList from "../CommentList/CommentList";
@@ -47,6 +48,10 @@ function Post({post}) {
   // const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   // const [isDataFetched, setIsDataFetched] = useState(false);
+
+  if (post.contentType) {
+    post.content_type = post.contentType; 
+  }
 
   const theme = createTheme({
     palette: {
@@ -449,9 +454,18 @@ function Post({post}) {
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {post.published.slice(0, 10)}
           </Typography>
-          <Typography variant="body2">
-            {post.content}
-          </Typography>
+          {post.content_type.includes("image") ? (
+            <div>
+              <img src={post.contentImage} alt="Post content" />
+            </div>
+          ) : post.content_type.includes("markdown") ? (
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          ) : (
+            <Typography variant="body2">
+              {post.content}
+            </Typography>
+          )}
+          
         </CardContent>
 
         <CardActions disableSpacing>
