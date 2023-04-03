@@ -112,7 +112,9 @@ def create_post(request, userId):
         # notice a new post from me
         current_author_followers = Followers.objects.filter(followedUser=current_author)
         if current_author_followers:
-            all_node = Node.objects.all()
+            #all_node = Node.objects.all()
+            #print(all_node)
+            return Response(f"{all_node}", status=400)
             for item in current_author_followers:
                 if item.follower.uuid == item.follower.username:
                     
@@ -132,11 +134,26 @@ def create_post(request, userId):
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
                             send_author = AuthorSerializer(current_author)
                             send_post = PostsSerializer(new_post)
+                            # send_data = {
+                            #     "type": "post",
+                            #     "author": send_author.data,
+                            #     "post": send_post.data
+                            # }
                             send_data = {
                                 "type": "post",
-                                "author": send_author.data,
-                                "post": send_post.data
+                                "title": send_post.data['title'],
+                                "id": send_post.data['id'],
+                                "source": send_post.data['source'],
+                                "origin": send_post.data['origin'],
+                                "description": send_post.data['description'],
+                                "contentType": send_post.data['contentType'],
+                                "content": send_post.data['content'],
+                                "author": AuthorSerializer(send_post.data['author']).data,
+                                "comments": send_post.data['comments'],
+                                "published": send_post.data['published'],
+                                "visibility": send_post.data['visibility'],
                             }
+
                             try:
                                 response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username), str(node.password)))
                                 break
