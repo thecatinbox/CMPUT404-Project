@@ -24,6 +24,22 @@ from drf_yasg import openapi
 from django.core.files.base import ContentFile
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 
+def get_image(image_url):
+    img_type = str(image_url).split(".")[-1]
+    try:
+        imagePath = '.' + str(image_url)
+    except:
+        return Response(status=404)
+
+    with open(imagePath, 'rb') as img:
+        image_data = img.read()
+
+    base64_encoded_image = base64.b64encode(image_data).decode('utf-8')
+
+    result =  f'data:image/{img_type};base64,{base64_encoded_image}'
+
+    return result
+
 create_post_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
@@ -140,6 +156,25 @@ def create_post(request, userId):
                             # }
                             ############################################################################################################
                             comment = send_post.data['id'] + "/comments"
+                            if send_post.data['contentType'] == "image":
+                                image_type = new_post.contentImage.url.split('.')[-1]
+
+                                if image_type == "png":
+                                    types = "image/png;base64"
+
+                                elif image_type == "jpg":
+                                    types = "image/jpeg;base64"
+                                
+                                image_code = get_image(new_post.contentImage.url)
+                              
+                            else:
+                                types = send_post.data['contentType']
+                                image_code = send_post.data["contentImage"]
+                            
+                            if send_post.data['content'] == "" or send_post.data['content'] == None or send_post.data['content'] == null:
+                                contents = "No Content"
+                            else:
+                                contents = send_post.data['content']
                             send_data = {
                                 "type": "post",
                                 "title": send_post.data['title'],
@@ -147,8 +182,9 @@ def create_post(request, userId):
                                 "source": send_post.data['source'],
                                 "origin": send_post.data['origin'],
                                 "description": send_post.data['description'],
-                                "contentType": send_post.data['contentType'],
-                                "content": send_post.data['content'],
+                                "contentType": types,
+                                "content": contents,
+                                "contentImage": image_code,
                                 "author": send_author.data,
                                 "comments": comment,
                                 "published": send_post.data['published'],
@@ -156,10 +192,11 @@ def create_post(request, userId):
                                 "unlisted": "false",
                             }
 
+
                             try:
                                 response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username),str(node.password)))
                                 if response.status_code !=200 or response.status_code !=201:
-                                    return Response({"Error ":f"{response.status_code} {response.reason} {response.text}"}, status=404)
+                                    return Response({"response ":f"{response.status_code} {response.reason} {response.text}"}, status=404)
                                 break
                             except Exception as e:
                                 print(e)
