@@ -1154,7 +1154,7 @@ def inbox(request, pk):
 
                     try:
                         follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}"
-                        response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(username1, password1)(str(current_user.username), str(current_user.password)))
+                        response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(str(current_user.username), str(current_user.password)))
                     except Exception as e:
                         print('this is error:',e)
                         return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)
