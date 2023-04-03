@@ -675,6 +675,7 @@ def oneFollower(request, pk, foreignPk):
                             #username = "p2padmin" #change when ever need
                             #password = "p2padmin" #change when ever need
                             response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+                            print('this is response:',response.status_code, response.reason, response.text)
                             break
                         except Exception as e:
                             print('this is error:',e)
@@ -1114,7 +1115,7 @@ def inbox(request, pk):
             return Response(status=201)
 
         elif post_type == 'follow':
-            if request.data.get('approved') and request.data.get('approved') == "true":
+            if request.data.get('approved') :
                 try:
                     actor = request.data.get('object')
                     if Authors.objects.filter(url=actor.get('url')):
@@ -1157,6 +1158,7 @@ def inbox(request, pk):
                         follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}/"
 
                         response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(str(current_user.username), str(current_user.password)))
+
                     except Exception as e:
                         print('this is error:',e)
                         return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)
