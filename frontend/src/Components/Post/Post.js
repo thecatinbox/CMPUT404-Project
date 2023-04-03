@@ -103,6 +103,7 @@ function Post({post}) {
   };
 
   // Handle add new like
+  /* 
   async function handleNewLike() {
     if (liked == false) {
       try {
@@ -140,7 +141,6 @@ function Post({post}) {
     }
   }
 
-  /* 
   const handleNewLike = () => {
     if (liked == false) {
       const header = {

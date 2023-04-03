@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework import permissions, authentication
 from django.core.paginator import Paginator
+from django.core.files.base import ContentFile
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
@@ -1162,7 +1163,8 @@ def inbox(request, pk):
                     if response.status_code == 200:
                         return Response({"message": "Successfully create the relation on our side too"}, status=200)
                     else:
-                        message = response.data.get('message')
+                        # message = response.json().get('message')
+                        message = "Something went wrong"
                         return Response({"message":message}, status=404)
 
                 else:
