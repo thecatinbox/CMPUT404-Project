@@ -18,7 +18,7 @@ function Network() {
 
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
-  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox'; 
+  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox/'; 
   
   async function fetchPostData() {
     try {
