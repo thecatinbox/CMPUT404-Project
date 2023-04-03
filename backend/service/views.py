@@ -22,6 +22,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 import os
+from django.core.files.base import ContentFile
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -1114,7 +1115,7 @@ def inbox(request, pk):
             return Response(status=201)
 
         elif post_type == 'follow':
-            if request.data.get('approved') and request.data.get('approved') == True:
+            if request.data.get('approved') and request.data.get('approved') == "true":
                 try:
                     actor = request.data.get('object')
                     if Authors.objects.filter(url=actor.get('url')):
@@ -1153,8 +1154,8 @@ def inbox(request, pk):
                         return Response({"message": "Follow request failed"}, status=404)
 
                     try:
-                        follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}"
-                        response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(username1, password1)(str(current_user.username), str(current_user.password)))
+                        follow_url = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(pk)}/followers/{str(foreign_user.uuid)}/"
+                        response = requests.put(follow_url, data={"approved": True}, auth=HTTPBasicAuth(str(current_user.username), str(current_user.password)))
                     except Exception as e:
                         print('this is error:',e)
                         return Response({"message": "Create follow fail, either url problem or response problem"}, status=404)
@@ -1162,8 +1163,8 @@ def inbox(request, pk):
                     if response.status_code == 200:
                         return Response({"message": "Successfully create the relation on our side too"}, status=200)
                     else:
-                        message = response.data.get('message')
-                        return Response({"message":message}, status=404)
+                        #message = response.json().get('message')
+                        return Response({"message":"response give error"}, status=404)
 
                 else:
                     return Response({"message": "You are already following this user"}, status=404)

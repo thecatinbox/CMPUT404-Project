@@ -112,9 +112,9 @@ def create_post(request, userId):
         # notice a new post from me
         current_author_followers = Followers.objects.filter(followedUser=current_author)
         if current_author_followers:
-            #all_node = Node.objects.all()
+            all_node = Node.objects.all()
             #print(all_node)
-            return Response(f"{all_node}", status=400)
+            #return Response(f"{all_node}", status=400)
             for item in current_author_followers:
                 if item.follower.uuid == item.follower.username:
                     
