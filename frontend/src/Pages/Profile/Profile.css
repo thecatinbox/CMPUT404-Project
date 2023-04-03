@@ -15,8 +15,8 @@
     padding-top: 5%;
 }
 
-.profile img {
+#profileImage {
     width: 230px;
-    height: auto;
+    height: 230px;
     border-radius: 50%;
 }

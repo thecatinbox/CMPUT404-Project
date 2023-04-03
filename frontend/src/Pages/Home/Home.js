@@ -28,8 +28,8 @@ function Home() {
       const response = await axios.get(ENDPOINT, {
         headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       });
-    
-      return response.data.items;
+      const filteredItems = response.data.items.filter(item => item.origin === null);
+      return filteredItems;
     } catch (error) {
       console.error('Error:', error);
       return [];
