@@ -171,8 +171,8 @@ def create_post(request, userId):
                                 types = send_post.data['contentType']
                                 image_code = send_post.data["contentImage"]
                             
-                            if send_post.data['content'] == "" or send_post.data['content'] == None or send_post.data['content'] == null:
-                                contents = "No Content"
+                            if send_post.data['content'] == "" or send_post.data['content'] == None:
+                                contents = image_code
                             else:
                                 contents = send_post.data['content']
                             send_data = {
@@ -184,7 +184,6 @@ def create_post(request, userId):
                                 "description": send_post.data['description'],
                                 "contentType": types,
                                 "content": contents,
-                                "contentImage": image_code,
                                 "author": send_author.data,
                                 "comments": comment,
                                 "published": send_post.data['published'],
@@ -205,11 +204,10 @@ def create_post(request, userId):
                                 return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
 
                 else: 
-                    
+                    #return Response({"message": "there"}, status=200)
                     try:
+                        
                         follower = item.follower
-                       
-
                         follower_inbox = Inbox.objects.get(author=follower)
                         new_share = Shares.objects.create(author=current_author, post=new_post)
                         follower_inbox.posts.add(new_share)
