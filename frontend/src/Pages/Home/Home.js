@@ -128,7 +128,7 @@ function Home() {
   
 
   useEffect(() => {
-    const fetchDataInterval = setInterval(() => {
+    // const fetchDataInterval = setInterval(() => {
       // if (!isDataFetched) { // Fetch data only if it has not been fetched already
         Promise.all([fetchData(), fetchTeam16Data(), fetchTeam1Data()]).then(results => {
           const postList12 = results[0];
@@ -139,10 +139,10 @@ function Home() {
           // setIsDataFetched(true); // Set the state variable to true after fetching the data
         });
       // }
-    }, 1000);
+    // }, 1000);
   
-    return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
-  }); //, [isDataFetched]
+    // return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
+  }, []); //, [isDataFetched]
 
   return (
     <>

@@ -43,15 +43,15 @@ function Network() {
   }
   
   useEffect(() => {
-    const fetchDataInterval = setInterval(() => {
+    // const fetchDataInterval = setInterval(() => {
       Promise.all([fetchPostData()]).then(results => {
         const posts = results[0];
         console.log(posts); 
         setPostList(posts.sort((a, b) => new Date(a.published) - new Date(b.published)));
       });
-    }, 1000);
+    // }, 1000);
   
-    return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
+    // return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
   }, []);  
 
   return (

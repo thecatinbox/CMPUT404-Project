@@ -18,6 +18,7 @@ function CommentList({post}) {
         /// console.log(inputs); 
     };
 
+    const user = localStorage.getItem('user'); 
     const uuid = localStorage.getItem('uuid'); 
     const puid = post.uuid; 
     const user_url = post.author.url; 
@@ -62,7 +63,8 @@ function CommentList({post}) {
             { 
               "type": "comment", 
               "comment": inputs.comment, 
-              "userId": uuid, 
+              "author": user, 
+              "contentType": "text/plain",
               "postId": puid
            }
           ); 

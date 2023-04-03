@@ -8,6 +8,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 function Like({post}) { 
 
   const uuid = localStorage.getItem('uuid'); 
+  const user = localStorage.getItem('user'); 
   const puid = post.uuid; 
   const user_url = post.author.url; 
 
@@ -64,7 +65,7 @@ function Like({post}) {
           { 
             "type": "like", 
             "p_or_c": "post", 
-            "userId": uuid, 
+            "author": user, 
             "postId": puid
          }
         ); 
