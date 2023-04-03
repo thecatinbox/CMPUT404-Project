@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from allModels.models import Authors, FollowRequests, Posts, Comments, Likes, Shares, Inbox
+from allModels.models import Authors, FollowRequests, Posts, Comments, Likes, Shares, Inbox, Node
 
 
 class AuthorSerializer(serializers.ModelSerializer):

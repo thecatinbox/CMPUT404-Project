@@ -792,8 +792,6 @@ def get_post_likes(request, pk, postsId):
         for like in likes:
             author = Authors.objects.get(uuid=like.author.uuid)
             author_dict = AuthorSerializer(author).data
-            author_dict.pop("username")
-            author_dict.pop("password")
             like_dict = LikedSerializer(like).data
             like_dict["author"] = author_dict
             items_list.append(like_dict)

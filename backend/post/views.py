@@ -116,30 +116,25 @@ def create_post(request, userId):
             #print(all_node)
             #return Response(f"{all_node}", status=400)
             for item in current_author_followers:
-
+                
                 if item.follower.uuid == item.follower.username:
-                    
+                    #print(item.follower.uuid, item.follower.username)
+                    #return Response(f"{all_node}", status=400)
 
-                    # connect_group1 = "https://p2psd.herokuapp.com" #change when ever need
-                    # username1 = "p2padmin" #change when ever need
-                    # password1 = "p2padmin" #change when ever need
-                       
-                    # connect_group2 = "None" #change when ever need
-                    # username1 = "" #change when ever need
-                    # password1 = "" #change when ever need
                     uuuid = item.follower.url.split('/')[-1]
                     host = item.follower.host
                     for node in all_node:
                         temp_node = str(node.host).replace("/service","")
                         if str(host) == temp_node:
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
-                            send_author = AuthorSerializer(new_post.author)
+                            send_author = AuthorSerializer(current_author)
                             send_post = PostsSerializer(new_post)
                             # send_data = {
                             #     "type": "post",
                             #     "author": send_author.data,
                             #     "post": send_post.data
                             # }
+                            comment = send_post.data['id'] + "/comments"
                             send_data = {
                                 "type": "post",
                                 "title": send_post.data['title'],
@@ -150,13 +145,18 @@ def create_post(request, userId):
                                 "contentType": send_post.data['contentType'],
                                 "content": send_post.data['content'],
                                 "author": send_author.data,
-                                "comments": send_post.data['comments'],
+                                "comments": comment,
                                 "published": send_post.data['published'],
                                 "visibility": send_post.data['visibility'],
+                                "unlisted": "false",
                             }
-
+                            #print(inbox_url)
+                            #print(send_data)
+                            #print("see ",str(node.username), str(node.password))
                             try:
-                                response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+                                response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username),str(node.password)))
+                                if response.status_code !=200 or response.status_code !=201:
+                                    return Response({"Error ":f"{response.status_code} {response.reason} {response.text}"}, status=404)
                                 break
                             except Exception as e:
                                 print(e)
