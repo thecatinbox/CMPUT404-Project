@@ -1111,7 +1111,7 @@ def inbox(request, pk):
             return Response(status=201)
 
         elif post_type == 'follow':
-            if request.data.get('approved') :
+            if request.data.get('approved') and request.data.get('approved')=="true":
                 try:
                     actor = request.data.get('object')
                     if Authors.objects.filter(url=actor.get('url')):
