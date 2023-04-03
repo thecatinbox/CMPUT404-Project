@@ -17,6 +17,8 @@ import Avatar from '@mui/material/Avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
+import axios from "axios";
+
 
 function SignIn() {
     const [inputs, setInputs] = useState({});
@@ -24,6 +26,7 @@ function SignIn() {
     const app_url = localStorage.getItem('url'); 
 
     const ENDPOINT = app_url + '/service/authors/'; 
+    const SIGNIN_ENDPOINT = app_url + '/signin/'; 
     
     const theme = createTheme({
         palette: {
@@ -37,13 +40,30 @@ function SignIn() {
       });
 
     const checkAuth = (userData) => {
-        if (inputs.username === userData.username && inputs.password === userData.password) {
-            localStorage.setItem('user', JSON.stringify(userData)); 
-            localStorage.setItem('uuid', userData.uuid); 
+        // console.log(userData); 
+
+        const parts = userData.split(":");
+        const uuid = parts[1];
+        // console.log("uuid: " + uuid);
+
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: "Basic " + btoa("username1:123"),
+        };
+
+        axios.get(ENDPOINT + uuid, {
+            headers: headers,
+          })
+          .then((response) => {
+            // console.log(response.data.items);
+            localStorage.setItem('user', JSON.stringify(response.data.items)); 
+            localStorage.setItem('uuid', uuid); 
             navigate("/home");
-        } else {
-            alert("Incorrect password, please try again. ");
-        }
+          })
+          .catch((error) => {
+            console.log("error: " + error);
+          });
     }; 
 
     // handle changes in the input box
@@ -51,8 +71,40 @@ function SignIn() {
         const { name, value } = event.target;
         setInputs((prevInputs) => ({ ...prevInputs, [name]: value }));
     };
-    
+    const handleSubmit = (event) => {
+        event.preventDefault();
+      
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: "Basic " + btoa("username1:123"),
+        };
+      
+        const data = {
+          username: inputs.username,
+          password: inputs.password,
+        };
+      
+        // console.log(data);
+      
+        axios.post(SIGNIN_ENDPOINT, data, {
+            headers: headers,
+          })
+          .then((response) => {
+            if (response.data.includes(":")) {
+              checkAuth(response.data);
+            } else {
+              alert("Incorrect username or password, please try again. ");
+            }
+          })
+          .catch((error) => {
+            alert("Incorrect username or password, please try again. ");
+          });
+      };
+
     // handle the submit of the form
+    /* 
+
     const handleSubmit = (event) => {
         event.preventDefault();
         // alert(JSON.stringify(inputs)); // check input
@@ -61,7 +113,7 @@ function SignIn() {
             headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
             method: "GET"
         }).then(response => response.json()).then(data => {
-            console.log(data.items); 
+            // console.log(data.items); 
             var result = data.items.find(item => item.username === inputs.username);
             if (result) {
                 // console.log(result.username); 
@@ -76,6 +128,7 @@ function SignIn() {
             // console.error('Error:', error);
         });
     };
+    */ 
 
     return (
         <ThemeProvider theme={ theme }>

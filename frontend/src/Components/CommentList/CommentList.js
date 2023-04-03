@@ -15,35 +15,40 @@ function CommentList({post}) {
     const handleChange = (event) => {
         const { name, value } = event.target;
         setInputs((prevInputs) => ({ ...prevInputs, [name]: value }));
-        console.log(inputs); 
+        /// console.log(inputs); 
     };
 
+    const user = localStorage.getItem('user'); 
     const uuid = localStorage.getItem('uuid'); 
     const puid = post.uuid; 
     const user_url = post.author.url; 
 
-    var COMMENT_ENDPOINT = user_url + "/posts/" + puid + "/comments"; 
-    var MESSAGE_ENDPOINT = user_url + '/inbox'; 
+    var COMMENT_ENDPOINT = user_url + "/posts/" + puid + "/comments/"; 
+    var MESSAGE_ENDPOINT = user_url + '/inbox/'; 
     // console.log(COMMENT_ENDPOINT); 
     // console.log(MESSAGE_ENDPOINT); 
     
     async function fetchComments() {
         try {
-        const response = await fetch(COMMENT_ENDPOINT, {
-            headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
-            method: "GET"
-        });
-    
-        const data = await response.json();
-        setCommentList(data.items);
-        setFetched(true); 
+            if (!fetched) {
+                const response = await fetch(COMMENT_ENDPOINT, {
+                    headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+                    method: "GET"
+                });
+            
+                const data = await response.json();
+                setCommentList(data.items);
+                setFetched(true); 
+            } 
         } catch (error) {
-        console.error('Error:', error);
+            console.error('Error:', error);
         }
     }
 
     useEffect(() => {
-        fetchComments(); 
+        if (user_url.includes("cmput404-project")) {
+            fetchComments(); 
+        }
     }); 
 
     async function handleNewComment() {
@@ -51,7 +56,6 @@ function CommentList({post}) {
           const header = {
             "Content-Type": 'application/json',
             "Accept": 'application/json', 
-            "Origin": 'http://localhost:3000', 
             "Authorization": 'Basic ' + btoa('username1:123')
           }
   
@@ -60,19 +64,21 @@ function CommentList({post}) {
             { 
               "type": "comment", 
               "comment": inputs.comment, 
-              "userId": uuid, 
+              "author": JSON.parse(user), 
+              "contentType": "text/plain",
               "postId": puid
            }
           ); 
   
-          console.log(body); 
+          // console.log(body); 
   
           await fetch(MESSAGE_ENDPOINT, {
             headers: header,
             body: body, 
             method: "POST"
           }); 
-  
+          
+          setFetched(false); 
           } catch (error) {
             console.error('Error:', error);
           }

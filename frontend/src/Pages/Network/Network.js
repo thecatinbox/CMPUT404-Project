@@ -18,7 +18,8 @@ function Network() {
 
   const app_url = localStorage.getItem('url'); 
   const uuid = localStorage.getItem('uuid'); 
-  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox'; 
+  const ENDPOINT = app_url + '/service/authors/' + uuid + '/inbox/'; 
+  const MYPOST_ENDPOINT = app_url + '/service/authors/' + uuid + '/posts/'; 
   
   async function fetchPostData() {
     try {
@@ -28,13 +29,31 @@ function Network() {
       });
   
       const data = await response.json();
-      console.log(data.items)
-      console.log(data.items[0])
+      // console.log(data.items)
+      // console.log(data.items[0])
       const originalArray = data.items[0]; 
       const newArray = originalArray.map(item => item.post);
 
-      console.log(newArray);
+      // console.log(newArray);
       return newArray;
+    } catch (error) {
+      console.error('Error:', error);
+      return []; 
+      // Handle the error here
+    }
+  }
+
+  async function fetchMyPostData() {
+    try {
+      const response = await fetch(MYPOST_ENDPOINT, {
+        headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
+        method: "GET"
+      });
+  
+      const data = await response.json();
+      // console.log(data.items);
+      return data.items;
+      
     } catch (error) {
       console.error('Error:', error);
       return []; 
@@ -43,12 +62,18 @@ function Network() {
   }
   
   useEffect(() => {
-    Promise.all([fetchPostData()]).then(results => {
-      const posts = results[0];
-      console.log(posts); 
-      setPostList(posts.sort((a, b) => new Date(a.published) - new Date(b.published)));
-    });
-  }, []);
+    const fetchDataInterval = setInterval(() => {
+      Promise.all([fetchPostData(), fetchMyPostData()]).then(results => {
+        const posts = results[0];
+        const myposts = results[1];
+        // console.log(posts); 
+        const mergedPosts = [...posts, ...myposts];
+        setPostList(mergedPosts.sort((a, b) => new Date(a.published) - new Date(b.published)));
+      });
+    }, 1000);
+  
+    return () => clearInterval(fetchDataInterval); // Clear the interval on unmount
+  });  
 
   return (
     <>

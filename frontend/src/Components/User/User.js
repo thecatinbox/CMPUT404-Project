@@ -18,11 +18,11 @@ function User({user, followed}) {
   const app_url = localStorage.getItem('url'); 
 
   // var FOLLOW_REQUEST_ENDPOINT = app_url + "/service/authors/" + uuid + "/followRequests/" + follow_uuid; 
-  var FOLLOWER_ENDPOINT = app_url + "/service/authors/" + uuid + "/followers/" + follow_uuid; 
+  var FOLLOWER_ENDPOINT = app_url + "/service/authors/" + uuid + "/followers/" + follow_uuid + "/"; 
   // console.log(FOLLOWER_ENDPOINT); 
 
   // Send to local/foreign user's inbox 
-  var MESSAGE_ENDPOINT = follow_url + '/inbox'; // app_url + '/service/authors/' + follow_uuid + '/inbox'; 
+  var MESSAGE_ENDPOINT = follow_url + '/inbox/'; // app_url + '/service/authors/' + follow_uuid + '/inbox'; 
   // console.log(MESSAGE_ENDPOINT); 
 
   // Send follow request to user's inbox 
@@ -30,7 +30,6 @@ function User({user, followed}) {
     const header = {
       "Content-Type": 'application/json',
       "Accept": 'application/json', 
-      "Origin": 'http://localhost:3000', 
       "Authorization": 'Basic ' + btoa('username1:123'),
     }
 

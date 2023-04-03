@@ -20,7 +20,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 function SignUp() {
     const [inputs, setInputs] = useState({});
     const [image, setImage] = useState(null);
-    const [passwordMatch, setPassWordMatch] = useState(true);
+    // const [passwordMatch, setPassWordMatch] = useState(true);
     const app_url = localStorage.getItem('url'); 
 
     const theme = createTheme({
@@ -36,7 +36,7 @@ function SignUp() {
 
     const navigate = useNavigate();
     const SIGNUP_ENDPOINT = app_url + '/signup/'; 
-    const AUTHORS_ENDPOINT = app_url + '/service/authors/'; 
+    // const AUTHORS_ENDPOINT = app_url + '/service/authors/'; 
 
     // handle changes in the input box
     const handleChange = (event) => {
@@ -58,6 +58,7 @@ function SignUp() {
     }
       
     // handle the submit of the form
+    /* 
     const userNotExist = () => {
         fetch(AUTHORS_ENDPOINT, {
             headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
@@ -75,21 +76,23 @@ function SignUp() {
         });
 
         return true; 
-    };
+    }; */ 
 
     // handle the submit of the form
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (inputs.password != inputs.password2) {
+        if (!inputs.username || !inputs.password || !inputs.password2 || !inputs.username || !inputs.displayname || !inputs.githuburl) {
+            alert("Please fill in all information. ");
+        }
+        else if (inputs.password != inputs.password2) {
             alert("Password does not match. ");
         }
-        else if (userNotExist()) {
+        else { //if (userNotExist()) 
             console.log("creating user")
 
             const header = {
                 "Content-Type": 'application/json',
                 "Accept": 'application/json', 
-                "Origin": 'http://localhost:3000', 
                 "Authorization": 'Basic ' + btoa('username1:123'),
             }
           
@@ -117,7 +120,8 @@ function SignUp() {
                 navigate("/signin");
             })
             .catch((error) => {
-                console.log('error: ' + error);
+                // console.log('error: ' + error);
+                alert("Username already exists! "); 
             }); 
         } 
     };

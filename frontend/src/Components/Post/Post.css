@@ -11,3 +11,8 @@
     color:white !important;
     background-color: #FF694B !important;
  }
+
+img {
+    max-width: 100%;
+    height: auto;
+}

@@ -57,7 +57,7 @@ function Friends() {
 
   useEffect(() => {
     fetchData();
-  }); 
+  }, []); 
 
   return (
     <>

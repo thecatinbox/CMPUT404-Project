@@ -43,7 +43,8 @@ function Profile() {
       headers: { "Accept": "application/json", "Authorization": 'Basic ' + btoa('username1:123') },
       method: "GET"
     }).then(response => response.json()).then(postData => {
-      setPostList(postData.items);
+      // setPostList(postData.items);
+      setPostList(postData.items.sort((a, b) => new Date(a.published) - new Date(b.published)));
       // console.log(postData); 
     }); 
 

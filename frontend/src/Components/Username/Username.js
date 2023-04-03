@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import User from "../User/User";
+import UserDetail from "../UserDetail/UserDetail";
 
 function Username({user}) { 
   const [open, setOpen] = React.useState(false);
@@ -35,7 +35,7 @@ function Username({user}) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <User user={user}/>
+            <UserDetail user={user}/>
           </DialogContentText>
         </DialogContent>
       </Dialog>

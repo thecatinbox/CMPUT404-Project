@@ -6,32 +6,37 @@
   border-style: solid;
   border-radius: 10px;
   margin: auto;
+  position: relative;
+  padding-bottom: 50px;
 }
+
 .title{
   font-size: large;
   width: 98%;
   border-radius: 10px;
-  margin: 10px 10px 10px 10px;
+  margin: 3px 10px 10px 10px;
   border:none;
 }
 
 .input-field{
-width: 98%;
-height: 130px;
-margin-left: 10px;
-margin-right: 10px;
-resize: none;
-border-radius: 10px;
-border-color: white;
+  width: 98%;
+  height: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+  resize: none;
+  border-radius: 10px;
+  border-color: white;
 }
+
 .buttons-container{
   display: flex;
   position: relative;
 }
 
 .file-input {
-	display: none;
+  display: none;
 }
+
 .upload-btn {
   height: 36px;
   width: 165px;
@@ -43,27 +48,28 @@ border-color: white;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
-  margin: auto 15px ;
+  margin: auto 20px ;
 }
 
 /* Dropdown list: https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/ */
 .dropdown {
-position: absolute;
-display: inline-block;
-right:130px;
-top: 30px;
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: 15px;
+  margin-bottom: 5px;
 }
 
 select {
-font-size: 20px;
-outline: 0;
-background: white;
-color: #0091AE;
-border: 1px solid #a8cdec;
-padding: 6px;
-border-radius: 10px;
-font-weight: bold;
+  font-size: 20px;
+  outline: 0;
+  background: white;
+  color: #0091AE;
+  border: 1px solid #a8cdec;
+  padding: 6px;
+  border-radius: 10px;
+  font-weight: bold;
 }
+
 .submit-button{
   background-color: white;
   color: #0091AE;
@@ -73,32 +79,31 @@ font-weight: bold;
   border-radius: 10px;
   padding: 5px 10px;
   position: absolute;
-  right:20px;
-  top: 30px;
+  bottom: 10px;
+  right: 10px;
 }
+
 /* Add a background color on hover for all buttons*/
 button:hover {
-background-color: #FF9175;
-color: white;
+  background-color: #FF9175;
+  color: white;
 }
 
 .preview-image {
-	height: 90px;
-	width: 90px;
-	object-fit: cover;
-	margin-left: 15px;
-  border-radius: 5px;
-
-}
-/* .image-preview-container{
-  background-color: #f1faff;
-  border: 3px solid #8bbee8;
-  border-radius: 15px;
-  margin-left: 6px;
-  margin-right: 6px;
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+  margin-left: 20px;
   margin-top: 5px;
-  margin-bottom: 4px;
-} */
+  border-radius: 10px;
+}
+
 img[src=""],img:not([src]){
   opacity:0;
+}
+
+a{
+  color: #14849a;
+  margin-right: 5px;
+  margin-top: 5px; 
 }

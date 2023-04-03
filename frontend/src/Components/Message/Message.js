@@ -26,7 +26,7 @@ function Message({message}) {
     // const follow_uuid = user.uuid; 
     const app_url = localStorage.getItem('url'); 
   
-    const FOLLOW_ENDPOINT = app_url + "/service/authors/" + uuid + "/followers/" + follow_uuid; 
+    const FOLLOW_ENDPOINT = app_url + "/service/authors/" + uuid + "/followers/" + follow_uuid + "/"; 
 
     const header = {
       "Content-Type": 'application/json',
