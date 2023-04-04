@@ -12,11 +12,9 @@ python -m pip install Django
 # Run frontend
 cd frontend
 
-pip install -r requirements.txt
-
 npm start
 
-# Run backend
+# Run backend (in new terminal)
 cd backend
 
 pip install -r requirements.txt
