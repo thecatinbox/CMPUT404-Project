@@ -37,7 +37,9 @@ signUp_example = openapi.Schema(
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def signUp(request):
-    
+    '''
+    create a new user and author, keep the user inactive until the user approved by admin
+    '''
     if request.method == 'POST':
         data = json.loads(request.body.decode())
         try:
@@ -82,7 +84,6 @@ def signUp(request):
                                             uuid=uid,
                                             host="http://"+request.headers.get('host'), 
                                             id =f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}",
-                                            #"http://"+request.headers.get('host')+"/author/"+str(uid),
                                             url=f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(uid)}"
                                             )
             author.save()

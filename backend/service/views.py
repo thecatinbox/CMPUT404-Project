@@ -28,6 +28,9 @@ from django.core.files.base import ContentFile
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_image(image_url):
+    '''
+    use image url to get image data and return base64 encoded image
+    '''
     img_type = str(image_url).split(".")[-1]
     try:
         imagePath = '.' + str(image_url)
@@ -49,13 +52,7 @@ def getURLId(url):
 
 def paginate(request,objects):
     """
-    Paginates a list of objects.
-
-    Args:
-        objects (list): The list of objects to paginate.
-
-    Returns:
-        - The paginated objects.
+    paginates a list of objects.
     """
     page=1
     page_size=10
@@ -65,17 +62,15 @@ def paginate(request,objects):
     objects = objects[start_index:end_index]
     
     return objects
-"""
-Authors 
-"""
+
+
 @swagger_auto_schema(method='get', operation_description="Get all authors' informations.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def authorsList(request):
     """
-    This view is used to display all authors information
+    Read and return all authors in the database as a list
     """
-
+    #use to identify authors belong to this server
     authors1 = Authors.objects.filter(url__icontains="https://cmput404-project-data.herokuapp.com")#change when different deployment
     authors2 = Authors.objects.filter(url__icontains="http://127.0.0.1")
     authors = list(chain(authors1,authors2))
@@ -111,9 +106,6 @@ def authorsList(request):
     return Response(responseData, status=200)
 
 
-"""
-Single Author
-"""
 singleAuthor_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
@@ -124,14 +116,12 @@ singleAuthor_example = openapi.Schema(
     },
     required=['github', 'profileImage', 'host', 'url'],
 )
-
 @swagger_auto_schema(method='post', operation_description="Modify author's information.", request_body=singleAuthor_example)
 @swagger_auto_schema(method='get', operation_description="Get informations for specific author.")
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def singleAuthor(request, pk):
     """
-    This view is used to display and update one author information
+    This view returns a single author's information or modify the author's information.
     """
     try:
         author = Authors.objects.get(uuid=pk)
@@ -222,18 +212,15 @@ def showGithubActivity(request, pk):
         else:
             return Response(status=response.status_code)
    
-"""
-Posts
-"""
 
 @swagger_auto_schema(method='get', operation_description="Get all public posts.")
 @api_view(['GET'])
 #@permission_classes([AllowAny])
 def getAllPublicPosts(request):
     """
-    This view will get all public posts
+    This view is used to return all public posts from this server.
     """
-
+    #identify the posts that are public and from this server
     posts1 = Posts.objects.filter(visibility='PUBLIC', id__icontains="https://cmput404-project-data.herokuapp.com").prefetch_related('author')#change when different deployment
     posts2 = Posts.objects.filter(visibility='PUBLIC', id__icontains="http://127.0.0.1").prefetch_related('author')#change when different deployment
     posts = list(chain(posts1, posts2))
@@ -243,7 +230,7 @@ def getAllPublicPosts(request):
         the_image = post.contentImage.url if post.contentImage else None
         if the_image:
             the_image = get_image(the_image)
-        #the_image = str(the_image).split(".")[-1]
+
         the_author_image = post.author.profileImage.url if post.author.profileImage else None
         if the_author_image:
             the_author_image = get_image(the_author_image)
@@ -263,7 +250,6 @@ def getAllPublicPosts(request):
         else:
             author_data['profileImage'] = None
 
-       
         item = {
             **data,
             'author': author_data,
@@ -297,12 +283,11 @@ Post_example = openapi.Schema(
 @swagger_auto_schema(method='post', operation_description="Create a new post, don't use this one, was used for test.", request_body=Post_example)
 @swagger_auto_schema(method='get', operation_description="Get posts create by specific author.")
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def Post(request, pk):
     """
-    This view is used to display posts of a given author and create a new post
+    This view is used to get posts of a given author
     """
-    # Display posts of a given author
+
     if request.method == 'GET':
         item_list = []
             
@@ -355,7 +340,7 @@ def Post(request, pk):
                     'count': comments_count,
                 }
                 item_list.append(item)
-            #return Response({"message":"there"}, status=200)
+
             responseData = {
                 "type": "posts",
                 "items": item_list
@@ -394,9 +379,6 @@ def Post(request, pk):
     return Response(status=400)  # Return bad request if method is not GET or POST
 
 
-"""
-POST Manipulation
-"""
 get_post_example = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
@@ -414,10 +396,9 @@ get_post_example = openapi.Schema(
 @swagger_auto_schema(method='delete', operation_description="Delete a specific post.")
 @swagger_auto_schema(method='get', operation_description="Get a specific post.")
 @api_view(['GET', 'PUT', 'DELETE'])
-#@permission_classes([AllowAny])
 def get_post(request, pk, postsId):
     """
-    Get, update, delete or create a specific post.
+    This view is used to get a specific post, update a specific post, or delete a specific post
     """
     # Get a specific post
     if request.method == 'GET':
@@ -496,10 +477,9 @@ def get_post(request, pk, postsId):
 @swagger_auto_schema(method='post', operation_description="Post new comments. Don't use this one, just for test.")
 @swagger_auto_schema(method='get', operation_description="Get all the comments of specific post.")
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def getComments(request, pk, postsId):
     """
-    Get comments for a post and paginated
+    Get all the comments of specific post
     """
     if request.method == 'GET':
         item_list = []
@@ -555,8 +535,10 @@ def getComments(request, pk, postsId):
 
 @swagger_auto_schema(method='get', operation_description="Get a specific comment.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def getOneComment(request, pk, postsId, commentId):
+    '''
+    get a specific comment
+    '''
     if request.method == "GET":
         comment = Comments.objects.get(uuid=commentId)
         serializeComment = CommentSerializer(comment).data
@@ -574,12 +556,11 @@ def getOneComment(request, pk, postsId, commentId):
 
         return Response(responseData, status=200)
 
-@swagger_auto_schema(method='get', operation_description="Get all the followers taht follow current user.")
+@swagger_auto_schema(method='get', operation_description="Get all the followers that follow current user.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def getFollowers(request, pk):
     """
-    Display a list of followers that follow user<pk>
+    Get all the followers that following current user
     """
     if request.method == 'GET':
         oneFollowers = Followers.objects.filter(followedUser__uuid=pk)
@@ -596,10 +577,9 @@ def getFollowers(request, pk):
 
 @swagger_auto_schema(method='get', operation_description="Get all the users followed by current user.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def getFollowing(request, pk):
     """
-    Display a list of followers that followed by user<pk>
+    Get all the users followed by current user
     """
     if request.method == 'GET':
         oneFollowers = Followers.objects.filter(follower__uuid=pk)
@@ -618,7 +598,6 @@ def getFollowing(request, pk):
 @swagger_auto_schema(method='delete', operation_description="Delete a following relation.")
 @swagger_auto_schema(method='get', operation_description="Get information of a specific follower.")
 @api_view(['DELETE', 'PUT', 'GET'])
-#@permission_classes([AllowAny])
 def oneFollower(request, pk, foreignPk):
     """
     DELETE: delete the author<foreignPk> from author<pk>'s follower list<br>
@@ -668,53 +647,13 @@ def oneFollower(request, pk, foreignPk):
                                 "actor": send_actor,
                                 "object": send_object
                             }
-                            #username = "p2padmin" #change when ever need
-                            #password = "p2padmin" #change when ever need
+
                             response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(str(node.username), str(node.password)))
                             print('this is response:',response.status_code, response.reason, response.text)
                             break
                         except Exception as e:
                             print('this is error:',e)
                             return Response({"message": "send approved follow request back fail"}, status=404)
-
-                # if host == connect_group1:
-                #     try:
-                #         inbox_url = f"{str(connect_group1)}/authors/{str(uid)}/inbox/"
-                #         send_actor = AuthorSerializer(foreign_user).data
-                #         send_object = AuthorSerializer(current_user).data
-                #         object = {
-                #             "approved": True,
-                #             "type": "follow",
-                #             "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
-                #             "actor": send_actor,
-                #             "object": send_object
-                #         }
-                #         username = "p2padmin" #change when ever need
-                #         password = "p2padmin" #change when ever need
-                #         response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
-                #     except Exception as e:
-                #         print('this is error:',e)
-                #         return Response({"message": "send approved follow request back fail"}, status=404)
-
-                # elif host == connect_group2:
-                #     try:
-                #         inbox_url = f"{str(connect_group2)}/service/authors/{str(uid)}/inbox/"
-                #         send_actor = AuthorSerializer(foreign_user).data
-                #         send_object = AuthorSerializer(current_user).data
-                #         object = {
-                #             "approved": True,
-                #             "type": "follow",
-                #             "summary": f"{current_user.displayName} approved {foreign_user.displayName}'s follow request",
-                #             "actor": send_actor,
-                #             "object": send_object
-                #         }
-                #         username = "Team12" #change when ever need
-                #         password = "P*ssw0rd!" #change when ever need
-                #         response = requests.post(inbox_url, data=object, auth=HTTPBasicAuth(username, password))
-                #     except Exception as e:
-                #         print('this is error:',e)
-                #         return Response({"message": "send approved follow request back fail"}, status=404)
-
 
             return Response({"message": "Followed successfully"}, status=200)
 
@@ -729,12 +668,14 @@ def oneFollower(request, pk, foreignPk):
         else:
             return Response({"isFollowed": False}, status=404)
 
-@swagger_auto_schema(method='post', operation_description="Create a follow request current author.")
+
+@swagger_auto_schema(method='post', operation_description="Create a follow request to current author.")
 @swagger_auto_schema(method='get', operation_description="Don't use this GET, use getFollowers instead.")
-#don't use this GET method, use getFollowers instead
 @api_view(['GET','POST'])
-#@permission_classes([AllowAny])
 def followRequest(request, pk, foreignPk):
+    '''
+    post a follow request to current author, foreignPk is the author who want to follow current author
+    '''
     try:
         current_user = Authors.objects.get(uuid=pk)
         foreign_user = Authors.objects.get(uuid=foreignPk)
@@ -773,10 +714,9 @@ def followRequest(request, pk, foreignPk):
 
 @swagger_auto_schema(method='get', operation_description="Get all the likes for a specific post.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def get_post_likes(request, pk, postsId):
     """
-    Get a list of likes of a post
+    Get all the likes for a specific post.
     """
     if request.method == "GET":
         try:
@@ -804,7 +744,6 @@ def get_post_likes(request, pk, postsId):
 
 @swagger_auto_schema(method='get', operation_description="Get all the posts liked by specific author.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def get_liked(request, pk):
     """
     Get a list of posts liked by an author
@@ -834,7 +773,6 @@ def get_liked(request, pk):
 
 @swagger_auto_schema(method='get', operation_description="Get all comments liked by specific author.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def get_liked_comments(request, pk):
     """
     Get a list of comments liked by an author
@@ -864,10 +802,9 @@ def get_liked_comments(request, pk):
 
 @swagger_auto_schema(method='get', operation_description="Get all the likes for a specific comment.")
 @api_view(['GET'])
-#@permission_classes([AllowAny])
 def get_comment_likes(request, pk, commentId):
     """
-    Get a list of likes of a comment
+    Get all the likes for a specific comment.
     """
     if request.method == "GET":
         try:
@@ -990,17 +927,19 @@ inbox_example = openapi.Schema(
 @swagger_auto_schema(method='delete', operation_description="Clear inbox for specific author.")
 @swagger_auto_schema(method='get', operation_description="Get all the posts, comments, follow requests and likes in specific author's inbox.")
 @api_view(['GET', 'DELETE', 'POST'])
-#@permission_classes([AllowAny])
+
 def inbox(request, pk):
+    '''
+    GET: get all the posts, comments, follow requests and likes in specific author's inbox.
+    POST: create share posts or comments to specific post or follow requests or likes post or comment to specific author's inbox.
+    DELETE: clear inbox for specific author.
+    '''
     if request.method == 'GET':
         
         try:
             author = Authors.objects.get(uuid=pk)
             author_inbox = Inbox.objects.get(author=author)
-            #print(author_inbox.comments.all())
-            
-        
-        
+
             posts_list = [ShareSerializer(post).data for post in author_inbox.posts.all()]
             
             for i in posts_list:
@@ -1014,7 +953,7 @@ def inbox(request, pk):
                 i['post']['author'] = AuthorSerializer(temp_post_author).data
                 i['post']['author']['profileImage'] = get_image(i['post']['author']['profileImage']) if i['post']['author']['profileImage'] else ""
                 i['post']['contentImage'] = get_image(i['post']['contentImage']) if i['post']['contentImage'] else ""
-            #return Response(status=200)
+
             comments_list = [CommentSerializer(comment).data for comment in author_inbox.comments.all()]
             for i in comments_list:
                 user = Authors.objects.get(username=i['author'])
@@ -1036,7 +975,6 @@ def inbox(request, pk):
             data_list.append(comments_list)
             data_list.append(follow_requests_list)
             data_list.append(likes_list)
-            #posts_list + comments_list + follow_requests_list + likes_list
 
             response_data = {
                 "type": "inbox",
@@ -1047,8 +985,10 @@ def inbox(request, pk):
             return Response(response_data, status=200)
         except :
             return Response(status=404)
-    elif request.method == 'POST':
+        
 
+
+    elif request.method == 'POST':
 
         try:
             author = Authors.objects.get(uuid=pk)
@@ -1087,7 +1027,6 @@ def inbox(request, pk):
                 temp1 = Posts.objects.create(
                     title=post_entity.get('title'),
                     description=post_entity.get('description'),
-                    #contentImage=post_entity.get('contentImage'),
                     contentType=post_entity.get('contentType'),
                     content=post_entity.get('content'),
                     visibility=post_entity.get('visibility'),
@@ -1099,7 +1038,7 @@ def inbox(request, pk):
                     categories=post_entity.get('categories'),
                     count=post_entity.get('count'),
                 )
-                #return Response({"message":"this one"}, status=404)
+
                 temp1.save()
                 selectedPost = Posts.objects.get(uuid = uid)
                 
@@ -1127,8 +1066,7 @@ def inbox(request, pk):
                     
                 except Authors.DoesNotExist:
                     return Response({"message": "User not found"}, status=404)
-                #print(current_user)
-                #print('\n',foreign_user)
+
                 if current_user == foreign_user:
                     return Response({"message": "You cannot follow yourself"}, status=404)
                     
@@ -1162,7 +1100,7 @@ def inbox(request, pk):
                     if response.status_code == 200 or response.status_code == 201:
                         return Response({"message": "Successfully create the relation on our side too"}, status=200)
                     else:
-                        #message = response.json().get('message')
+
                         return Response({"message":"response give error"}, status=404)
 
 
@@ -1186,8 +1124,7 @@ def inbox(request, pk):
                     
                 except Authors.DoesNotExist:
                     return Response({"message": "User not found"}, status=404)
-                #print(current_user)
-                #print('\n',foreign_user)
+
                 if current_user == foreign_user:
                     return Response({"message": "You cannot follow yourself"}, status=404)
                     
@@ -1208,7 +1145,6 @@ def inbox(request, pk):
                         print('this is error:',e)
                         return Response({"message": "Follow request failed"}, status=404)
 
-                    #return Response(status=200)
                     inbox.followRequests.add(makeRequest)
                     inbox.save()
                     return Response(status=201)

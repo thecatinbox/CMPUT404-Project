@@ -25,6 +25,9 @@ from django.core.files.base import ContentFile
 from .serializers import AuthorSerializer, PostsSerializer, LikedSerializer, CommentSerializer, FollowRequestSerializer, ShareSerializer
 
 def get_image(image_url):
+    '''
+    This function is used to convert received image url to base64
+    '''
     img_type = str(image_url).split(".")[-1]
     try:
         imagePath = '.' + str(image_url)
@@ -56,15 +59,14 @@ create_post_example = openapi.Schema(
 
 @swagger_auto_schema(method='post', operation_description="Create a new post.", request_body=create_post_example)
 @swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def create_post(request, userId):
-
+    '''
+    This function is used to create a new post and in the same time share the post to all followers of the author(except private post)
+    '''
     if request.method == 'POST':
-        
+        #get info from request
         title = request.data.get('title')
-        #return Response(f"{title}", status=400)
         if "description" in request.data:
             description = request.data.get('description')
         else:
@@ -86,7 +88,7 @@ def create_post(request, userId):
         else:
             categories = ""
         uid = str(uuid.uuid4())
-
+        #decode image
         tempCheck = 0
         if content_type == "image":  
             tempCheck = 1
@@ -125,19 +127,15 @@ def create_post(request, userId):
         new_post.count = "0"
         new_post.save()
 
-        # notice a new post from me
+        #get all followers of the author
         current_author_followers = Followers.objects.filter(followedUser=current_author)
-        #return Response(f"{new_post.visibility}", status=200)
+        #share the post to all followers of the author(except private post)
         if current_author_followers and (new_post.visibility!="PRIVATE" and new_post.visibility!="private"):
             all_node = Node.objects.all()
-            #print(all_node)
             
             for item in current_author_followers:
-                
+                #check if the follower is remote
                 if item.follower.uuid == item.follower.username:
-                    #return Response({"message": "there"}, status=200)
-                    #print(item.follower.uuid, item.follower.username)
-                    #return Response(f"{all_node}", status=400)
 
                     uuuid = item.follower.url.split('/')[-1]
                     host = item.follower.host
@@ -147,14 +145,7 @@ def create_post(request, userId):
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
                             send_author = AuthorSerializer(current_author)
                             send_post = PostsSerializer(new_post)
-                            #change when other server deployed:#######################################################################
-                            # if host == "https://" 
-                            #    send_data = {
-                            #     "type": "post",
-                            #     "author": send_author.data,
-                            #     "post": send_post.data
-                            # }
-                            ############################################################################################################
+                           
                             comment = send_post.data['id'] + "/comments"
                             if send_post.data['contentType'] == "image":
                                 image_type = new_post.contentImage.url.split('.')[-1]
@@ -204,7 +195,7 @@ def create_post(request, userId):
                                 return Response({"message": "Create post send to follower's inbox raise error"}, status=404) 
 
                 else: 
-                    #return Response({"message": "there"}, status=200)
+                    #send to local follower
                     try:
                         
                         follower = item.follower
@@ -237,11 +228,12 @@ create_comment_example = openapi.Schema(
 
 @swagger_auto_schema(method='post', operation_description="Create a new comment on the specified post.", request_body=create_comment_example)
 @swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-# @login_required(login_url='/signin/')
+
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def create_comment(request, userId, postId):
-    
+    '''
+    create a new comment on the specified post
+    '''
     if request.method == 'POST':
         comment = request.data.get('comment')
         content_type = request.data.get('content_type', 'text/plain')
@@ -264,7 +256,7 @@ def create_comment(request, userId, postId):
         currentPost.count = str(int(currentPost.count) + 1)
         currentPost.save()
 
-        # comment added to inbox
+        # comment added to post author's inbox
         post_author = Posts.objects.get(uuid=postId).author
         post_author_inbox = Inbox.objects.get(author=post_author)
         post_author_inbox.comments.add(newComment)
@@ -286,10 +278,12 @@ def create_comment(request, userId, postId):
 
 @swagger_auto_schema(method='post', operation_description="Create a like to specified post, no data required.")
 @swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-# @login_required(login_url='/signin/')
+
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def create_like(request, userId, postId):
+    '''
+    create a like to specified post
+    '''
     if request.method == 'POST':
         post = Posts.objects.get(uuid=postId).id
         currentAuthor = Authors.objects.get(uuid=userId)
@@ -305,7 +299,7 @@ def create_like(request, userId, postId):
             liked = Liked.objects.get(object=post)
             liked.items.add(like)
 
-            # Liked added to inbox
+            # Liked added to post author's inbox
             post_author = Posts.objects.get(uuid=postId).author
             post_author_inbox = Inbox.objects.get(author=post_author)
             post_author_inbox.likes.add(like)
@@ -340,10 +334,11 @@ share_post_example = openapi.Schema(
 
 @swagger_auto_schema(method='post', operation_description="Share post from current author to another author.", request_body=share_post_example)
 @swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-# @login_required(login_url='/signin/')
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def share_post(request, userId, postId):
+    '''
+    share post from current author to another author, add to their inbox
+    '''
     currentAuthor = Authors.objects.get(uuid=userId)
     selectedPost = Posts.objects.get(uuid=postId)
 
@@ -375,10 +370,12 @@ def share_post(request, userId, postId):
 
 @swagger_auto_schema(method='post', operation_description="Create a like to specified comment under specified post, no data required.")
 @swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-# @login_required(login_url='/signin/')
+
 @api_view(['GET', 'POST'])
-#@permission_classes([AllowAny])
 def create_like_comment(request, userId, postId, commentId):
+    '''
+    create a like to specified comment under specified post
+    '''
     if request.method == 'POST':
         comment = Comments.objects.get(uuid=commentId)
         comment_author = comment.author
