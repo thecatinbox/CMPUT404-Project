@@ -1,0 +1,2959 @@
+{
+	"info": {
+		"_postman_id": "0142b28d-e2e0-4407-ac5e-3d94e9284d16",
+		"name": "API Documentation",
+		"description": "CMPUT 404 Project API Documentation\n\nContact Support:\n Email: qliang2@ualberta.ca",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26666729"
+	},
+	"item": [
+		{
+			"name": "(root)",
+			"item": [
+				{
+					"name": "Response 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"username1\",\n  \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "post/authors/{userId}",
+			"item": [
+				{
+					"name": "like/{postId}",
+					"item": [
+						{
+							"name": "post authors like read",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Validating 200 status code\r",
+											"pm.test('200 response check',function() {\r",
+											"    pm.response.to.have.status(200)\r",
+											"})\r",
+											"\r",
+											"//Validating Content-Type\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/post/authors/:userId/like/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"post",
+										"authors",
+										":userId",
+										"like",
+										":postId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "aa4a432c-7093-4a31-bd38-1f81198ed022",
+											"description": "(Required) "
+										},
+										{
+											"key": "postId",
+											"value": "682be3e5-29de-4286-9e54-15e6a87ec4e9",
+											"description": "(Required) "
+										}
+									]
+								},
+								"description": "Don't use this get, this is just for testing."
+							},
+							"response": []
+						},
+						{
+							"name": "post authors like create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Validating 200 status code\r",
+											"pm.test('500 response check',function() {\r",
+											"    pm.response.to.have.status(500)\r",
+											"})\r",
+											"\r",
+											"//Validating Content-Type\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/post/authors/:userId/like/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"post",
+										"authors",
+										":userId",
+										"like",
+										":postId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "aa4a432c-7093-4a31-bd38-1f81198ed022",
+											"description": "(Required) "
+										},
+										{
+											"key": "postId",
+											"value": "682be3e5-29de-4286-9e54-15e6a87ec4e9",
+											"description": "(Required) "
+										}
+									]
+								},
+								"description": "Create a like to specified post, no data required."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "posts",
+					"item": [
+						{
+							"name": "create",
+							"item": [
+								{
+									"name": "post authors posts create list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('200 response check',function() {\r",
+													"    pm.response.to.have.status(200)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/post/authors/:userId/posts/create",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"post",
+												"authors",
+												":userId",
+												"posts",
+												"create"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Don't use this get, this is just for testing."
+									},
+									"response": []
+								},
+								{
+									"name": "post authors posts create create",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('500 response check',function() {\r",
+													"    pm.response.to.have.status(500)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"test\",\n  \"visibility\": \"Pubilc\",\n  \"description\": \"Testcase\",\n  \"content\": \"test1\",\n  \"content_type\": \"plain\",\n  \"categories\": \" \",\n  \"contentImage\": \" \"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/post/authors/:userId/posts/create",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"post",
+												"authors",
+												":userId",
+												"posts",
+												"create"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Create a new post."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "{postId}",
+							"item": [
+								{
+									"name": "comment",
+									"item": [
+										{
+											"name": "post authors posts comment list",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('200 response check',function() {\r",
+															"    pm.response.to.have.status(200)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/post/authors/:userId/posts/:postId/comment",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"post",
+														"authors",
+														":userId",
+														"posts",
+														":postId",
+														"comment"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "postId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Don't use this get, this is just for testing."
+											},
+											"response": []
+										},
+										{
+											"name": "post authors posts comment create",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('500 response check',function() {\r",
+															"    pm.response.to.have.status(500)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"comment\": \"<string>\",\n  \"content_type\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/post/authors/:userId/posts/:postId/comment",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"post",
+														"authors",
+														":userId",
+														"posts",
+														":postId",
+														"comment"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "postId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Create a new comment on the specified post."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "comments/{commentId}/likes",
+									"item": [
+										{
+											"name": "post authors posts comments likes list",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('200 response check',function() {\r",
+															"    pm.response.to.have.status(200)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/post/authors/:userId/posts/:postId/comments/:commentId/likes",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"post",
+														"authors",
+														":userId",
+														"posts",
+														":postId",
+														"comments",
+														":commentId",
+														"likes"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "postId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "commentId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Don't use this get, this is just for testing."
+											},
+											"response": []
+										},
+										{
+											"name": "post authors posts comments likes create",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('500 response check',function() {\r",
+															"    pm.response.to.have.status(500)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/post/authors/:userId/posts/:postId/comments/:commentId/likes",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"post",
+														"authors",
+														":userId",
+														"posts",
+														":postId",
+														"comments",
+														":commentId",
+														"likes"
+													],
+													"variable": [
+														{
+															"key": "userId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "postId",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "commentId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Create a like to specified comment under specified post, no data required."
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "share/{postId}",
+					"item": [
+						{
+							"name": "post authors share read",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Validating 200 status code\r",
+											"pm.test('500 response check',function() {\r",
+											"    pm.response.to.have.status(500)\r",
+											"})\r",
+											"\r",
+											"//Validating Content-Type\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/post/authors/:userId/share/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"post",
+										"authors",
+										":userId",
+										"share",
+										":postId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "<string>",
+											"description": "(Required) "
+										},
+										{
+											"key": "postId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								},
+								"description": "Don't use this get, this is just for testing."
+							},
+							"response": []
+						},
+						{
+							"name": "post authors share create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Validating 200 status code\r",
+											"pm.test('500 response check',function() {\r",
+											"    pm.response.to.have.status(500)\r",
+											"})\r",
+											"\r",
+											"//Validating Content-Type\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"sendTo\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/post/authors/:userId/share/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"post",
+										"authors",
+										":userId",
+										"share",
+										":postId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "<string>",
+											"description": "(Required) "
+										},
+										{
+											"key": "postId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								},
+								"description": "Share post from current author to another author."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "service",
+			"item": [
+				{
+					"name": "authors",
+					"item": [
+						{
+							"name": "{id}",
+							"item": [
+								{
+									"name": "comments",
+									"item": [
+										{
+											"name": "service authors comments liked list",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('500 response check',function() {\r",
+															"    pm.response.to.have.status(500)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/comments/liked/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"comments",
+														"liked",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Get all comments liked by specific author."
+											},
+											"response": []
+										},
+										{
+											"name": "service authors comments likes list",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 200 status code\r",
+															"pm.test('404 response check',function() {\r",
+															"    pm.response.to.have.status(404)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/comments/:commentId/likes/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"comments",
+														":commentId",
+														"likes",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "commentId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Get all the likes for a specific comment."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "followRequests/{foreignPk}",
+									"item": [
+										{
+											"name": "service authors follow Requests read",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 404 status code\r",
+															"pm.test('404 response check',function() {\r",
+															"    pm.response.to.have.status(404)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/followRequests/:foreignPk/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"followRequests",
+														":foreignPk",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "foreignPk",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Don't use this GET, use getFollowers instead."
+											},
+											"response": []
+										},
+										{
+											"name": "service authors follow Requests create",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"//Validating 404 status code\r",
+															"pm.test('404 response check',function() {\r",
+															"    pm.response.to.have.status(404)\r",
+															"})\r",
+															"\r",
+															"//Validating Content-Type\r",
+															"pm.test(\"Content-Type is present\", function () {\r",
+															"    pm.response.to.have.header(\"Content-Type\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/followRequests/:foreignPk/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"followRequests",
+														":foreignPk",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														},
+														{
+															"key": "foreignPk",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Create a follow request current author."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "followers",
+									"item": [
+										{
+											"name": "{foreignPk}",
+											"item": [
+												{
+													"name": "service authors followers read",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"followers",
+																":foreignPk",
+																""
+															],
+															"variable": [
+																{
+																	"key": "foreignPk",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Get information of a specific follower."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"followers",
+																		":foreignPk",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "foreignPk",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												},
+												{
+													"name": "service authors followers update",
+													"request": {
+														"method": "PUT",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"followers",
+																":foreignPk",
+																""
+															],
+															"variable": [
+																{
+																	"key": "foreignPk",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Add a new following relation, make sure the user send out follow request put after /followers/author_uuid."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "PUT",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"followers",
+																		":foreignPk",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "foreignPk",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												},
+												{
+													"name": "service authors followers delete",
+													"request": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"followers",
+																":foreignPk",
+																""
+															],
+															"variable": [
+																{
+																	"key": "foreignPk",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Delete a following relation."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "DELETE",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/followers/:foreignPk/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"followers",
+																		":foreignPk",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "foreignPk",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "No Content",
+															"code": 204,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "service authors followers list",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/followers/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"followers",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Get all the followers taht follow current user."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/followers/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"followers",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "inbox",
+									"item": [
+										{
+											"name": "service authors inbox list",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"inbox",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Get all the posts, comments, follow requests and likes in specific author's inbox."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"inbox",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "service authors inbox create",
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"sharePost\": {\n    \"type\": \"<string>\",\n    \"sender\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"post\": {\n      \"title\": \"<string>\",\n      \"description\": \"<string>\",\n      \"contentImage\": \"<string>\",\n      \"visibility\": \"<string>\",\n      \"contentType\": \"<string>\",\n      \"id\": \"<string>\",\n      \"origin\": \"<string>\",\n      \"author\": {\n        \"id\": \"<string>\",\n        \"url\": \"<string>\",\n        \"host\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"github\": \"<string>\",\n        \"profileImage\": \"<string>\",\n        \"type\": \"<string>\"\n      },\n      \"categories\": \"<string>\",\n      \"count\": \"<string>\"\n    }\n  },\n  \"followRequest\": {\n    \"type\": \"<string>\",\n    \"summary\": \"<string>\",\n    \"approved\": \"<boolean>\",\n    \"actor\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"object\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  },\n  \"newLikes\": {\n    \"type\": \"<string>\",\n    \"p_or_c\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"postId\": \"<string>\",\n    \"commentId\": \"<string>\"\n  },\n  \"newComment\": {\n    \"type\": \"<string>\",\n    \"postId\": \"<string>\",\n    \"comment\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"contentType\": \"<string>\"\n  }\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"inbox",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "###attention: only followRequest is valid now.### Create posts or comments or follow requests or likes to specific author's inbox."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"sharePost\": {\n    \"type\": \"<string>\",\n    \"sender\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"post\": {\n      \"title\": \"<string>\",\n      \"description\": \"<string>\",\n      \"contentImage\": \"<string>\",\n      \"visibility\": \"<string>\",\n      \"contentType\": \"<string>\",\n      \"id\": \"<string>\",\n      \"origin\": \"<string>\",\n      \"author\": {\n        \"id\": \"<string>\",\n        \"url\": \"<string>\",\n        \"host\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"github\": \"<string>\",\n        \"profileImage\": \"<string>\",\n        \"type\": \"<string>\"\n      },\n      \"categories\": \"<string>\",\n      \"count\": \"<string>\"\n    }\n  },\n  \"followRequest\": {\n    \"type\": \"<string>\",\n    \"summary\": \"<string>\",\n    \"approved\": \"<boolean>\",\n    \"actor\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"object\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  },\n  \"newLikes\": {\n    \"type\": \"<string>\",\n    \"p_or_c\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"postId\": \"<string>\",\n    \"commentId\": \"<string>\"\n  },\n  \"newComment\": {\n    \"type\": \"<string>\",\n    \"postId\": \"<string>\",\n    \"comment\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"contentType\": \"<string>\"\n  }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"inbox",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"sharePost\": {\n    \"type\": \"<string>\",\n    \"sender\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"post\": {\n      \"title\": \"<string>\",\n      \"description\": \"<string>\",\n      \"contentImage\": \"<string>\",\n      \"visibility\": \"<string>\",\n      \"contentType\": \"<string>\",\n      \"id\": \"<string>\",\n      \"origin\": \"<string>\",\n      \"author\": {\n        \"id\": \"<string>\",\n        \"url\": \"<string>\",\n        \"host\": \"<string>\",\n        \"displayName\": \"<string>\",\n        \"github\": \"<string>\",\n        \"profileImage\": \"<string>\",\n        \"type\": \"<string>\"\n      },\n      \"categories\": \"<string>\",\n      \"count\": \"<string>\"\n    }\n  },\n  \"followRequest\": {\n    \"type\": \"<string>\",\n    \"summary\": \"<string>\",\n    \"approved\": \"<boolean>\",\n    \"actor\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"object\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  },\n  \"newLikes\": {\n    \"type\": \"<string>\",\n    \"p_or_c\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"postId\": \"<string>\",\n    \"commentId\": \"<string>\"\n  },\n  \"newComment\": {\n    \"type\": \"<string>\",\n    \"postId\": \"<string>\",\n    \"comment\": \"<string>\",\n    \"author\": {\n      \"id\": \"<string>\",\n      \"url\": \"<string>\",\n      \"host\": \"<string>\",\n      \"displayName\": \"<string>\",\n      \"github\": \"<string>\",\n      \"profileImage\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    \"contentType\": \"<string>\"\n  }\n}"
+												}
+											]
+										},
+										{
+											"name": "service authors inbox delete",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"inbox",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Clear inbox for specific author."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/inbox/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"inbox",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "posts",
+									"item": [
+										{
+											"name": "{postsId}",
+											"item": [
+												{
+													"name": "comments",
+													"item": [
+														{
+															"name": "service authors posts comments list",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		"comments",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																},
+																"description": "Get all the comments of specific post."
+															},
+															"response": [
+																{
+																	"name": "Untitled Response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [
+																			{
+																				"description": "Added as a part of security scheme: basic",
+																				"key": "Authorization",
+																				"value": "Basic <credentials>"
+																			}
+																		],
+																		"url": {
+																			"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"service",
+																				"authors",
+																				":id",
+																				"posts",
+																				":postsId",
+																				"comments",
+																				""
+																			],
+																			"variable": [
+																				{
+																					"key": "id",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				},
+																				{
+																					"key": "postsId",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [
+																		{
+																			"key": "Content-Type",
+																			"value": "text/plain"
+																		}
+																	],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														},
+														{
+															"name": "service authors posts comments create",
+															"request": {
+																"method": "POST",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		"comments",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																},
+																"description": "Post new comments. Don't use this one, just for test."
+															},
+															"response": [
+																{
+																	"name": "Untitled Response",
+																	"originalRequest": {
+																		"method": "POST",
+																		"header": [
+																			{
+																				"description": "Added as a part of security scheme: basic",
+																				"key": "Authorization",
+																				"value": "Basic <credentials>"
+																			}
+																		],
+																		"url": {
+																			"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"service",
+																				"authors",
+																				":id",
+																				"posts",
+																				":postsId",
+																				"comments",
+																				""
+																			],
+																			"variable": [
+																				{
+																					"key": "id",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				},
+																				{
+																					"key": "postsId",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				}
+																			]
+																		}
+																	},
+																	"status": "Created",
+																	"code": 201,
+																	"_postman_previewlanguage": "text",
+																	"header": [
+																		{
+																			"key": "Content-Type",
+																			"value": "text/plain"
+																		}
+																	],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														},
+														{
+															"name": "service authors posts comments read",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/:commentId/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		"comments",
+																		":commentId",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "commentId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																},
+																"description": "Get a specific comment."
+															},
+															"response": [
+																{
+																	"name": "Untitled Response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [
+																			{
+																				"description": "Added as a part of security scheme: basic",
+																				"key": "Authorization",
+																				"value": "Basic <credentials>"
+																			}
+																		],
+																		"url": {
+																			"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/comments/:commentId/",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"service",
+																				"authors",
+																				":id",
+																				"posts",
+																				":postsId",
+																				"comments",
+																				":commentId",
+																				""
+																			],
+																			"variable": [
+																				{
+																					"key": "commentId",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				},
+																				{
+																					"key": "id",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				},
+																				{
+																					"key": "postsId",
+																					"value": "<string>",
+																					"description": "(Required) "
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [
+																		{
+																			"key": "Content-Type",
+																			"value": "text/plain"
+																		}
+																	],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "service authors posts read",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																":postsId",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "postsId",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Get a specific post."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												},
+												{
+													"name": "service authors posts update",
+													"request": {
+														"method": "PUT",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																":postsId",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "postsId",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Update a specific post, non required."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "PUT",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												},
+												{
+													"name": "service authors posts delete",
+													"request": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																":postsId",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "postsId",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Delete a specific post."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "DELETE",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "No Content",
+															"code": 204,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												},
+												{
+													"name": "service authors posts likes list",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/likes/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																":postsId",
+																"likes",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "postsId",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														},
+														"description": "Get all the likes for a specific post."
+													},
+													"response": [
+														{
+															"name": "Untitled Response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [
+																	{
+																		"description": "Added as a part of security scheme: basic",
+																		"key": "Authorization",
+																		"value": "Basic <credentials>"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/service/authors/:id/posts/:postsId/likes/",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"service",
+																		"authors",
+																		":id",
+																		"posts",
+																		":postsId",
+																		"likes",
+																		""
+																	],
+																	"variable": [
+																		{
+																			"key": "id",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		},
+																		{
+																			"key": "postsId",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [
+																{
+																	"key": "Content-Type",
+																	"value": "text/plain"
+																}
+															],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "service authors posts list",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/posts/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"posts",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Get posts create by specific author."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "service authors posts create",
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"title\": \"<string>\",\n  \"source\": \"<string>\",\n  \"origin\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contentType\": \"<string>\",\n  \"content\": \"<string>\",\n  \"categories\": \"<string>\",\n  \"visibility\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/service/authors/:id/posts/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"service",
+														"authors",
+														":id",
+														"posts",
+														""
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "Create a new post, don't use this one, was used for test."
+											},
+											"response": [
+												{
+													"name": "Untitled Response",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: basic",
+																"key": "Authorization",
+																"value": "Basic <credentials>"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"title\": \"<string>\",\n  \"source\": \"<string>\",\n  \"origin\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contentType\": \"<string>\",\n  \"content\": \"<string>\",\n  \"categories\": \"<string>\",\n  \"visibility\": \"<string>\"\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/service/authors/:id/posts/",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"service",
+																"authors",
+																":id",
+																"posts",
+																""
+															],
+															"variable": [
+																{
+																	"key": "id",
+																	"value": "<string>",
+																	"description": "(Required) "
+																}
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"title\": \"<string>\",\n  \"source\": \"<string>\",\n  \"origin\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contentType\": \"<string>\",\n  \"content\": \"<string>\",\n  \"categories\": \"<string>\",\n  \"visibility\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "service authors read",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('200 response check',function() {\r",
+													"    pm.response.to.have.status(200)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/service/authors/:id/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"service",
+												"authors",
+												":id",
+												""
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Get informations for specific author."
+									},
+									"response": []
+								},
+								{
+									"name": "service authors create",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('404 response check',function() {\r",
+													"    pm.response.to.have.status(404)\r",
+													"})\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"github\": \"<string>\",\n  \"profileImage\": \"<string>\",\n  \"host\": \"<string>\",\n  \"url\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/service/authors/:id/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"service",
+												"authors",
+												":id",
+												""
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Modify author's information."
+									},
+									"response": []
+								},
+								{
+									"name": "service authors following list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('200 response check',function() {\r",
+													"    pm.response.to.have.status(200)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/service/authors/:id/following/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"service",
+												"authors",
+												":id",
+												"following",
+												""
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Get all the users followed by current user."
+									},
+									"response": []
+								},
+								{
+									"name": "service authors github list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('404 response check',function() {\r",
+													"    pm.response.to.have.status(404)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/service/authors/:id/github/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"service",
+												"authors",
+												":id",
+												"github",
+												""
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Get the author's github link."
+									},
+									"response": []
+								},
+								{
+									"name": "service authors liked list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Validating 200 status code\r",
+													"pm.test('500 response check',function() {\r",
+													"    pm.response.to.have.status(500)\r",
+													"})\r",
+													"\r",
+													"//Validating Content-Type\r",
+													"pm.test(\"Content-Type is present\", function () {\r",
+													"    pm.response.to.have.header(\"Content-Type\");\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/service/authors/:id/liked/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"service",
+												"authors",
+												":id",
+												"liked",
+												""
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Get all the posts liked by specific author."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "service authors list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Validating 200 status code\r",
+											"pm.test('200 response check',function() {\r",
+											"    pm.response.to.have.status(200)\r",
+											"})\r",
+											"\r",
+											"//Validating Content-Type\r",
+											"pm.test(\"Content-Type is present\", function () {\r",
+											"    pm.response.to.have.header(\"Content-Type\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/service/authors/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"service",
+										"authors",
+										""
+									]
+								},
+								"description": "Get all authors' informations."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "service posts list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/service/posts/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"service",
+								"posts",
+								""
+							]
+						},
+						"description": "Get all public posts."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "signin",
+			"item": [
+				{
+					"name": "signin list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/signin/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"signin",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"username1\",\n  \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/signin/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"signin",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "signup",
+			"item": [
+				{
+					"name": "signup list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/signup/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"signup",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signup create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validating 200 status code\r",
+									"pm.test('200 response check',function() {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"//Validating Content-Type\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"postman\",\n  \"password\": \"123\",\n  \"displayName\": \"Postmantest\",\n  \"github\": \" \",\n  \"profileImage\": \" \"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/signup/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"signup",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{basicAuthUsername}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{basicAuthPassword}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://cmput404-project-data.herokuapp.com",
+			"type": "string"
+		},
+		{
+			"key": "basicAuthUsername",
+			"value": "username1"
+		},
+		{
+			"key": "basicAuthPassword",
+			"value": "000"
+		}
+	]
+}
