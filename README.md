@@ -25,6 +25,7 @@ python manage.py runserver
 
 
 # Example inbox POST formate(post)
+'''
 {
 "type": "post",
 "sender":{
@@ -57,8 +58,9 @@ python manage.py runserver
         "count": "2"
 }
 }
-
+'''
 # Example inbox POST formate(follow request)
+'''
 {
 "type": "follow",
 "summary": "Sunny wants to follow Nevil Kandathil",
@@ -72,9 +74,10 @@ python manage.py runserver
         "profileImage": ""
 }
  }
-
+'''
 
 # Example inbox POST formate(like)
+'''
 {
 "type":"like",
 "p_or_c":"post",
@@ -89,8 +92,9 @@ python manage.py runserver
             "profileImage": ""
         }
 }
-
+'''
 # Example inbox POST formate(comment)
+'''
 {
 "type":"comment",
 "comment":"test inbox comment",
@@ -106,3 +110,4 @@ python manage.py runserver
             "profileImage": ""
         }
 }
+'''
