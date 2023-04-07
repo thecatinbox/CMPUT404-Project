@@ -115,3 +115,16 @@ python manage.py runserver
         }
 }
 ```
+
+# Tool Usage 
+- Miro design borad: https://miro.com/app/board/uXjVPoMnR4U=/#tpicker-content
+- Github Project board: https://github.com/users/thecatinbox/projects/5 
+- Github Issues / Pull Requests / Commmits 
+- AJAX: consistent usage of async / await functions and React useStates hooks for update posts, likes, comments, inbox, and follow requests 
+
+# Feedbacks 
+1. No follower following functionality. Only posts. (Now follower following functionality is implemented) 
+2. API documentation but no explanations of endpoints. (API documentation is now updated with explainations; All requests can be directly sent from the interface)
+3. Test cases: available but non-comprehensive. (Updated test cases with Postman) 
+4. Couldn't demonstrate any of the comment/like functionality working even with the API. (Comment/like now both functional with both the webpage and the API) 
+5. The speed of the webpage loading is too slow. (Set time intervals for fetching new data, which significantly improved the preformance; Some fetch methods are updated with axios for better performance) 
