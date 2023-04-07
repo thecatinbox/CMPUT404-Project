@@ -25,6 +25,7 @@ python manage.py runserver
 
 
 # Example inbox POST formate(post)
+**POST**
 '''
 {
 "type": "post",
@@ -60,6 +61,7 @@ python manage.py runserver
 }
 '''
 # Example inbox POST formate(follow request)
+**POST**
 '''
 {
 "type": "follow",
@@ -77,6 +79,7 @@ python manage.py runserver
 '''
 
 # Example inbox POST formate(like)
+**POST**
 '''
 {
 "type":"like",
@@ -94,6 +97,7 @@ python manage.py runserver
 }
 '''
 # Example inbox POST formate(comment)
+**POST**
 '''
 {
 "type":"comment",
