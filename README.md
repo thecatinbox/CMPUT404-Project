@@ -117,9 +117,10 @@ python manage.py runserver
 ```
 
 # Tool Usage 
-- Miro design borad: https://miro.com/app/board/uXjVPoMnR4U=/#tpicker-content
+- Miro design board: https://miro.com/app/board/uXjVPoMnR4U=/#tpicker-content
 - Github Project board: https://github.com/users/thecatinbox/projects/5 
-- Github Issues / Pull Requests / Commmits 
+- Github Issues / Pull Requests / Commmits for task tracking 
+- GitHub Wiki for documentations: https://github.com/thecatinbox/CMPUT404-Project/wiki/Web-Service-Deployment 
 - AJAX: consistent usage of async / await functions and React useStates hooks for update posts, likes, comments, inbox, and follow requests 
 
 # Feedbacks 
