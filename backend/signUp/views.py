@@ -34,7 +34,7 @@ signUp_example = openapi.Schema(
 
 
 @swagger_auto_schema(method='post', description="Sign Up with username,password and displayName", request_body=signUp_example)
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def signUp(request):
     '''
@@ -42,6 +42,7 @@ def signUp(request):
     '''
     if request.method == 'POST':
         data = json.loads(request.body.decode())
+        #create user with input informations and inactive status
         try:
             username = data['username']
             password = data['password']

@@ -24,8 +24,8 @@ signIn_example = openapi.Schema(
 )
 
 @swagger_auto_schema(method='post', description="Sign In with username and password", request_body=signIn_example)
-@swagger_auto_schema(method='get', description="Don't use this one, it's for testing only")
-@api_view(['GET', 'POST'])
+
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def signIn(request):
     '''
@@ -41,10 +41,10 @@ def signIn(request):
             userLogin = User.objects.get(username=username)
         except:
             return Response({"message": "User does not exist"}, status=404)
-
+        # check if user is active
         if userLogin.is_active == True:
             user = authenticate(request, username=username, password=password)
-
+            # check if user is authenticated
             if user is not None:
                 login(request, user)
                 current_user = request.user

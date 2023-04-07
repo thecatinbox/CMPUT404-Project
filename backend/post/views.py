@@ -28,12 +28,14 @@ def get_image(image_url):
     '''
     This function is used to convert received image url to base64
     '''
+    #get image type
     img_type = str(image_url).split(".")[-1]
+    #get image path
     try:
         imagePath = '.' + str(image_url)
     except:
         return Response(status=404)
-
+    #convert image to base64
     with open(imagePath, 'rb') as img:
         image_data = img.read()
 
@@ -101,7 +103,7 @@ def create_post(request, userId):
             else:
                 contentImage = ""
                 
-
+        #create a new post
         new_post = Posts()
         new_post.title = title
         new_post.description = description
@@ -112,6 +114,7 @@ def create_post(request, userId):
         new_post.visibility = visibility
         new_post.contentType = content_type
         new_post.uuid = uid
+        #create post id for the new post
         new_post.id = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{uid}"
         if "source" in request.data:
             new_post.source = request.data.get('source')
@@ -132,21 +135,24 @@ def create_post(request, userId):
         #share the post to all followers of the author(except private post)
         if current_author_followers and (new_post.visibility!="PRIVATE" and new_post.visibility!="private"):
             all_node = Node.objects.all()
-            
+            #loop through all followers
             for item in current_author_followers:
                 #check if the follower is remote
                 if item.follower.uuid == item.follower.username:
-
+                    #get uuid of the follower
                     uuuid = item.follower.url.split('/')[-1]
                     host = item.follower.host
+                    #loop through all nodes to find the node that the follower is in
                     for node in all_node:
                         temp_node = str(node.host).replace("/service","")
+                        #check if the node is the node that the follower is in, if yes, take nessary data and send the post to the follower
                         if str(host) == temp_node:
                             inbox_url = f"{str(node.host)}/authors/{str(uuuid)}/inbox/"
                             send_author = AuthorSerializer(current_author)
                             send_post = PostsSerializer(new_post)
-                           
+                            
                             comment = send_post.data['id'] + "/comments"
+                            #if is image post, get the image type and encode the image
                             if send_post.data['contentType'] == "image":
                                 image_type = new_post.contentImage.url.split('.')[-1]
 
@@ -182,7 +188,7 @@ def create_post(request, userId):
                                 "unlisted": "false",
                             }
 
-
+                            #send the post to the follower with the inbox url
                             try:
                                 response = requests.post(inbox_url, data=send_data, auth=HTTPBasicAuth(str(node.username),str(node.password)))
                                 break
@@ -227,9 +233,8 @@ create_comment_example = openapi.Schema(
 )
 
 @swagger_auto_schema(method='post', operation_description="Create a new comment on the specified post.", request_body=create_comment_example)
-@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def create_comment(request, userId, postId):
     '''
     create a new comment on the specified post
@@ -277,9 +282,8 @@ def create_comment(request, userId, postId):
         return Response(responseData, status=200)
 
 @swagger_auto_schema(method='post', operation_description="Create a like to specified post, no data required.")
-@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def create_like(request, userId, postId):
     '''
     create a like to specified post
@@ -289,8 +293,9 @@ def create_like(request, userId, postId):
         currentAuthor = Authors.objects.get(uuid=userId)
         author_name = currentAuthor.displayName
         summary = author_name + " Likes your post"
-
+        # check if the like already exists
         if not Likes.objects.filter(author=currentAuthor, summary=summary, object=post):
+            # create a new like
             context = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/posts/{str(postId)}/likes"
             like = Likes.objects.create(context=context,author=currentAuthor, summary=summary, object=post)
             like.save()
@@ -333,12 +338,12 @@ share_post_example = openapi.Schema(
 )
 
 @swagger_auto_schema(method='post', operation_description="Share post from current author to another author.", request_body=share_post_example)
-@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def share_post(request, userId, postId):
     '''
     share post from current author to another author, add to their inbox
     '''
+    # get current author and post
     currentAuthor = Authors.objects.get(uuid=userId)
     selectedPost = Posts.objects.get(uuid=postId)
 
@@ -347,7 +352,7 @@ def share_post(request, userId, postId):
         sendToAuthor = Authors.objects.get(uuid=sendTo)
 
         inbox = Inbox.objects.get(author=sendToAuthor)
-
+        # create a new share to store in inbox
         newShare = Shares.objects.create(post=selectedPost, author=currentAuthor)
         newShare.save()
 
@@ -369,9 +374,8 @@ def share_post(request, userId, postId):
         return Response(responseData, status=200)
 
 @swagger_auto_schema(method='post', operation_description="Create a like to specified comment under specified post, no data required.")
-@swagger_auto_schema(method='get', operation_description="Don't use this get, this is just for testing.")
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def create_like_comment(request, userId, postId, commentId):
     '''
     create a like to specified comment under specified post
@@ -382,7 +386,7 @@ def create_like_comment(request, userId, postId, commentId):
         currentAuthor = Authors.objects.get(uuid=userId)
         summary = currentAuthor.displayName + " Likes your comment"
         obj = comment.id
-
+        # check if the like already exists
         if not Likes.objects.filter(author=currentAuthor, summary=summary, object=obj):
             context = f"{request.build_absolute_uri('/')[:-1]}/service/authors/{str(userId)}/comments/{str(commentId)}/likes"
             like = Likes.objects.create(context=context, author=currentAuthor, summary=summary, object=obj)

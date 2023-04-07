@@ -3,6 +3,10 @@ from .models import *
 from django.db.utils import IntegrityError
 import uuid
 '''
+This file is used to test the models in the allModels folder, (is old and not used anymore)
+'''
+
+'''
 Authors.objects.create(
     username="test_author_11111",
     password="test_password11111",
