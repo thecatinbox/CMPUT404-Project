@@ -24,9 +24,9 @@ python manage.py runserver
 (might need to makemigrations and migrate first)
 
 
-# Example inbox POST formate(post)
+## Example inbox POST formate(post) ##
 **POST**
-'''
+```
                                 {
                                 "type": "post",
                                 "sender":{
@@ -59,10 +59,10 @@ python manage.py runserver
                                         "count": "2"
                                 }
                                 }
-'''
+```
 # Example inbox POST formate(follow request)
 **POST**
-'''
+```
                                 {
                                 "type": "follow",
                                 "summary": "Sunny wants to follow Nevil Kandathil",
@@ -76,11 +76,11 @@ python manage.py runserver
                                         "profileImage": ""
                                 }
                                  }
-'''
+```
 
 # Example inbox POST formate(like)
 **POST**
-'''
+```
                                 {
                                 "type":"like",
                                 "p_or_c":"post",
@@ -95,10 +95,10 @@ python manage.py runserver
                                             "profileImage": ""
                                         }
                                 }
-'''
+```
 # Example inbox POST formate(comment)
 **POST**
-'''
+```
                                 {
                                 "type":"comment",
                                 "comment":"test inbox comment",
@@ -114,4 +114,4 @@ python manage.py runserver
                                             "profileImage": ""
                                         }
                                 }
-'''
+```
