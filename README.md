@@ -24,7 +24,7 @@ python manage.py runserver
 (might need to makemigrations and migrate first)
 
 
-# Example inbox POST formate(post)
+## Example inbox POST formate(post)
 **POST**
 '''
 Eg. {
@@ -60,7 +60,7 @@ Eg. {
 }
 }
 '''
-# Example inbox POST formate(follow request)
+## Example inbox POST formate(follow request)
 **POST**
 '''
 Eg.{
@@ -78,7 +78,7 @@ Eg.{
  }
 '''
 
-# Example inbox POST formate(like)
+## Example inbox POST formate(like)
 **POST**
 '''
 Eg.{
@@ -96,7 +96,7 @@ Eg.{
         }
 }
 '''
-# Example inbox POST formate(comment)
+## Example inbox POST formate(comment)
 **POST**
 '''
 Eg.{
